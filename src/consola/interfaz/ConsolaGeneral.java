@@ -30,7 +30,7 @@ import modelo.producto.Producto;
 import modelo.producto.Bebida;
 import modelo.producto.Platillo;
 
-public class Consola {
+public class ConsolaGeneral {
 	private PersistenciaCafeJson persistenciaCafe;
 	private PersistenciaOperacionesJson persistenciaOps;
 	private Cafe miCafe;
@@ -38,7 +38,7 @@ public class Consola {
 	private Random aleatorio;
 	private int opcion = 0;
 
-	public Consola() {
+	public ConsolaGeneral() {
 		this.miCafe = new Cafe(50);
 		this.lector = new Scanner(System.in);
 		this.aleatorio = new Random();
@@ -1175,7 +1175,7 @@ public class Consola {
 		}
 	}
 	public static void main(String[] args) {
-		Consola consola = new Consola();
+		ConsolaGeneral consola = new ConsolaGeneral();
 		Scanner lectorMenu = new Scanner(System.in);
 		int opcion = 0;
 
@@ -1184,22 +1184,22 @@ public class Consola {
 		do {
 			System.out.println("\n--- MENÚ PRINCIPAL ---");
 			System.out.println("0. Registrar nuevo admin");
-			System.out.println("1. Registrar nuevo usuario");
-			System.out.println("2. Ver total de clientes");
-			System.out.println("3. Cambiar Contraseña");
-			System.out.println("4. Ingreso de juegos favoritos");
+			System.out.println("1. Registrar nuevo usuario"); // Si  no existe
+			System.out.println("2. Ver total de clientes");  // Admin y Empleado
+			System.out.println("3. Cambiar Contraseña"); // General 
+			System.out.println("4. Ingreso de juegos favoritos"); // 
 			System.out.println("5. Comprar Productos");
 			System.out.println("6. Afiliar un Amigo");
 			System.out.println("7. Hacer una Reserva");
 			System.out.println("8. Hacer solicitudes para la Mesa");
-			System.out.println("9. Pagar Reserva");
-			System.out.println("10. Gestionar turnos");
-			System.out.println("11. Sugerir platillo");
-			System.out.println("12. Solicitar prestamo");
-			System.out.println("13. Gestionar Juegos");
-			System.out.println("14. Terminar Reserva");
-			System.out.println("15. Aceptar Platillos");
-			System.out.println("16. Ver  Finanzas");
+			System.out.println("9. Pagar Reserva"); // Cliente
+			System.out.println("10. Gestionar turnos"); // 
+			System.out.println("11. Sugerir platillo"); //
+			System.out.println("12. Solicitar prestamo"); //
+			System.out.println("13. Gestionar Juegos"); // Administrador
+			System.out.println("14. Terminar Reserva"); // Mesero
+			System.out.println("15. Aceptar Platillos"); //Admin
+			System.out.println("16. Ver  Finanzas"); //Vaina del administrador
 			System.out.println("17. Salir");
 			System.out.print("Seleccione una opción: ");
 
