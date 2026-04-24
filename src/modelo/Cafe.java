@@ -205,6 +205,18 @@ public class Cafe {
 		this.sugerenciasPendientes.add(platillo);
 	}
 	
+	private Usuario buscarUsuario(String login) {
+		for (Cliente c : getClientes()) {
+			if (c.getLogin().equals(login))
+				return c;
+		}
+		for (Empleado e : getEmpleados()) {
+			if (e.getLogin().equals(login))
+				return e;
+		}
+		return null;
+	}
+	
 	public boolean reservarJuego(Juego juego, Reserva r) {
 	    if (!juegosPrestamo.contains(juego)) {
 	        return false;
@@ -283,7 +295,6 @@ public class Cafe {
 		return total;
 	}
 	
-	// Dentro de la clase Cafe
 	public void registrarProductoEnTransaccion(Transaccion t, Producto p) {
 	    t.agregarProducto(p);
 	    // Si la transacción no estaba en el historial, la agregamos (evita duplicados)
@@ -300,4 +311,81 @@ public class Cafe {
 
 	    return null;
 	}
+	
+	
+	
+	//Carga de Datos Iniciales
+
+	
+	
+
+	public void cambioContraseña() {
+		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
+		System.out.print("Ingrese su login de usuario: ");
+		String loginBusqueda = lector.nextLine();
+
+		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+
+		if (usuarioEncontrado != null) {
+			System.out.print("Ingrese la nueva contraseña: ");
+			String nuevaPass = lector.nextLine();
+
+			usuarioEncontrado.setPassword(nuevaPass);
+
+			System.out.println("Contraseña actualizada para el usuario: " + usuarioEncontrado.getNombre());
+		} else {
+			System.out.println("Error: No se encontró ningún usuario con el login: " + loginBusqueda);
+		}
+	}
+	
+	public Cafe cargarDatos(String juegosArchivo, String bebidasArchivo, String platillosArchivo,
+			String administradorArchivo, String reservasArchivo, String  historialPrestamosArchivo, 
+			String transaccionesArchivo) { //Lógica que debería cargarse en el café 
+		
+		// El string que pasa por parámetro es la ruta de los archivos que debería ser
+		// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
+		
+		try {
+			// Intentamos cargar la infraestructura y luego las operaciones
+			persistenciaCafe.cargarCafe("cafe.json",this );
+			persistenciaOps.cargarOperaciones("operaciones.json", this);
+			System.out.println(" Datos cargados exitosamente.");
+			
+		} catch (Exception e) {
+			System.out.println(" No se encontraron datos previos o hubo un error. Inicializando local por defecto...");
+			
+			Juego juegoInicial = new Juego(501, 150000, "Catan", 1995, "Devir", 4, "apto 5 anios", "Tablero");
+			Bebida bebidaInicial = new Bebida(201, 12000, "Café Americano", "Caliente", false);
+			Platillo platilloInicial = new Platillo(101, 25000, "Sandwich de Pavo", "Gluten, Lácteos");
+			
+			juegosVenta.add(juegoInicial);
+			juegosPrestamo.add(juegoInicial);
+			menuBebidas.add(bebidaInicial);
+			menuPlatillos.add(platilloInicial);
+			
+			
+		}
+	}
+
+	private void inicializarMesas() { 
+		int contadorMesa = 1;
+
+
+
+		while (capacidad > 0) {
+			
+			int sillasMesa = aleatorio.nextInt(15);
+
+			if (sillasMesa > capacidad) {
+				sillasMesa = capacidad; // Ajustamos la última mesa al espacio sobrante
+			}
+
+			// Creamos la mesa y la añadimos al café
+			Mesa nuevaMesa = new Mesa(contadorMesa, sillasMesa, true);
+			mesas.add(nuevaMesa);
+			contadorMesa++;
+		}
+	}
+	
+
 }

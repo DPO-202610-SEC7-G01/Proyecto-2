@@ -9,7 +9,7 @@ public class CentralPersistencia
     public static final String JSON = "JSON";
 
     // --- Métodos Estáticos ---
-    public static IPersistenciaCafe getPersistenciaCafe( String tipoArchivo ) throws Exception 
+    public static PersistenciaCafe getPersistenciaCafe( String tipoArchivo ) throws Exception 
     {
         if ( tipoArchivo.equals( JSON ) )
         {
@@ -21,7 +21,7 @@ public class CentralPersistencia
         }
     }
 
-    public static IPersistenciaOperaciones getPersistenciaOperaciones( String tipoArchivo ) throws Exception
+    public static PersistenciaOperaciones getPersistenciaOperaciones( String tipoArchivo ) throws Exception
     {
         if ( tipoArchivo.equals( JSON ) )
         {

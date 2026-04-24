@@ -23,9 +23,10 @@ import modelo.usuario.Cocinero;
 /**
  * Clase encargada de cargar y salvar la información base del café (Infraestructura) en formato JSON.
  */
-public class PersistenciaCafeJson implements IPersistenciaCafe {
+public class PersistenciaCafeJson   {
 
-    @Override
+	//Carga de Información 
+    
     public void cargarCafe(String archivo, Cafe cafe) throws IOException, Exception {
         try {
             String contenido = new String(Files.readAllBytes(new File(archivo).toPath()));
@@ -45,7 +46,7 @@ public class PersistenciaCafeJson implements IPersistenciaCafe {
         }
     }
 
-    @Override
+    
     public void salvarCafe(String archivo, Cafe cafe) throws IOException {
         JSONObject root = new JSONObject();
 

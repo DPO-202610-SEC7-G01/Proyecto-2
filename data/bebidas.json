@@ -1,0 +1,44 @@
+{[
+  {
+    "id": 201,
+    "precio": 12000,
+    "nombre": "Café Americano",
+    "temperatura": "Caliente",
+    "esAlcoholica": false
+  },
+  {
+    "id": 202,
+    "precio": 15000,
+    "nombre": "Jugo de Naranja Natural",
+    "temperatura": "Fría",
+    "esAlcoholica": false
+  },
+  {
+    "id": 203,
+    "precio": 18000,
+    "nombre": "Limonada de Coco",
+    "temperatura": "Fría",
+    "esAlcoholica": false
+  },
+  {
+    "id": 204,
+    "precio": 25000,
+    "nombre": "Vino Tinto Reserva",
+    "temperatura": "Ambiente",
+    "esAlcoholica": true
+  },
+  {
+    "id": 205,
+    "precio": 22000,
+    "nombre": "Cerveza Artesanal IPA",
+    "temperatura": "Fría",
+    "esAlcoholica": true
+  },
+  {
+    "id": 201,
+    "precio": 12000,
+    "nombre": "Café Americano",
+    "temperatura": "Caliente",
+    "esAlcoholica": false
+  }
+]}

@@ -1,0 +1,37 @@
+[
+  {
+    "id": 101,
+    "login": "mesero_carlos",
+    "password": "pass_carlos_2024",
+    "nombre": "Carlos Alberto Ruiz",
+    "juegosConocidos": []
+  },
+  {
+    "id": 102,
+    "login": "mesero_elena",
+    "password": "elena_secure_88",
+    "nombre": "Elena Rodríguez",
+    "juegosConocidos": []
+  },
+  {
+    "id": 103,
+    "login": "mesero_miguel",
+    "password": "miguel_p_991",
+    "nombre": "Miguel Ángel Torres",
+    "juegosConocidos": []
+  },
+  {
+    "id": 104,
+    "login": "mesero_lucia",
+    "password": "lucia_v_772",
+    "nombre": "Lucía Villamil",
+    "juegosConocidos": []
+  },
+  {
+    "id": 105,
+    "login": "mesero_sergio",
+    "password": "sergio_s_334",
+    "nombre": "Sergio Salazar",
+    "juegosConocidos": []
+  }
+]

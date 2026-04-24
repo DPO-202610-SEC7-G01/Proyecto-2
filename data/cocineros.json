@@ -1,0 +1,42 @@
+[
+  {
+    "id": 201,
+    "login": "chef_ramiro",
+    "password": "clave_segura_1",
+    "nombre": "Ramiro Gutiérrez",
+    "bebidasConocidas": [],
+    "platillosConocidos": []
+  },
+  {
+    "id": 202,
+    "login": "chef_claudia",
+    "password": "clave_segura_2",
+    "nombre": "Claudia Méndez",
+    "bebidasConocidas": [],
+    "platillosConocidos": []
+  },
+  {
+    "id": 203,
+    "login": "chef_andres",
+    "password": "clave_segura_3",
+    "nombre": "Andrés Felipe",
+    "bebidasConocidas": [],
+    "platillosConocidos": []
+  },
+  {
+    "id": 204,
+    "login": "chef_beatriz",
+    "password": "clave_segura_4",
+    "nombre": "Beatriz Soler",
+    "bebidasConocidas": [],
+    "platillosConocidos": []
+  },
+  {
+    "id": 205,
+    "login": "chef_marcos",
+    "password": "clave_segura_5",
+    "nombre": "Marcos Duarte",
+    "bebidasConocidas": [],
+    "platillosConocidos": []
+  }
+]

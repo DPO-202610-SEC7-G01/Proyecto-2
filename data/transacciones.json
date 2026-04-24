@@ -1,0 +1,71 @@
+[
+  {
+    "id": 1001,
+    "fecha": "2026-04-20",
+    "productos": [
+      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
+      { "id": 5, "nombre": "Croissant", "precio": 3.5 }
+    ],
+    "cliente_final": {
+      "id": 1,
+      "login": "juanito_99",
+      "nombre": "Juan Pérez"
+    },
+    "amigoEmpleado": false
+  },
+  {
+    "id": 1002,
+    "fecha": "2026-04-21",
+    "productos": [
+      { "id": 2, "nombre": "Cappuccino", "precio": 6.0 }
+    ],
+    "cliente_final": {
+      "id": 2,
+      "login": "marta_gamer",
+      "nombre": "Marta Gómez"
+    },
+    "amigoEmpleado": true
+  },
+  {
+    "id": 1003,
+    "fecha": "2026-04-21",
+    "productos": [
+      { "id": 10, "nombre": "Té Matcha", "precio": 7.0 },
+      { "id": 12, "nombre": "Muffin Arándanos", "precio": 4.0 }
+    ],
+    "cliente_final": {
+      "id": 3,
+      "login": "lucas_sky",
+      "nombre": "Lucas Silva"
+    },
+    "amigoEmpleado": false
+  },
+  {
+    "id": 1004,
+    "fecha": "2026-04-22",
+    "productos": [
+      { "id": 3, "nombre": "Latte", "precio": 6.5 }
+    ],
+    "cliente_final": {
+      "id": 4,
+      "login": "sofia_dev",
+      "nombre": "Sofía Castro"
+    },
+    "amigoEmpleado": false
+  },
+  {
+    "id": 1005,
+    "fecha": "2026-04-23",
+    "productos": [
+      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
+      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
+      { "id": 15, "nombre": "Tostadas", "precio": 8.0 }
+    ],
+    "cliente_final": {
+      "id": 5,
+      "login": "diego_board",
+      "nombre": "Diego Ruiz"
+    },
+    "amigoEmpleado": true
+  }
+]
