@@ -5,16 +5,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import modelo.producto.Juego;
-import modelo.usuario.Empleado;
-import modelo.usuario.Mesero;
-import modelo.usuario.Cliente;
-import modelo.usuario.Cocinero;
-import modelo.usuario.Administrador;
-import modelo.usuario.Usuario;
-import modelo.producto.Platillo;
-import modelo.producto.Bebida;
-import modelo.producto.Producto;
+
+
+import modelo.usuario.*;
+import modelo.producto.*;
+import persistencia.*;
 
 public class Cafe {
 
@@ -119,6 +114,27 @@ public class Cafe {
 		return sugerenciasPendientes;
 	}
 	
+	//Persistencia
+	//Carga de Datos Iniciales
+		public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
+				String bebidasArchivo, String platillosArchivo, String administradorArchivo,
+				String empleadosArchivo, String clientesArchivo,
+				String reservasArchivo, String  historialPrestamosArchivo, 
+				String transaccionesArchivo,String mesasArchivo) { 
+			
+			// El string que pasa por parámetro es la ruta de los archivos que debería ser
+			// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
+
+
+			// administrador , trababajadores y clientes son cargados por la  clase "usuario""
+			// las reversas, mesas, transacciones y el cafe mismo es cargado por si mismo
+			PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
+					bebidasArchivo,platillosArchivo, this);
+			PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
+			PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
+			
+		}
+		
 	
 	// Métodos
 	public void cambiarAdmin(Administrador adminNuevo) {
@@ -312,10 +328,25 @@ public class Cafe {
 	    return null;
 	}
 	
-	
-	
-	//Carga de Datos Iniciales
+	private void inicializarMesas() { 
+		int contadorMesa = 1;
+		while (capacidad > 0) {
+			
+			int sillasMesa = aleatorio.nextInt(15);
 
+			if (sillasMesa < capacidad) {
+				sillasMesa = capacidad; // Ajustamos la última mesa al espacio sobrante
+			}
+
+			// Creamos la mesa y la añadimos al café
+			Mesa nuevaMesa = new Mesa(contadorMesa, sillasMesa, true);
+			mesas.add(nuevaMesa);
+			contadorMesa++;
+		}
+	}
+	
+	
+	
 	
 	
 
@@ -338,54 +369,9 @@ public class Cafe {
 		}
 	}
 	
-	public Cafe cargarDatos(String juegosArchivo, String bebidasArchivo, String platillosArchivo,
-			String administradorArchivo, String reservasArchivo, String  historialPrestamosArchivo, 
-			String transaccionesArchivo) { //Lógica que debería cargarse en el café 
-		
-		// El string que pasa por parámetro es la ruta de los archivos que debería ser
-		// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
-		
-		try {
-			// Intentamos cargar la infraestructura y luego las operaciones
-			persistenciaCafe.cargarCafe("cafe.json",this );
-			persistenciaOps.cargarOperaciones("operaciones.json", this);
-			System.out.println(" Datos cargados exitosamente.");
-			
-		} catch (Exception e) {
-			System.out.println(" No se encontraron datos previos o hubo un error. Inicializando local por defecto...");
-			
-			Juego juegoInicial = new Juego(501, 150000, "Catan", 1995, "Devir", 4, "apto 5 anios", "Tablero");
-			Bebida bebidaInicial = new Bebida(201, 12000, "Café Americano", "Caliente", false);
-			Platillo platilloInicial = new Platillo(101, 25000, "Sandwich de Pavo", "Gluten, Lácteos");
-			
-			juegosVenta.add(juegoInicial);
-			juegosPrestamo.add(juegoInicial);
-			menuBebidas.add(bebidaInicial);
-			menuPlatillos.add(platilloInicial);
-			
-			
-		}
-	}
+	
 
-	private void inicializarMesas() { 
-		int contadorMesa = 1;
-
-
-
-		while (capacidad > 0) {
-			
-			int sillasMesa = aleatorio.nextInt(15);
-
-			if (sillasMesa > capacidad) {
-				sillasMesa = capacidad; // Ajustamos la última mesa al espacio sobrante
-			}
-
-			// Creamos la mesa y la añadimos al café
-			Mesa nuevaMesa = new Mesa(contadorMesa, sillasMesa, true);
-			mesas.add(nuevaMesa);
-			contadorMesa++;
-		}
-	}
+	
 	
 
 }

@@ -59,14 +59,19 @@ public class ConsolaGeneral {
 		this.persistenciaOps = new PersistenciaOperacionesJson(); // Guarda la información dinámica del café
 		// Historiales de reversa, transacciones, etc
 		
-		 miCafe.cargarDatos(
-		            "juegos.json",           
-		            "bebidas.json",           
-		            "platillos.json",        
-		            "administrador.json",   
-		            "reservas.json",         
-		            "historialPrestamos.json", 
-		            "transacciones.json"    
+		 miCafe.descargarDatos(
+		            "data/juegosPrestamo.json",  
+		            "data/juegosVenta.json",     
+		            "data/juegosDificiles",
+		            "data/bebidas.json",           
+		            "data/platillos.json",        
+		            "data/administrador.json", 
+		            "data/empleados.json",
+		            "data/clientes.json",
+		            "data/reservas.json",         
+		            "data/historialPrestamos.json", 
+		            "data/transacciones.json" ,
+		            "data/mesas.json"
 		        );
 		this.consolaAdmin = new ConsolaAdministrador(miCafe);
 				

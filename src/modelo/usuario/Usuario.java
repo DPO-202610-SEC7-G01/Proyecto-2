@@ -31,4 +31,6 @@ public abstract class Usuario {
 	public void setPassword(String nueva) {
 		this.password=nueva;
 	}
+	
+	
 }

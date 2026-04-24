@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "numSillas": 4,
+    "disponible": true
+  },
+  {
+    "id": 2,
+    "numSillas": 2,
+    "disponible": false
+  }
+]

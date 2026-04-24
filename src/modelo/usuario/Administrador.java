@@ -19,6 +19,7 @@ public class Administrador extends Usuario {
 		this.miCafe = cafe;
 	}
 	
+	
 	//Métodos
 	public void moverJuego(Juego juego) {
 	    ArrayList<Juego> listaVenta = miCafe.getJuegosVenta();
