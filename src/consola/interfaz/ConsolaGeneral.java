@@ -80,17 +80,11 @@ public class ConsolaGeneral {
 		String loginBusqueda = lector.nextLine();
 
 		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+		System.out.print("Ingrese la nueva contraseña: ");
+		String nuevaPass = lector.nextLine();
 
-		if (usuarioEncontrado != null) {
-			System.out.print("Ingrese la nueva contraseña: ");
-			String nuevaPass = lector.nextLine();
-
-			usuarioEncontrado.setPassword(nuevaPass);
-
-			System.out.println("Contraseña actualizada para el usuario: " + usuarioEncontrado.getNombre());
-		} else {
-			System.out.println("Error: No se encontró ningún usuario con el login: " + loginBusqueda);
-		}
+		usuarioEncontrado.setPassword(nuevaPass);
+		
 	}
 
 	
