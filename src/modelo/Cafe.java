@@ -53,7 +53,7 @@ public class Cafe {
 		
 	}
 
-	// Getters
+	// Getters y Setters
 
 	public int getCapacidad() {
 		return capacidad;
@@ -115,6 +115,10 @@ public class Cafe {
 		return sugerenciasPendientes;
 	}
 	
+	public void cambiarAdmin(Administrador adminNuevo) {
+		admin= adminNuevo;
+	}
+	
 	//Persistencia
 	//Carga de Datos Iniciales
 	public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
@@ -122,22 +126,16 @@ public class Cafe {
 				String empleadosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, 
 				String transaccionesArchivo,String mesasArchivo) throws IOException, FileNotFoundException { 
-			
-			// El string que pasa por parámetro es la ruta de los archivos que debería ser
-			// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
-		
-	PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
-					bebidasArchivo,platillosArchivo, this);
-	PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
-	PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
+		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
+						bebidasArchivo,platillosArchivo, this);
+		PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
+		PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
 			
 		}
 		
 	
 	// Métodos
-	public void cambiarAdmin(Administrador adminNuevo) {
-		admin= adminNuevo;
-	}
+	
 	
 	public void agregarSugerencias(Platillo p) {
 		sugerenciasPendientes.add(p);
@@ -219,17 +217,7 @@ public class Cafe {
 		this.sugerenciasPendientes.add(platillo);
 	}
 	
-	private Usuario buscarUsuario(String login) {
-		for (Cliente c : getClientes()) {
-			if (c.getLogin().equals(login))
-				return c;
-		}
-		for (Empleado e : getEmpleados()) {
-			if (e.getLogin().equals(login))
-				return e;
-		}
-		return null;
-	}
+	
 	
 	public boolean reservarJuego(Juego juego, Reserva r) {
 	    if (!juegosPrestamo.contains(juego)) {
@@ -326,50 +314,13 @@ public class Cafe {
 	    return null;
 	}
 	
-	private void inicializarMesas() { 
-		int contadorMesa = 1;
-		while (capacidad > 0) {
-			
-			int sillasMesa = aleatorio.nextInt(15);
-
-			if (sillasMesa < capacidad) {
-				sillasMesa = capacidad; // Ajustamos la última mesa al espacio sobrante
-			}
-
-			// Creamos la mesa y la añadimos al café
-			Mesa nuevaMesa = new Mesa(contadorMesa, sillasMesa, true);
-			mesas.add(nuevaMesa);
-			contadorMesa++;
-		}
-	}
+	
 	
 	
 	
 	
 	
 
-	public void cambioContraseña() {
-		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
-		System.out.print("Ingrese su login de usuario: ");
-		String loginBusqueda = lector.nextLine();
-
-		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-
-		if (usuarioEncontrado != null) {
-			System.out.print("Ingrese la nueva contraseña: ");
-			String nuevaPass = lector.nextLine();
-
-			usuarioEncontrado.setPassword(nuevaPass);
-
-			System.out.println("Contraseña actualizada para el usuario: " + usuarioEncontrado.getNombre());
-		} else {
-			System.out.println("Error: No se encontró ningún usuario con el login: " + loginBusqueda);
-		}
-	}
-	
-	
-
-	
 	
 
 }

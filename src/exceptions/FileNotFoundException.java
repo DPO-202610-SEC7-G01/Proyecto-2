@@ -8,8 +8,9 @@ public class FileNotFoundException extends Exception{
 	public FileNotFoundException(String nombreArchivo) {
 		this.nombreArchivo = nombreArchivo;
 	}
+	
 	@Override
     public String getMessage( )    {
-        return "El ingrediente " + nombreArchivo + " está repetido";
+        return "El archivo " + nombreArchivo + " no existe.";
     }
 }

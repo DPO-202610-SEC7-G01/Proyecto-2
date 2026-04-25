@@ -2,23 +2,18 @@ package consola.interfaz;
 
 import java.util.Scanner;
 
+//Exceptiones
 import exceptions.FileNotFoundException;
+import exceptions.UserNotFoundException;
+import java.io.IOException;
+
+//Persistencias
 import persistencia.PersistenciaCafeJson;
 import persistencia.PersistenciaOperacionesJson;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Random;
-
+//módulos de lógica
 import modelo.*;
 import modelo.usuario.*;
-import modelo.producto.*;
 
 
 //Perdón amigos si hay muchos comentarios sino que me parece
@@ -67,8 +62,39 @@ public class ConsolaGeneral {
 				
 	}
 	
+	private Usuario buscarUsuario(String login) throws UserNotFoundException {
+	    for (Cliente c : miCafe.getClientes()) {
+	        if (c.getLogin().equals(login))
+	            return c;
+	    }
+	    for (Empleado e : miCafe.getEmpleados()) {
+	        if (e.getLogin().equals(login))
+	            return e;
+	    }
+	    throw new UserNotFoundException("Usuario con login '" + login + "' no encontrado");
+	}
+
+	public void cambioContraseña() throws UserNotFoundException {
+		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
+		System.out.print("Ingrese su login de usuario: ");
+		String loginBusqueda = lector.nextLine();
+
+		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+
+		if (usuarioEncontrado != null) {
+			System.out.print("Ingrese la nueva contraseña: ");
+			String nuevaPass = lector.nextLine();
+
+			usuarioEncontrado.setPassword(nuevaPass);
+
+			System.out.println("Contraseña actualizada para el usuario: " + usuarioEncontrado.getNombre());
+		} else {
+			System.out.println("Error: No se encontró ningún usuario con el login: " + loginBusqueda);
+		}
+	}
+
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, FileNotFoundException {
 		ConsolaGeneral consola = new ConsolaGeneral();
 		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
 	
@@ -79,9 +105,5 @@ public class ConsolaGeneral {
 		if (miCafe.getAdmin()== null ) { //Registrar un nuevo admin si no hay uno en el café 
 			consolaAdmin.registrarAdmin();
 		}
-		
-		
-		
-		
 	}
 }

@@ -51,7 +51,7 @@ public class PersistenciaProductos {
     
     public static void salvarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
     		String juegosDificilesArchivo, String bebidasArchivo, String platillosArchivo, 
-            Cafe miCafe) throws IOException {
+            Cafe miCafe) throws IOException, FileNotFoundException {
     	salvarJuegos(juegosVentaArchivo,juegosPrestamoArchivo, juegosDificilesArchivo, miCafe);
     	salvarPlatillos(platillosArchivo, miCafe);
     	salvarBebidas(bebidasArchivo,miCafe);
@@ -59,7 +59,7 @@ public class PersistenciaProductos {
     }
     
     public static void salvarJuegos( String juegosPrestamoArchivo, String juegosVentaArchivo, 
-        	String juegosDificilesArchivo, Cafe miCafe) throws  IOException {
+        	String juegosDificilesArchivo, Cafe miCafe) throws  IOException,FileNotFoundException {
         	
      JSONArray juegosPrestamoArray = new JSONArray();
      JSONArray juegosVentaArray = new JSONArray();
@@ -110,7 +110,7 @@ public class PersistenciaProductos {
     
     
     
-    public static void salvarPlatillos(String platillosArchivos, Cafe miCafe) throws IOException, FileNotFoundException {
+    public static void salvarPlatillos(String platillosArchivos, Cafe miCafe)  throws  IOException,FileNotFoundException {
     	JSONArray platillosArray = new JSONArray();
     	
     	for (Platillo platillo : miCafe.menuPlatillos) {
@@ -127,7 +127,7 @@ public class PersistenciaProductos {
     	}
     }
     
-	public static void salvarBebidas(String bebidasArchivos, Cafe miCafe) throws IOException, FileNotFoundException {
+	public static void salvarBebidas(String bebidasArchivos, Cafe miCafe)  throws  IOException,FileNotFoundException {
 		JSONArray bebidasArray = new JSONArray();
     	
     	for (Bebida bebida : miCafe.menuBebidas) {
@@ -145,7 +145,7 @@ public class PersistenciaProductos {
     	}
 	    }
     //
-    public static ArrayList<Juego> descargarJuegos(String juegoArchivo) throws IOException, FileNotFoundException{
+    public static ArrayList<Juego> descargarJuegos(String juegoArchivo)  throws  IOException,FileNotFoundException {
         ArrayList<Juego> juegosCargados = new ArrayList<>();
         
         File archivoJuego = new File(juegoArchivo);
@@ -186,7 +186,7 @@ public class PersistenciaProductos {
     }
     
     public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo)
-    		throws FileNotFoundException, IOException{
+    		 throws  IOException,FileNotFoundException {
     	ArrayList<Platillo> platillos = new ArrayList<>();
         
         File archivoPlatillo = new File(platilloArchivo);
@@ -194,7 +194,7 @@ public class PersistenciaProductos {
             throw new FileNotFoundException(platilloArchivo);
         }
         
-        String contenido = new String(Files.readAllBytes(archivoPlatillo.toPath())); // Me da error esta línea de código
+        String contenido = new String(Files.readAllBytes(archivoPlatillo.toPath())); 
         JSONArray jPlatillos = new JSONArray(contenido);
         
         for (int i = 0; i < jPlatillos.length(); i++) {
@@ -210,8 +210,7 @@ public class PersistenciaProductos {
 		return platillos;
     }
 
-    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo)
-    		throws FileNotFoundException, IOException{
+    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo) throws  IOException,FileNotFoundException {
     	ArrayList<Bebida> bebidas = new ArrayList<>();
         
         File archivoBebidas = new File(bebidaArchivo);
@@ -219,7 +218,7 @@ public class PersistenciaProductos {
             throw new FileNotFoundException(bebidaArchivo);
         }
         
-        String contenido = new String(Files.readAllBytes(archivoBebidas.toPath())); // Me da error esta línea de código
+        String contenido = new String(Files.readAllBytes(archivoBebidas.toPath())); 
         JSONArray jBebidas= new JSONArray(contenido);
         
         for (int i = 0; i < jBebidas.length(); i++) {
@@ -235,8 +234,6 @@ public class PersistenciaProductos {
     	}
 		return bebidas;
     }
-    
-   
     
     
 }
