@@ -10,7 +10,11 @@ public class JuegoDificil extends Juego{
 		super(id, precio, nombre, anioPublicacion, empresMatriz, numJugadores, restriccionEdad, categoria);
 		this.instrucciones = instrucciones;
 	}
-		
+	
+	//Getters Y Setters
+	public String getInstrucciones() {
+		return instrucciones;
+	}
 	//Métodos
 
 	@Override
@@ -18,7 +22,5 @@ public class JuegoDificil extends Juego{
 		return true;
 	}
 	
-	public String obtenerGuiaRapida() {
-		return this.instrucciones;
-	}
+
 }

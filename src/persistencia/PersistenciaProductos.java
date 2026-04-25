@@ -9,191 +9,234 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import modelo.Cafe;
+import modelo.*;
 import modelo.producto.*;
+import exceptions.*;
 
 public class PersistenciaProductos {
     
-	 /**
-     * DESCARGA/ CARGA los productos desde archivos JSON hacia el café
-     * @param juegosPrestamoArchivo Ruta del archivo JSON de juegos de préstamo (ej: "data/juegosPrestamo.json")
-     * @param juegosVentaArchivo Ruta del archivo JSON de juegos de venta (ej: "data/juegosVenta.json")
-     * @param juegosDificilesArchivo Ruta del archivo JSON de juegos difíciles (ej: "data/juegosDificiles.json")
-     * @param bebidasArchivo Ruta del archivo JSON de bebidas (ej: "data/bebidas.json")
-     * @param platillosArchivo Ruta del archivo JSON de platillos (ej: "data/platillos.json")
-     * @param micafe El objeto Café donde se cargarán los productos
-     */
-    public static void descargarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
+    public static  void descargarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
              String juegosDificilesArchivo, String bebidasArchivo,
-             String platillosArchivo, Cafe micafe) {
+             String platillosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
         
     	
-    	ArrayList<Juego> juegosVenta = descargarJuegos(juegosVentaArchivo,micafe);
-        ArrayList<Juego> juegosPrestamo = descargarJuegos(juegosPrestamoArchivo, micafe);
-        ArrayList<Juego> juegosDificiles =  descargarJuegos(juegosDificilesArchivo,micafe);
-    	
-           
+    	ArrayList<Juego> juegosVenta = descargarJuegos(juegosVentaArchivo);
+        ArrayList<Juego> juegosPrestamo = descargarJuegos(juegosPrestamoArchivo);
+        ArrayList<Juego> juegosDificiles =  descargarJuegos(juegosDificilesArchivo);
+        
+	    for (Juego juego:juegosVenta) {
+	    	miCafe.getJuegosVenta().add(juego);
+	        }
+	    
+	    for (Juego juego:juegosPrestamo) {
+	    	miCafe.getJuegosPrestamo().add(juego);
+	        }
+        
+	    for (Juego juego:juegosDificiles) {
+	    	miCafe.getJuegosPrestamo().add(juego);
+	        }
+	    
+	    ArrayList<Platillo> platillos = descargarPlatillos(platillosArchivo);
+	    ArrayList<Bebida> bebidas = descargarBebidas(bebidasArchivo);
+	    
+	    for (Bebida bebida:bebidas) {
+	    	miCafe.getMenuBebidas().add(bebida);
+	        }
+	    
+	    for (Platillo platillo:platillos) {
+	    	miCafe.getMenuPlatillos().add(platillo);
+	        }
+	    
         }
     
- 
-    public ArrayList<Juego> descargarJuegos(String juegoArchivo, Cafe micafe) {
+    public static void salvarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
+    		String juegosDificilesArchivo, String bebidasArchivo, String platillosArchivo, 
+            Cafe miCafe) throws IOException {
+    	salvarJuegos(juegosVentaArchivo,juegosPrestamoArchivo, juegosDificilesArchivo, miCafe);
+    	salvarPlatillos(platillosArchivo, miCafe);
+    	salvarBebidas(bebidasArchivo,miCafe);
+    	
+    }
+    
+    public static void salvarJuegos( String juegosPrestamoArchivo, String juegosVentaArchivo, 
+        	String juegosDificilesArchivo, Cafe miCafe) throws  IOException {
+        	
+     JSONArray juegosPrestamoArray = new JSONArray();
+     JSONArray juegosVentaArray = new JSONArray();
+     JSONArray juegosDificilesArray = new JSONArray();
+        	
+     for (Juego juego : miCafe.juegosPrestamo) {
+        	JSONObject jJuego = new JSONObject();
+        	jJuego.put("id", juego.getId());
+        	jJuego.put("nombre", juego.getNombre());
+        	jJuego.put("precio", juego.getPrecio());
+        	jJuego.put("anioPublicacion", juego.getAnioPublicacion());
+        	jJuego.put("empresMatriz", juego.getEmpresMatriz());
+        	jJuego.put("numJugadores", juego.getNumJugadores());
+        	jJuego.put("restriccionEdad", juego.getRestriccionEdad());
+        	jJuego.put("categoria", juego.getCategoria());
+        		
+        	if (juego instanceof JuegoDificil) {
+        			JuegoDificil juegoDif = (JuegoDificil) juego;
+        			jJuego.put("instrucciones", juegoDif.getInstrucciones());
+        			juegosDificilesArray.put(jJuego);  
+        		} else {
+        			juegosPrestamoArray.put(jJuego);  
+        		}   		
+        } 
+
+     for (Juego juego : miCafe.juegosVenta) {
+        	JSONObject jJuego = new JSONObject();
+        	jJuego.put("id", juego.getId());
+        	jJuego.put("nombre", juego.getNombre());
+        	jJuego.put("precio", juego.getPrecio());
+        	jJuego.put("anioPublicacion", juego.getAnioPublicacion());
+        	jJuego.put("empresMatriz", juego.getEmpresMatriz());
+        	jJuego.put("numJugadores", juego.getNumJugadores());
+        	jJuego.put("restriccionEdad", juego.getRestriccionEdad());
+        	jJuego.put("categoria", juego.getCategoria());
+        	juegosVentaArray.put(jJuego);  
+        	} 
+        	
+     try (PrintWriter pwPrestamo = new PrintWriter(juegosPrestamoArchivo);
+          PrintWriter pwDificiles = new PrintWriter(juegosDificilesArchivo);
+          PrintWriter pwVenta = new PrintWriter(juegosVentaArchivo)) {
+         
+         pwPrestamo.print(juegosPrestamoArray.toString(4));
+         pwDificiles.print(juegosDificilesArray.toString(4));
+         pwVenta.print(juegosVentaArray.toString(4));
+     }
+    }
+    
+    
+    
+    public static void salvarPlatillos(String platillosArchivos, Cafe miCafe) throws IOException, FileNotFoundException {
+    	JSONArray platillosArray = new JSONArray();
+    	
+    	for (Platillo platillo : miCafe.menuPlatillos) {
+        	JSONObject jPlatillo = new JSONObject();
+        	jPlatillo.put("id", platillo.getId());
+        	jPlatillo.put("nombre", platillo.getNombre());
+        	jPlatillo.put("precio", platillo.getPrecio());
+        	jPlatillo.put("alergenos", platillo.getAlergeneos());
+        	platillosArray.put(jPlatillo);  
+        	} 
+    	
+    	try (PrintWriter pwPlatillo = new PrintWriter(platillosArchivos)){
+    		pwPlatillo.print(platillosArray.toString(4));
+    	}
+    }
+    
+	public static void salvarBebidas(String bebidasArchivos, Cafe miCafe) throws IOException, FileNotFoundException {
+		JSONArray bebidasArray = new JSONArray();
+    	
+    	for (Bebida bebida : miCafe.menuBebidas) {
+        	JSONObject jBebidda = new JSONObject();
+        	jBebidda.put("id", bebida.getId());
+        	jBebidda.put("nombre", bebida.getNombre());
+        	jBebidda.put("precio", bebida.getPrecio());
+        	jBebidda.put("temperatura", bebida.getTemperatura());
+        	jBebidda.put("esAlcoholica", bebida.isTieneAlcohol());
+        	bebidasArray.put(jBebidda);  
+        	} 
+    	
+    	try (PrintWriter pwPlatillo = new PrintWriter(bebidasArchivos)){
+    		pwPlatillo.print(bebidasArray.toString(4));
+    	}
+	    }
+    //
+    public static ArrayList<Juego> descargarJuegos(String juegoArchivo) throws IOException, FileNotFoundException{
         ArrayList<Juego> juegosCargados = new ArrayList<>();
         
-        try {
-            File archivoJuego = new File(juegoArchivo);
-            if (archivoJuego.exists()) {
-                String contenido = new String(Files.readAllBytes(archivoJuego.toPath()));
-                JSONArray jJuegos = new JSONArray(contenido);
-                
-                for (int i = 0; i < jJuegos.length(); i++) {
-                    JSONObject jJuego = jJuegos.getJSONObject(i);
-                    
-                    int id = jJuego.getInt("id");
-                    String nombre = jJuego.getString("nombre");
-                    int precio = jJuego.getInt("precio");
-                    int anioPublicacion = jJuego.getInt("anioPublicacion");
-                    String empresMatriz = jJuego.getString("empresMatriz");
-                    int numJugadores = jJuego.getInt("numJugadores");
-                    String restriccionEdad = jJuego.getString("restriccionEdad");
-                    String categoria = jJuego.getString("categoria");
-                    
-                    Juego nuevoJuego;
-                    if (jJuego.has("instrucciones")) {
-                        String instrucciones = jJuego.getString("instrucciones");
-                        nuevoJuego = new JuegoDificil(id, precio, nombre, anioPublicacion, 
-                                                      empresMatriz, numJugadores, restriccionEdad, 
-                                                      categoria, instrucciones);
-                    } else {
-                        nuevoJuego = new Juego(id, precio, nombre, anioPublicacion, 
-                                               empresMatriz, numJugadores, restriccionEdad, categoria);
-                    }
-                    
-                    micafe.juegosPrestamo.add(nuevoJuego);
-                    juegosCargados.add(nuevoJuego);  
-                }
+        File archivoJuego = new File(juegoArchivo);
+        if (!archivoJuego.exists()) {
+            throw new FileNotFoundException( juegoArchivo);
+        }
+        
+        String contenido = new String(Files.readAllBytes(archivoJuego.toPath()));
+        JSONArray jJuegos = new JSONArray(contenido);
+        
+        for (int i = 0; i < jJuegos.length(); i++) {
+            JSONObject jJuego = jJuegos.getJSONObject(i);
+            
+            int id = jJuego.getInt("id");
+            String nombre = jJuego.getString("nombre");
+            int precio = jJuego.getInt("precio");
+            int anioPublicacion = jJuego.getInt("anioPublicacion");
+            String empresMatriz = jJuego.getString("empresMatriz");
+            int numJugadores = jJuego.getInt("numJugadores");
+            String restriccionEdad = jJuego.getString("restriccionEdad");
+            String categoria = jJuego.getString("categoria");
+            
+            Juego nuevoJuego;
+            if (jJuego.has("instrucciones")) {
+                String instrucciones = jJuego.getString("instrucciones");
+                nuevoJuego = new JuegoDificil(id, precio, nombre, anioPublicacion, 
+                                              empresMatriz, numJugadores, restriccionEdad, 
+                                              categoria, instrucciones);
+            } else {
+                nuevoJuego = new Juego(id, precio, nombre, anioPublicacion, 
+                                       empresMatriz, numJugadores, restriccionEdad, categoria);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            
+            juegosCargados.add(nuevoJuego);  
         }
         
         return juegosCargados;  
     }
     
-    /**
-     * GUARDAR los productos del café en archivos JSON
-     * @param juegosPrestamoArchivo Ruta donde guardar juegos de préstamo
-     * @param juegosVentaArchivo Ruta donde guardar juegos de venta
-     * @param bebidasArchivo Ruta donde guardar bebidas
-     * @param platillosArchivo Ruta donde guardar platillos
-     * @param micafe El objeto Café del cual extraer los productos
-     */
-    public static void salvarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
-                                        String bebidasArchivo, String platillosArchivo, 
-                                        Cafe micafe) {
+    public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo)
+    		throws FileNotFoundException, IOException{
+    	ArrayList<Platillo> platillos = new ArrayList<>();
         
-        try {
-            // ==================== 1. GUARDAR JUEGOS DE PRÉSTAMO ====================
-            JSONArray jJuegosPrestamo = new JSONArray();
-            
-            // Recorrer todos los juegos de préstamo del café
-            for (Juego juego : micafe.juegosPrestamo) {
-                JSONObject jJuego = new JSONObject();
-                
-                // Atributos comunes para todos los juegos
-                jJuego.put("id", juego.getId());
-                jJuego.put("nombre", juego.getNombre());
-                jJuego.put("precio", juego.getPrecio());
-                jJuego.put("anioPublicacion", juego.getAnioPublicacion());
-                jJuego.put("empresMatriz", juego.getEmpresMatriz());
-                jJuego.put("numJugadores", juego.getNumJugadores());
-                jJuego.put("restriccionEdad", juego.getRestriccionEdad());
-                jJuego.put("categoria", juego.getCategoria());
-                
-                // Si es un juego difícil, guardar también las instrucciones
-                if (juego instanceof JuegoDificil) {
-                    JuegoDificil juegoDif = (JuegoDificil) juego;
-                    jJuego.put("instrucciones", juegoDif.getInstrucciones());
-                }
-                
-                jJuegosPrestamo.put(jJuego);
-            }
-            
-            // Escribir el JSONArray al archivo
-            try (PrintWriter pw = new PrintWriter(juegosPrestamoArchivo)) {
-                pw.print(jJuegosPrestamo.toString(4)); // Indentación de 4 espacios para legibilidad
-            }
-            System.out.println("Guardados " + micafe.juegosPrestamo.size() + " juegos de préstamo");
-            
-            // ==================== 2. GUARDAR JUEGOS DE VENTA ====================
-            JSONArray jJuegosVenta = new JSONArray();
-            
-            for (Juego juego : micafe.juegosVenta) {
-                JSONObject jJuego = new JSONObject();
-                
-                jJuego.put("id", juego.getId());
-                jJuego.put("nombre", juego.getNombre());
-                jJuego.put("precio", juego.getPrecio());
-                jJuego.put("anioPublicacion", juego.getAnioPublicacion());
-                jJuego.put("empresMatriz", juego.getEmpresMatriz());
-                jJuego.put("numJugadores", juego.getNumJugadores());
-                jJuego.put("restriccionEdad", juego.getRestriccionEdad());
-                jJuego.put("categoria", juego.getCategoria());
-                
-                if (juego instanceof JuegoDificil) {
-                    JuegoDificil juegoDif = (JuegoDificil) juego;
-                    jJuego.put("instrucciones", juegoDif.getInstrucciones());
-                }
-                
-                jJuegosVenta.put(jJuego);
-            }
-            
-            try (PrintWriter pw = new PrintWriter(juegosVentaArchivo)) {
-                pw.print(jJuegosVenta.toString(4));
-            }
-            System.out.println("Guardados " + micafe.juegosVenta.size() + " juegos de venta");
-            
-            // ==================== 3. GUARDAR BEBIDAS ====================
-            JSONArray jBebidas = new JSONArray();
-            
-            for (Bebida bebida : micafe.menuBebidas) {
-                JSONObject jBebida = new JSONObject();
-                
-                jBebida.put("id", bebida.getId());
-                jBebida.put("nombre", bebida.getNombre());
-                jBebida.put("precio", bebida.getPrecio());
-                jBebida.put("temperatura", bebida.getTemperatura());
-                jBebida.put("tieneAlcohol", bebida.isTieneAlcohol());
-                
-                jBebidas.put(jBebida);
-            }
-            
-            try (PrintWriter pw = new PrintWriter(bebidasArchivo)) {
-                pw.print(jBebidas.toString(4));
-            }
-            System.out.println("Guardadas " + micafe.menuBebidas.size() + " bebidas");
-            
-            // ==================== 4. GUARDAR PLATILLOS ====================
-            JSONArray jPlatillos = new JSONArray();
-            
-            for (Platillo platillo : micafe.menuPlatillos) {
-                JSONObject jPlatillo = new JSONObject();
-                
-                jPlatillo.put("id", platillo.getId());
-                jPlatillo.put("nombre", platillo.getNombre());
-                jPlatillo.put("precio", platillo.getPrecio());
-                jPlatillo.put("alergenos", platillo.getAlergeneos());
-                
-                jPlatillos.put(jPlatillo);
-            }
-            
-            try (PrintWriter pw = new PrintWriter(platillosArchivo)) {
-                pw.print(jPlatillos.toString(4));
-            }
-            System.out.println("Guardados " + micafe.menuPlatillos.size() + " platillos");
-            
-        } catch (IOException e) {
-            System.err.println("Error al guardar archivos: " + e.getMessage());
-            e.printStackTrace();
+        File archivoPlatillo = new File(platilloArchivo);
+        if (!archivoPlatillo.exists()) {
+            throw new FileNotFoundException(platilloArchivo);
         }
+        
+        String contenido = new String(Files.readAllBytes(archivoPlatillo.toPath())); // Me da error esta línea de código
+        JSONArray jPlatillos = new JSONArray(contenido);
+        
+        for (int i = 0; i < jPlatillos.length(); i++) {
+            JSONObject jPlatillo = jPlatillos.getJSONObject(i);
+            
+            int id = jPlatillo.getInt("id");
+            String nombre = jPlatillo.getString("nombre");
+            int precio = jPlatillo.getInt("precio");
+            String alergenos = jPlatillo.getString("alergenos");
+            Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
+            platillos.add(nuevoPlatillo);  
+    	}
+		return platillos;
     }
+
+    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo)
+    		throws FileNotFoundException, IOException{
+    	ArrayList<Bebida> bebidas = new ArrayList<>();
+        
+        File archivoBebidas = new File(bebidaArchivo);
+        if (!archivoBebidas.exists()) {
+            throw new FileNotFoundException(bebidaArchivo);
+        }
+        
+        String contenido = new String(Files.readAllBytes(archivoBebidas.toPath())); // Me da error esta línea de código
+        JSONArray jBebidas= new JSONArray(contenido);
+        
+        for (int i = 0; i < jBebidas.length(); i++) {
+            JSONObject jBebida = jBebidas.getJSONObject(i);
+            
+            int id = jBebida.getInt("id");
+            String nombre = jBebida.getString("nombre");
+            int precio = jBebida.getInt("temperatura");
+            String temperatura = jBebida.getString("temperatura");
+            boolean alcohol = jBebida.getBoolean("esAlcoholica");
+            Bebida nuevaBebida= new Bebida(id, precio, nombre, temperatura, alcohol);
+            bebidas.add(nuevaBebida);  
+    	}
+		return bebidas;
+    }
+    
+   
+    
+    
 }

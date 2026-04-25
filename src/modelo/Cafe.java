@@ -1,12 +1,13 @@
 package modelo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import exceptions.FileNotFoundException;
 import modelo.usuario.*;
 import modelo.producto.*;
 import persistencia.*;
@@ -24,8 +25,8 @@ public class Cafe {
 	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;
 	private HashMap<Integer, ArrayList<Juego>> juegosCliente;
 	private ArrayList<Transaccion> historialTransaccion;
-	private ArrayList<Platillo> menuPlatillos;
-	private ArrayList<Bebida> menuBebidas;
+	public ArrayList<Platillo> menuPlatillos;
+	public ArrayList<Bebida> menuBebidas;
 	private Map<Calendar, Empleado> turnoEmpleados;
 	private List<Platillo> sugerenciasPendientes;
 
@@ -116,22 +117,19 @@ public class Cafe {
 	
 	//Persistencia
 	//Carga de Datos Iniciales
-		public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
+	public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
 				String bebidasArchivo, String platillosArchivo, String administradorArchivo,
 				String empleadosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, 
-				String transaccionesArchivo,String mesasArchivo) { 
+				String transaccionesArchivo,String mesasArchivo) throws IOException, FileNotFoundException { 
 			
 			// El string que pasa por parámetro es la ruta de los archivos que debería ser
 			// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
-
-
-			// administrador , trababajadores y clientes son cargados por la  clase "usuario""
-			// las reversas, mesas, transacciones y el cafe mismo es cargado por si mismo
-			PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
+		
+	PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 					bebidasArchivo,platillosArchivo, this);
-			PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
-			PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
+	PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
+	PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
 			
 		}
 		
