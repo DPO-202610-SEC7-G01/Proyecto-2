@@ -7,9 +7,6 @@ import exceptions.FileNotFoundException;
 import exceptions.UserNotFoundException;
 import java.io.IOException;
 
-//Persistencias
-import persistencia.PersistenciaCafeJson;
-import persistencia.PersistenciaOperacionesJson;
 
 //módulos de lógica
 import modelo.*;
@@ -25,9 +22,7 @@ public class ConsolaGeneral {
 	private static Scanner lector; //Objeto scanner para leer entradas
 
 	//Persistencia
-	private PersistenciaCafeJson persistenciaCafe;
-	private PersistenciaOperacionesJson persistenciaOps;
-	
+
 	//Consolas 
 	private ConsolaAdministrador consolaAdmin;
 	private ConsolaCliente consolaCliente;
@@ -40,11 +35,8 @@ public class ConsolaGeneral {
 
 	
 	public void NuevoCafe() throws IOException, FileNotFoundException { // Método de Carga
-		miCafe = new Cafe(50); // Un café con 50 de capacidad
-		this.persistenciaCafe = new PersistenciaCafeJson(); // Guarda la información mas fija del café 
-		// como lo son las mesas, meseros, etc 
-		this.persistenciaOps = new PersistenciaOperacionesJson(); // Guarda la información dinámica del café
-		// Historiales de reversa, transacciones, etc
+		miCafe = new Cafe(0); 
+		
 		
 		 miCafe.descargarDatos(
 		            "data/juegosPrestamo.json",  
@@ -53,7 +45,8 @@ public class ConsolaGeneral {
 		            "data/bebidas.json",           
 		            "data/platillos.json",        
 		            "data/administrador.json", 
-		            "data/empleados.json",
+		            "data/cocineros.json",
+		            "data/meseros.json",
 		            "data/clientes.json",
 		            "data/reservas.json",         
 		            "data/historialPrestamos.json", 
@@ -191,7 +184,7 @@ public class ConsolaGeneral {
 				case 2:
 					Usuario admin =consola.verificarUsuario();
 					if(admin instanceof Administrador) {
-						//
+						 ConsolaAdministrador.main(miCafe);
 					}
 					return;
 				case 3:

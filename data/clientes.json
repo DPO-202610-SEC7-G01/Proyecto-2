@@ -19,7 +19,7 @@
     "alergenos": "Ninguno",
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
-    "amigos": false
+    "amigos": true
   },
   {
     "id": 3,
@@ -52,6 +52,6 @@
     "alergenos": "Huevo",
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
-    "amigos": false
+    "amigos": true
   }
 ]

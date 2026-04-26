@@ -54,8 +54,16 @@ public class Reserva {
 		return transaccion;
 	}
 	
+	public void setFactura(ArrayList<Producto> nuevaTransaccion) {
+		this.transaccion=  nuevaTransaccion;
+	}
+	
 	public double getTotalFactura() {
 		return totalFactura;
+	}
+	
+	public void setTotalFactura(int factura) {
+		this.totalFactura= factura;
 	}
 
 	public List<Juego> getJuegosPrestados(){
@@ -70,6 +78,7 @@ public class Reserva {
 	public Mesero getMeseroAsignado() {
 	    return meseroAsignado;
 	}
+	
 	//Métodos
 	public void cambiarMesero(Mesero nuevoMesero) {
 	    this.meseroAsignado = nuevoMesero;
@@ -80,8 +89,6 @@ public class Reserva {
         double impuesto = p.getPrecio() * p.getTasaImpuesto();
         this.totalFactura += (p.getPrecio() + impuesto);
     }
-	
-
 	
 	public boolean tieneMenoresDeEdad() {
 	    for (Cliente c : this.clientes) { 

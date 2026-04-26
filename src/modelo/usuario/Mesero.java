@@ -20,6 +20,12 @@ public class Mesero extends Empleado{
 		this.juegosConocidos= new ArrayList<>();
 	}
 	
+	//getters	
+	public List<JuegoDificil> getJuegosConocidos() {
+		return juegosConocidos;
+	}
+	
+
 	//Métodos
 	public void aprenderJuegoDificil(JuegoDificil juego) {
 		juegosConocidos.add(juego);

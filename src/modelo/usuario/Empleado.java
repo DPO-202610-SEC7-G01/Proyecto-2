@@ -41,6 +41,15 @@ public class Empleado extends Usuario {
 		return juegosFavoritos;
 	}
 
+	//Métodos
+	public void sumarPuntosFidelidad(int puntosFidelidad) {
+		this.puntosFidelidad += puntosFidelidad;
+	}
+	
+	public void agregarAmigo(Cliente cliente) {
+		this.amigos.add(cliente);
+	}
+	
     public boolean aptoPrestamo(Administrador admin, Juego juego, Calendar fechaConsulta) {
         boolean estaEnTurno = false;
         for (Calendar fechaTurno : this.turno) {
@@ -62,9 +71,7 @@ public class Empleado extends Usuario {
     }
 
 
-	public void sumarPuntosFidelidad(int puntosFidelidad) {
-		this.puntosFidelidad += puntosFidelidad;
-	}
+	
 	
 	public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
 	    Calendar hoy = Calendar.getInstance();

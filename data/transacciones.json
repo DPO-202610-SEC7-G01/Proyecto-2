@@ -3,13 +3,40 @@
     "id": 1001,
     "fecha": "2026-04-20",
     "productos": [
-      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
-      { "id": 5, "nombre": "Croissant", "precio": 3.5 }
+      {
+        "id": 101,
+        "precio": 25000,
+        "nombre": "Sandwich de Pavo",
+        "alergenos": "Gluten, Lácteos"
+      },
+      {
+        "id": 201,
+        "precio": 12000,
+        "nombre": "Café Americano",
+        "temperatura": "Caliente",
+        "esAlcoholica": false
+      },
+      {
+        "id": 504,
+        "precio": 95000,
+        "nombre": "Dixit",
+        "anioLanzamiento": 2008,
+        "editorial": "Libellud",
+        "numeroJugadores": 6,
+        "clasificacion": "apto 8 anios",
+        "tipo": "Cartas"
+      }
     ],
     "cliente_final": {
       "id": 1,
       "login": "juanito_99",
-      "nombre": "Juan Pérez"
+      "password": "hashed_password_1",
+      "nombre": "Juan Pérez",
+      "edad": 24,
+      "alergenos": "Gluten",
+      "puntosFidelidad": 0,
+      "juegosFavoritos": [],
+      "amigos": false
     },
     "amigoEmpleado": false
   },
@@ -17,54 +44,30 @@
     "id": 1002,
     "fecha": "2026-04-21",
     "productos": [
-      { "id": 2, "nombre": "Cappuccino", "precio": 6.0 }
+      {
+        "id": 104,
+        "precio": 45000,
+        "nombre": "Filete de Res",
+        "alergenos": "Ninguno"
+      },
+      {
+        "id": 204,
+        "precio": 25000,
+        "nombre": "Vino Tinto Reserva",
+        "temperatura": "Ambiente",
+        "esAlcoholica": true
+      }
     ],
     "cliente_final": {
       "id": 2,
       "login": "marta_gamer",
-      "nombre": "Marta Gómez"
-    },
-    "amigoEmpleado": true
-  },
-  {
-    "id": 1003,
-    "fecha": "2026-04-21",
-    "productos": [
-      { "id": 10, "nombre": "Té Matcha", "precio": 7.0 },
-      { "id": 12, "nombre": "Muffin Arándanos", "precio": 4.0 }
-    ],
-    "cliente_final": {
-      "id": 3,
-      "login": "lucas_sky",
-      "nombre": "Lucas Silva"
-    },
-    "amigoEmpleado": false
-  },
-  {
-    "id": 1004,
-    "fecha": "2026-04-22",
-    "productos": [
-      { "id": 3, "nombre": "Latte", "precio": 6.5 }
-    ],
-    "cliente_final": {
-      "id": 4,
-      "login": "sofia_dev",
-      "nombre": "Sofía Castro"
-    },
-    "amigoEmpleado": false
-  },
-  {
-    "id": 1005,
-    "fecha": "2026-04-23",
-    "productos": [
-      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
-      { "id": 1, "nombre": "Espresso", "precio": 5.0 },
-      { "id": 15, "nombre": "Tostadas", "precio": 8.0 }
-    ],
-    "cliente_final": {
-      "id": 5,
-      "login": "diego_board",
-      "nombre": "Diego Ruiz"
+      "password": "hashed_password_2",
+      "nombre": "Marta Gómez",
+      "edad": 30,
+      "alergenos": "Ninguno",
+      "puntosFidelidad": 0,
+      "juegosFavoritos": [],
+      "amigos": true
     },
     "amigoEmpleado": true
   }

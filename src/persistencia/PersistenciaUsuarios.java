@@ -1,8 +1,6 @@
 package persistencia;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -13,12 +11,14 @@ import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
 
-public class PersistenciaUsuarios {
+public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	public static void descargarUsuarios(String administradorArchivo, String cocinerosArchivo,
-			String meserosArchivo, String clientesArchivo, Cafe miCafe) throws FileNotFoundException, IOException{
+			String meserosArchivo, String clientesArchivo, Cafe miCafe) 
+			throws FileNotFoundException, IOException{
 		
 		descargarAdministrador(administradorArchivo, miCafe);
+		
 		ArrayList<Cliente> clientes = descargarClientes(clientesArchivo);
 		for (Cliente  cliente:clientes) {
 	    	miCafe.getClientes().add(cliente);
@@ -26,142 +26,317 @@ public class PersistenciaUsuarios {
 		
         ArrayList<Cocinero> cocineros = descargarCocineros(cocinerosArchivo); 
         for (Empleado  empleado:cocineros) {
-	    	miCafe.getEmpleados().add(empleado);
+	    	miCafe.agregarEmpleado(empleado);
+	        }
+        
+        ArrayList<Mesero> meseros = descargarMeseros(meserosArchivo); 
+        for (Empleado  empleado:meseros) {
+	    	miCafe.agregarEmpleado(empleado);
 	        }
         
 	}
 	
-	public static void descargarAdministrador(String administradorArchivo, Cafe miCafe) throws FileNotFoundException, IOException {
-		File archivoAdmin = new File(administradorArchivo);
-        if (!archivoAdmin.exists()) {
-            throw new FileNotFoundException( administradorArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoAdmin.toPath()));
-        JSONArray jAdmins = new JSONArray(contenido);
-        
-        if (jAdmins.length() > 0) {
-            JSONObject jAdmin = jAdmins.getJSONObject(0); 
-            
-            int id = jAdmin.getInt("id");
-            String nombre = jAdmin.getString("nombre");
-            String login = jAdmin.getString("login");
-            String password = jAdmin.getString("password");
-            
-            Administrador nuevoAdmin;
-            nuevoAdmin = new Administrador(id, login, password, nombre,miCafe);
-            miCafe.cambiarAdmin(nuevoAdmin);
-        }
-        
+	public static void salvarUsuarios(String administradorArchivo, String cocinerosArchivo,
+			String meserosArchivo, String clientesArchivo, Cafe miCafe) 
+			throws FileNotFoundException, IOException{
+		
+		salvarAdministrador(administradorArchivo,miCafe);
+		salvarClientes(clientesArchivo,miCafe);
+		salvarEmpleados(meserosArchivo,cocinerosArchivo,miCafe);
 	}
-	
-	public static ArrayList<Cliente> descargarClientes(String clientesArchivo)  throws  IOException,FileNotFoundException {
-        ArrayList<Cliente> clientesCargados = new ArrayList<>();
-        
-        File archivoCliente = new File(clientesArchivo);
-        if (!archivoCliente.exists()) {
-            throw new FileNotFoundException( clientesArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoCliente.toPath()));
-        JSONArray jClientes = new JSONArray(contenido);
-        
-        for (int i = 0; i < jClientes.length(); i++) {
-            JSONObject jCliente = jClientes.getJSONObject(i);
-            
-            int id = jCliente.getInt("id");
-            String nombre = jCliente.getString("nombre");
-            String login = jCliente.getString("login");
-            String password = jCliente.getString("password");
-            int edad = jCliente.getInt("edad");
-            String alergenos = jCliente.getString("alergenos");
-            
-            Cliente nuevoCliente;
-            nuevoCliente = new Cliente(id,login,password,nombre,edad,alergenos);            
-            clientesCargados.add(nuevoCliente);  
-        }
-        
-        return clientesCargados;  
-    }
-	
-	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo)  throws  IOException,FileNotFoundException {
-		ArrayList<Cocinero> chefsCargados = new ArrayList<>();
-
-		File cocinerosEmpleado = new File(cocinerosArchivo);
-        if (!cocinerosEmpleado.exists()) {
-            throw new FileNotFoundException( cocinerosArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(cocinerosEmpleado.toPath()));
-        JSONArray jEmpleados = new JSONArray(contenido);
-        
-        for (int i = 0; i < jEmpleados.length(); i++) {
-            JSONObject jEmpleado = jEmpleados.getJSONObject(i);
-            
-            int id = jEmpleado.getInt("id");
-            String nombre = jEmpleado.getString("nombre");
-            String login = jEmpleado.getString("login");
-            String password = jEmpleado.getString("password");
-            Cocinero nuevoChef = new Cocinero(id, login, password, nombre);
-            
-        	JSONArray bebidasArray = jEmpleado.optJSONArray("bebidasConocidas");
-        	JSONArray platillosArray = jEmpleado.optJSONArray("platillosConocidos");
-
-        	ArrayList<Platillo> platillos = PersistenciaProductos.descargarPlatillos(platillosArray);
-        	ArrayList<Bebida> bebidas = PersistenciaProductos.descargarBebidas(bebidasArray);
-
-        	for (Platillo platillo : platillos) {
-        		nuevoChef.getPlatillosConocidos().add(platillo);
-        	}
-        	for (Bebida bebida : bebidas) {
-        		nuevoChef.getBebidasConocidas().add(bebida);
-        	}
-        }
-		return chefsCargados;
 		
-	}
 	
-	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo)  throws  IOException,FileNotFoundException {
-        ArrayList<Mesero> empleadosCargados = new ArrayList<>();
-        
-        File archivoMesero = new File(meserosArchivo);
-        if (!archivoMesero.exists()) {
-            throw new FileNotFoundException( meserosArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoMesero.toPath()));
-        JSONArray jEmpleados = new JSONArray(contenido);
-        
-        for (int i = 0; i < jEmpleados.length(); i++) {
-            JSONObject jEmpleado = jEmpleados.getJSONObject(i);
-            
-            int id = jEmpleado.getInt("id");
-            String nombre = jEmpleado.getString("nombre");
-            String login = jEmpleado.getString("login");
-            String password = jEmpleado.getString("password");
-            
-            Mesero nuevoEmpleado = new Mesero(id,login,password,nombre);
-            empleadosCargados.add(nuevoEmpleado);  
-            JSONArray juegosArray = jEmpleado.optJSONArray("juegosConocidos");
-            
-            ArrayList<Juego> juegos = PersistenciaProductos.descargarJuegos(juegosArray);
-
-            for (Juego juego : juegos) {// Hay que hacer una excepción para cuando esto no es cierto
-            	 JuegoDificil juegoD = (JuegoDificil) juego;  
-                 nuevoEmpleado.aprenderJuegoDificil(juegoD);
-            }
-        }
-        
-        return empleadosCargados;  
-    }
 	
-	public void salvarUsuarios(String administradorArchivo, String empleadosArchivo,
-			String clientesArchivo, Cafe micafe){
-		
-		// El string que pasa por parámetro es la ruta de los archivos que debería ser
-		// "data/bebidas.json" o lo que sea pero se le debe poner  "data/ ... " 
-		
-		
+	//descargar
+	
+	public static void descargarAdministrador(String administradorArchivo, Cafe miCafe) throws FileNotFoundException, IOException {      
+	        JSONArray jAdmins = leerArchivoJSON(administradorArchivo);
+	        
+	        if (jAdmins.length() > 0) {
+	            JSONObject jAdmin = jAdmins.getJSONObject(0); 
+	            Administrador nuevoAdmin = new Administrador(
+	            		jAdmin.getInt("id"), 
+	            		jAdmin.getString("login"),
+	            		jAdmin.getString("password"),
+	            		jAdmin.getString("nombre"),miCafe);
+	            
+	            miCafe.cambiarAdmin(nuevoAdmin);
+	        }
+	        
 		}
+ 
+	public static ArrayList<Cliente> descargarClientes(String clientesArchivo) throws IOException, FileNotFoundException {             
+	    JSONArray jClientes = leerArchivoJSON(clientesArchivo);
+	    ArrayList<Cliente> clientes = new ArrayList<>();
+	    
+	    for (int i = 0; i < jClientes.length(); i++) {
+	        clientes.add(descargarClientes(jClientes.getJSONObject(i)));  
+	    }
+	    
+	    return clientes;
+	}
+
+	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException {
+	    Cliente nuevoCliente = new Cliente(
+	        jCliente.getInt("id"),
+	        jCliente.getString("login"),
+	        jCliente.getString("password"),
+	        jCliente.getString("nombre"),
+	        jCliente.getInt("edad"),
+	        jCliente.getString("alergenos")
+	    );
+	    
+	    if (jCliente.has("puntosFidelidad")) {
+	        nuevoCliente.sumarPuntosFidelidad(jCliente.getInt("puntosFidelidad"));
+	    }
+	    
+	    JSONArray juegosFavoritos = jCliente.optJSONArray("juegosFavoritos");
+	    if (juegosFavoritos != null) {
+	        for (int i = 0; i < juegosFavoritos.length(); i++) {
+	            Juego juego = PersistenciaProductos.descargarJuegos(juegosFavoritos.getJSONObject(i));
+	            nuevoCliente.getJuegosFavoritos().add(juego);
+	        }
+	    }
+	    
+	    nuevoCliente.setAmigos(jCliente.getBoolean("amigos"));
+	  
+	    
+	    return nuevoCliente;
+	}
+	
+
+	
+	
+	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) throws IOException, FileNotFoundException {
+	    ArrayList<Cocinero> chefsCargados = new ArrayList<>();
+	    JSONArray jEmpleados = leerArchivoJSON(cocinerosArchivo);
+	    
+	    for (int i = 0; i < jEmpleados.length(); i++) {
+	        JSONObject jEmpleado = jEmpleados.getJSONObject(i);
+	        
+	        Cocinero nuevoChef = new Cocinero(
+	            jEmpleado.getInt("id"),
+	            jEmpleado.getString("login"),
+	            jEmpleado.getString("password"),
+	            jEmpleado.getString("nombre")
+	        );
+	        
+	        cargarPuntosFidelidad(jEmpleado, nuevoChef);
+	        cargarJuegosFavoritos(jEmpleado, nuevoChef);
+	        cargarAmigos(jEmpleado, nuevoChef);
+	        
+	        JSONArray bebidasArray = jEmpleado.optJSONArray("bebidasConocidas");
+	        JSONArray platillosArray = jEmpleado.optJSONArray("platillosConocidos");
+
+	        if (platillosArray != null) {
+	            for (int j = 0; j < platillosArray.length(); j++) {
+	            	 Platillo platillo =PersistenciaProductos.descargarPlatillos(platillosArray.getJSONObject(i));  
+	            	 nuevoChef.getPlatillosConocidos().add(platillo);
+	            }	
+	        }
+	        
+	        if (bebidasArray != null) {
+	        	for (int j = 0; j < bebidasArray.length(); j++) {
+	            	 Bebida bebida =PersistenciaProductos.descargarBebidas(bebidasArray.getJSONObject(i));  
+	            	 nuevoChef.getBebidasConocidas().add(bebida);
+	            }	   
+	        }
+	        
+	        chefsCargados.add(nuevoChef);
+	    }
+	    return chefsCargados;
+	}
+
+	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo) throws IOException, FileNotFoundException {
+	    ArrayList<Mesero> empleadosCargados = new ArrayList<>();
+	    JSONArray jEmpleados = leerArchivoJSON(meserosArchivo);
+	    
+	    for (int i = 0; i < jEmpleados.length(); i++) {
+	        JSONObject jEmpleado = jEmpleados.getJSONObject(i);
+	        
+	        Mesero nuevoEmpleado = new Mesero(
+	            jEmpleado.getInt("id"),
+	            jEmpleado.getString("login"),
+	            jEmpleado.getString("password"),
+	            jEmpleado.getString("nombre")
+	        );
+	        
+	        cargarPuntosFidelidad(jEmpleado, nuevoEmpleado);
+	        cargarJuegosFavoritos(jEmpleado, nuevoEmpleado);
+	        cargarAmigos(jEmpleado, nuevoEmpleado);
+	        
+	        JSONArray juegosArray = jEmpleado.optJSONArray("juegosConocidos");
+	        if (juegosArray != null) {	            
+	            for (int j = 0; j < juegosArray.length(); j++) {
+	            	 Juego juego =PersistenciaProductos.descargarJuegos(juegosArray.getJSONObject(i)); 
+	            	 if (juego instanceof JuegoDificil) {
+	            	 nuevoEmpleado.aprenderJuegoDificil((JuegoDificil) juego);
+	            	 }
+	            }	
+	         
+	        
+	        }
+	            empleadosCargados.add(nuevoEmpleado);
+	    }
+	    return empleadosCargados;
+	}
+	
+	private static void cargarPuntosFidelidad(JSONObject jEmpleado, Empleado empleado) {
+	    if (jEmpleado.has("puntosFidelidad")) {
+	        int puntosFidelidad = jEmpleado.getInt("puntosFidelidad");
+	        empleado.sumarPuntosFidelidad(puntosFidelidad);
+	    }
+	}
+	
+	private static void cargarJuegosFavoritos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException {
+	    JSONArray juegosArray = jEmpleado.optJSONArray("juegosFavoritos");
+	    if (juegosArray != null) {
+            for (int j = 0; j < juegosArray.length(); j++) {
+            	 Juego juego =PersistenciaProductos.descargarJuegos(juegosArray.getJSONObject(j));  
+            	 empleado.getJuegosFavoritos().add(juego);
+            }	
+	    }
+	}
+	
+	private static void cargarAmigos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException {
+	    JSONArray amigosArray = jEmpleado.optJSONArray("amigos");
+	    if (amigosArray != null) {
+	    	for (int j=0; j< amigosArray.length(); j++) {
+	    		Cliente amigo = descargarClientes(amigosArray.getJSONObject(j));
+	    		empleado.agregarAmigo(amigo);
+	    	}
+	        
+	    }
+	}
+	
+	//salvar
+		public static void salvarAdministrador(String administradorArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+		    JSONObject jAdmin = new JSONObject();
+		    Administrador admin = miCafe.getAdmin();
+		    
+		    jAdmin.put("id", admin.getId());
+		    jAdmin.put("login", admin.getLogin());
+		    jAdmin.put("password", admin.getPassword());
+		    jAdmin.put("nombre", admin.getNombre());
+		    
+		    guardarArchivoJSON(administradorArchivo,jAdmin);
+		}
+		
+		public static void salvarClientes(String clientesArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+		    JSONArray jClientes = new JSONArray();
+		    
+		    for(Cliente cliente: miCafe.getClientes()) {
+		    	jClientes.put(AsalvarClientes(cliente));
+		    }
+		    guardarArchivoJSON(clientesArchivo,jClientes);
+		}
+		
+		public static JSONObject  AsalvarClientes(Cliente cliente) throws IOException, FileNotFoundException {
+			JSONObject jCliente = new JSONObject();
+			jCliente.put("id", cliente.getId());
+			jCliente.put("login", cliente.getLogin());
+			jCliente.put("password", cliente.getPassword());
+			jCliente.put("nombre", cliente.getNombre());
+			jCliente.put("edad", cliente.getEdad());
+			jCliente.put("puntosFidelidad", cliente.getPuntosFidelidad());
+			jCliente.put("alergenos", cliente.getAlergenos());
+		    jCliente.put("amigos", cliente.getAmigos());  
+
+			
+			JSONArray juegosArray = new JSONArray();
+	        for (Juego juego : cliente.getJuegosFavoritos()) {
+	            juegosArray.put(PersistenciaProductos.AsalvarJuegos(juego)); 
+	        }
+	       
+	        
+			return jCliente;
+		}
+		
+
+		public static void salvarEmpleados(String meserosArchivo, String cocinerosArchivo, Cafe miCafe) 
+				throws IOException, FileNotFoundException {
+			JSONArray jCocinero = new JSONArray();
+			JSONArray jMesero = new JSONArray();
+			
+		    for (Empleado empleado : miCafe.getEmpleados()) {
+		        if (empleado instanceof Cocinero) {
+		        	 Cocinero cocinero = (Cocinero) empleado;
+		        	jCocinero.put(salvarCocinero(cocinero));
+		        	}else {
+		        	 Mesero mesero = (Mesero) empleado;	
+		        	jMesero.put(salvarMesero(mesero));	
+		        	}
+		        }
+		    
+		    guardarArchivoJSON(cocinerosArchivo,jCocinero);
+		    guardarArchivoJSON(meserosArchivo,jCocinero);
+		}
+		
+		
+		public static JSONObject salvarCocinero(Cocinero cocinero) throws IOException, FileNotFoundException {
+			JSONObject jEmpleado = new JSONObject();
+			
+	        jEmpleado.put("id", cocinero.getId());
+	        jEmpleado.put("login", cocinero.getLogin());
+	        jEmpleado.put("password", cocinero.getPassword());
+	        jEmpleado.put("nombre", cocinero.getNombre());
+	        jEmpleado.put("puntosFidelidad", cocinero.getPuntosFidelidad());
+
+	        guardarJuegosFavoritos(jEmpleado, cocinero);
+	        guardarAmigos(jEmpleado, cocinero);
+	        
+	        JSONArray platillosArray = new JSONArray();
+	        for (Platillo platillo : cocinero.getPlatillosConocidos()) {
+	            platillosArray.put(PersistenciaProductos.AsalvarPlatillos(platillo)); 
+	        }
+	        jEmpleado.put("platillosConocidos", platillosArray);
+	        
+	        JSONArray bebidasArray = new JSONArray();
+	        for (Bebida bebida : cocinero.getBebidasConocidas()) {
+	            bebidasArray.put(PersistenciaProductos.AsalvarBebidas(bebida)); 
+	        }
+	        jEmpleado.put("bebidasConocidas", bebidasArray);
+	        
+	        return jEmpleado;
+	    }
+	   
+
+		private static void guardarJuegosFavoritos(JSONObject jEmpleado, Empleado emplado) throws IOException, FileNotFoundException {
+		    JSONArray juegosArray = new JSONArray();
+		    for (Juego juego : emplado.getJuegosFavoritos()) {
+		        juegosArray.put(PersistenciaProductos.AsalvarJuegos(juego));
+		    }
+		    jEmpleado.put("juegosFavoritos", juegosArray);
+		}
+		
+		private static void guardarAmigos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException {
+		    JSONArray amigosArray = new JSONArray();
+		    for (Cliente amigo : empleado.getAmigos()) {
+		        amigosArray.put(AsalvarClientes(amigo));
+		    }
+		    jEmpleado.put("amigos", amigosArray);
+		}
+
+
+		public static JSONObject salvarMesero(Mesero mesero) throws IOException, FileNotFoundException {
+			JSONObject jEmpleado = new JSONObject();
+			
+	        jEmpleado.put("id", mesero.getId());
+	        jEmpleado.put("login", mesero.getLogin());
+	        jEmpleado.put("password", mesero.getPassword());
+	        jEmpleado.put("nombre", mesero.getNombre());
+	        jEmpleado.put("puntosFidelidad", mesero.getPuntosFidelidad());
+
+	        guardarJuegosFavoritos(jEmpleado, mesero); 
+	        guardarAmigos(jEmpleado, mesero);
+	        
+	        JSONArray juegosArray = new JSONArray();
+		    for (Juego juego : mesero.getJuegosFavoritos()) {
+		        juegosArray.put(PersistenciaProductos.AsalvarJuegos(juego));
+		    }
+		    jEmpleado.put("juegosFavoritos", juegosArray);
+		    
+	        return jEmpleado;
+	    }
 
 }

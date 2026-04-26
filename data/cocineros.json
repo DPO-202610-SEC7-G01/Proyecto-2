@@ -11,7 +11,11 @@
 	   "temperatura": "Caliente",
 	   "esAlcoholica": false
 	 }],
-    "platillosConocidos": []
+    "platillosConocidos": [],
+	"puntosFidelidad": 0,
+	 "juegosFavoritos": [],
+	 "amigos": [],
+	 "turnos":[]
   },
   {
     "id": 202,
@@ -26,7 +30,11 @@
 		    "nombre": "Sandwich de Pavo",
 		    "alergenos": "Gluten, Lácteos"
 		  }
-	]
+	],
+	"puntosFidelidad": 0,
+	  "juegosFavoritos": [],
+	  "amigos": [],
+	  "turnos":[]
   },
   {
     "id": 203,
@@ -42,7 +50,19 @@
     "password": "clave_segura_4",
     "nombre": "Beatriz Soler",
     "bebidasConocidas": [],
-    "platillosConocidos": []
+    "platillosConocidos": [],
+	"puntosFidelidad": 0,
+	  "juegosFavoritos": [],
+	  "amigos": [{	  "id": 2,
+	      "login": "marta_gamer",
+	      "password": "hashed_password_2",
+	      "nombre": "Marta Gómez",
+	      "edad": 30,
+	      "alergenos": "Ninguno",
+	      "puntosFidelidad": 0,
+	      "juegosFavoritos": [],
+	      "amigos": true}],
+		  "turnos":[]
   },
   {
     "id": 205,
@@ -50,6 +70,10 @@
     "password": "clave_segura_5",
     "nombre": "Marcos Duarte",
     "bebidasConocidas": [],
-    "platillosConocidos": []
+    "platillosConocidos": [],
+	"puntosFidelidad": 0,
+	  "juegosFavoritos": [],
+	  "amigos": [],
+	  "turnos":[]
   }
 ]

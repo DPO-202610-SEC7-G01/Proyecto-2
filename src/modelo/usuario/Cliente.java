@@ -39,6 +39,15 @@ public class Cliente extends Usuario {
 	public String getAlergenos() {
 		return alergenos;
 	}
+	
+	public Boolean getAmigos() {
+		return this.amigos;
+	}
+	
+	public void setAmigos(boolean amigo) {
+		this.amigos= amigo;
+	}
+	
 	//Métodos
 	public void nuevoAmigo() {
 		amigos = true;

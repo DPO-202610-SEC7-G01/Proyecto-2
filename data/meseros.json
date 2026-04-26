@@ -4,34 +4,83 @@
     "login": "mesero_carlos",
     "password": "pass_carlos_2024",
     "nombre": "Carlos Alberto Ruiz",
-    "juegosConocidos": []
+    "juegosConocidos": [],
+	"puntosFidelidad": 0,
+		 "juegosFavoritos": [],
+		 "amigos": [],
+	"turnos":[]
   },
   {
     "id": 102,
     "login": "mesero_elena",
     "password": "elena_secure_88",
     "nombre": "Elena Rodríguez",
-    "juegosConocidos": []
+    "juegosConocidos": [],
+	"puntosFidelidad": 0,
+		 "juegosFavoritos": [],
+		 "amigos": [],
+		 "turnos":[]
   },
   {
     "id": 103,
     "login": "mesero_miguel",
     "password": "miguel_p_991",
     "nombre": "Miguel Ángel Torres",
-    "juegosConocidos": []
+    "juegosConocidos": [],
+	"puntosFidelidad": 0,
+		 "juegosFavoritos": [],
+		 "amigos": [],
+		 "turnos":[]
   },
   {
     "id": 104,
     "login": "mesero_lucia",
     "password": "lucia_v_772",
     "nombre": "Lucía Villamil",
-    "juegosConocidos": []
+    "juegosConocidos": [],
+	"puntosFidelidad": 0,
+		 "juegosFavoritos": [],
+		 "amigos": [],
+		 "turnos":[]
   },
   {
     "id": 105,
     "login": "mesero_sergio",
     "password": "sergio_s_334",
     "nombre": "Sergio Salazar",
-    "juegosConocidos": []
+    "juegosConocidos": [	{
+	    "id": 501,
+	    "precio": 120000,
+	    "nombre": "Gloomhaven",
+	    "anioPublicacion": 2017,
+	    "empresMatriz": "Cephalofair Games",
+	    "numJugadores": 4,
+	    "restriccionEdad": "+14",
+	    "categoria": "Estrategia / Mazmorras",
+	    "instrucciones": "Preparar el escenario colocando las losetas según el libro de escenarios. Cada jugador elige un mazo de habilidades y gestiona su agotamiento por fatiga o daño."
+	  }],
+	"puntosFidelidad": 0,
+		 "juegosFavoritos": [	{
+	    "id": 501,
+	    "precio": 150000,
+	    "nombre": "Catan",
+	    "anioLanzamiento": 1995,
+	    "editorial": "Devir",
+	    "numeroJugadores": 4,
+	    "clasificacion": "apto 5 anios",
+	    "tipo": "Tablero"
+	  }],
+		 "amigos": [	  {
+	      "id": 5,
+	      "login": "diego_board",
+	      "password": "hashed_password_5",
+	      "nombre": "Diego Ruiz",
+	      "edad": 22,
+	      "alergenos": "Huevo",
+	      "puntosFidelidad": 0,
+	      "juegosFavoritos": [],
+	      "amigos": true
+	    }],
+		"turnos":[]
   }
 ]

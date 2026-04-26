@@ -54,9 +54,13 @@ public class Cafe {
 	}
 
 	// Getters y Setters
-
+	
 	public int getCapacidad() {
 		return capacidad;
+	}
+	
+	public void SetCapacidad(int Capacidad) {
+		this.capacidad = Capacidad;
 	}
 	
 	public Administrador getAdmin() {
@@ -70,11 +74,19 @@ public class Cafe {
 	public ArrayList<Mesa> getMesas() {
 		return mesas;
 	}
+	public void agregarMesa(Mesa mesa) {
+		this.mesas.add(mesa);
+	}
 
 	public ArrayList<Cliente> getClientes() {
 		return clientes;
 	}
 
+	public void agregarUsuario(Cliente cliente) {
+		this.clientes.add(cliente);
+	}
+
+	
 	public ArrayList<Empleado> getEmpleados() {
 		return empleados;
 	}
@@ -90,6 +102,10 @@ public class Cafe {
 	public ArrayList<Transaccion> getHistorialTransaccion() {
 		return historialTransaccion;
 	}
+	
+	public void agregarTransaccion(Transaccion transaccion){
+		historialTransaccion.add(transaccion);
+	}
 
 	public Map<Calendar, Empleado> getTurnoEmpleados() {
 		return turnoEmpleados;
@@ -98,11 +114,19 @@ public class Cafe {
 	public ArrayList<Juego> getJuegosPrestamo() {
 		return juegosPrestamo;
 	}
+	
+	public void agregarJuegoPrestamo(Juego juego) {
+		this.juegosPrestamo.add(juego);
+	}
 
 	public ArrayList<Juego> getJuegosVenta() {
 		return juegosVenta;
 	}
-
+	
+	public void agregarJuegoVenta(Juego juego) {
+		this.juegosVenta.add(juego);
+	}
+	
 	public ArrayList<Platillo> getMenuPlatillos(){
 		return menuPlatillos;
 	}
@@ -119,16 +143,25 @@ public class Cafe {
 		admin= adminNuevo;
 	}
 	
+	
+	public void agregarEmpleado(Empleado e) {
+		this.empleados.add(e);
+		// Calendar turno = e.getTurno();
+		// this.turnoEmpleados.put(turno, e);
+	}
+
+	
 	//Persistencia
 	//Carga de Datos Iniciales
 	public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
 				String bebidasArchivo, String platillosArchivo, String administradorArchivo,
-				String empleadosArchivo, String clientesArchivo,
+				String cocinerosArchivo, String meserosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, 
 				String transaccionesArchivo,String mesasArchivo) throws IOException, FileNotFoundException { 
+		
 		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 						bebidasArchivo,platillosArchivo, this);
-		PersistenciaUsuarios.descargarUsuarios(administradorArchivo, empleadosArchivo, clientesArchivo,  this);
+		PersistenciaUsuarios.descargarUsuarios(administradorArchivo, cocinerosArchivo, meserosArchivo, clientesArchivo,  this);
 		PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
 			
 		}
@@ -192,27 +225,8 @@ public class Cafe {
 		return false;
 	}
 
-	public void agregarEmpleado(Empleado e) {
-		this.empleados.add(e);
-		// Calendar turno = e.getTurno();
-		// this.turnoEmpleados.put(turno, e);
-	}
-
-	public void agregarMesa(Mesa mesa) {
-		this.mesas.add(mesa);
-	}
-
-	public void agregarUsuario(Cliente cliente) {
-		this.clientes.add(cliente);
-	}
-
-	public void agregarJuegoPrestamo(Juego juego) {
-		this.juegosPrestamo.add(juego);
-	}
-
-	public void agregarJuegoVenta(Juego juego) {
-		this.juegosVenta.add(juego);
-	}
+	
+	
 	public void sugerirPlatillo(Platillo platillo) {
 		this.sugerenciasPendientes.add(platillo);
 	}
@@ -313,7 +327,8 @@ public class Cafe {
 
 	    return null;
 	}
-	
+
+
 	
 	
 	
