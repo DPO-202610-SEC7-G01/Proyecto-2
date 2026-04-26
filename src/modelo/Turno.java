@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 public class Turno {
 
-
 	    private Calendar fecha;
 	    private boolean activo;  
 	    

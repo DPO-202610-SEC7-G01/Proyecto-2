@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.json.JSONArray;
@@ -19,7 +20,7 @@ import modelo.producto.*;
 public class PersistenciaCafe extends PersistenciaCentral{
 
 	public static void descargarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
-			String transaccionesArchivo, String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
+			String transaccionesArchivo, String mesasArchivo, String  turnosArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
 		
 		//Aun que el café empieza con 0 de disponibilidad entonces voy a aumentarlo acorde a la mesa
 		descargarMesas(mesasArchivo,miCafe);
@@ -27,7 +28,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 		descargarTransaccion(transaccionesArchivo,miCafe);
 		descargarHistorialPrestamos(historialPrestamosArchivo,miCafe);
 		descargarSugerenciasPendientes(sugerenciasPendientesArchivo, miCafe);
-		
+		descargarTurnos(turnosArchivo, miCafe);
 		}
 	
 	public static void descargarMesas(String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
@@ -142,16 +143,41 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	    }
 	}
 		
+	public static void descargarTurnos(String turnosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+	    JSONArray jTurnos = leerArchivoJSON(turnosArchivo);
+	    
+	    for (int i = 0; i < jTurnos.length(); i++) {
+	        JSONObject jRegistro = jTurnos.getJSONObject(i);
+	        
+	        JSONObject jEmpleado = jRegistro.getJSONObject("empleado");
+	        int idEmpleado = jEmpleado.getInt("id");
+	        
+	        for (Empleado empleado : miCafe.getEmpleados()) {
+	            if (empleado.getId() == idEmpleado) {
+	                JSONObject jTurnoAsignado = jRegistro.getJSONObject("turno_asignado");
+	                String fechaString = jTurnoAsignado.getString("fecha");
+	                Calendar fecha = fechaEnCalendar(fechaString);
+	                boolean activo = jTurnoAsignado.getBoolean("activo");
+	                
+	                empleado.getTurnos().add(new Turno(fecha, activo));
+	                miCafe.getTurnoEmpleados().put(empleado ,new Turno(fecha, activo));
+	                break;
+	            }
+	        }
+	    }
+	}
+	
 	
 	public void salvarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
-			String transaccionesArchivo, String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
+			String transaccionesArchivo, String mesasArchivo,String turnosArchivo, Cafe miCafe) 
+					throws IOException, FileNotFoundException{
 		
 		salvarMesas(mesasArchivo,miCafe);
 		salvarReservas(reservasArchivo,miCafe);
 		salvarTransacciones(transaccionesArchivo,miCafe);
 		salvarHistorialPrestamos(historialPrestamosArchivo,miCafe);
-		descargarSugerenciasPendientes(sugerenciasPendientesArchivo, miCafe);
-		
+		salvarSugerenciasPendientes(sugerenciasPendientesArchivo, miCafe);
+		salvarTurnos(turnosArchivo, miCafe);
 		}
 	
 	public static void salvarMesas(String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
@@ -290,4 +316,66 @@ public class PersistenciaCafe extends PersistenciaCentral{
         root.put("bebidas", jBebidas);
         guardarArchivoJSON(sugerenciasPendientesArchivo, root);
     }
+	
+	public static void salvarTurnos(String turnosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+	    JSONArray jTurnos = new JSONArray();
+	    for (Map.Entry<Empleado, Turno> entrada : miCafe.getTurnoEmpleados().entrySet()) {
+	        JSONObject jRegistro = new JSONObject();
+	        jRegistro.put("empleado", salvarEmpleadoParaTurno(entrada.getKey()));
+	        
+	        JSONObject jTurnoAsignado = new JSONObject();
+	        jTurnoAsignado.put("fecha", calendarToString(entrada.getValue().getFecha()) + "T08:00:00Z");
+	        jTurnoAsignado.put("activo", entrada.getValue().isActivo());
+	        jRegistro.put("turno_asignado", jTurnoAsignado);
+	        
+	        jTurnos.put(jRegistro);
+	    }
+	    guardarArchivoJSON(turnosArchivo, jTurnos);
+	}
+
+	private static JSONObject salvarEmpleadoParaTurno(Empleado empleado) throws IOException, FileNotFoundException {
+	    JSONObject jEmpleado = new JSONObject();
+	    jEmpleado.put("id", empleado.getId());
+	    jEmpleado.put("login", empleado.getLogin());
+	    jEmpleado.put("password", empleado.getPassword());
+	    jEmpleado.put("nombre", empleado.getNombre());
+	    jEmpleado.put("puntosFidelidad", empleado.getPuntosFidelidad());
+	    
+	    JSONArray juegosArray = new JSONArray();
+	    for (Juego juego : empleado.getJuegosFavoritos()) {
+	        juegosArray.put(juego.getNombre());
+	    }
+	    jEmpleado.put("juegosFavoritos", juegosArray);
+	    
+	    JSONArray amigosArray = new JSONArray();
+	    for (Cliente amigo : empleado.getAmigos()) {
+	        amigosArray.put(amigo.getId());
+	    }
+	    jEmpleado.put("amigos", amigosArray);
+	    
+	    if (empleado instanceof Mesero) {
+	        JSONArray juegosConocidosArray = new JSONArray();
+	        for (Juego juego : ((Mesero) empleado).getJuegosConocidos()) {
+	            juegosConocidosArray.put(juego.getNombre());
+	        }
+	        jEmpleado.put("juegosConocidos", juegosConocidosArray);
+	    }
+	    
+	    if (empleado instanceof Cocinero) {
+	        JSONArray platillosArray = new JSONArray();
+	        for (Platillo platillo : ((Cocinero) empleado).getPlatillosConocidos()) {
+	            platillosArray.put(platillo.getNombre());
+	        }
+	        jEmpleado.put("platillosConocidos", platillosArray);
+	        
+	        JSONArray bebidasArray = new JSONArray();
+	        for (Bebida bebida : ((Cocinero) empleado).getBebidasConocidas()) {
+	            bebidasArray.put(bebida.getNombre());
+	        }
+	        jEmpleado.put("bebidasConocidas", bebidasArray);
+	    }
+	    
+	    jEmpleado.put("turnos", new JSONArray());
+	    return jEmpleado;
+	}
 }

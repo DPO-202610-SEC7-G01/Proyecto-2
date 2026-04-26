@@ -22,13 +22,13 @@ public class Cafe {
 	private ArrayList<Reserva> reservasPrevias; // 
 	public ArrayList<Juego> juegosPrestamo; //
 	public ArrayList<Juego> juegosVenta; // 
-	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;
-	private HashMap<Integer, ArrayList<Juego>> juegosCliente; 
+	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;// 
+	private HashMap<Integer, ArrayList<Juego>> juegosCliente;  //Estos juegos está en la reserva  
 	private ArrayList<Transaccion> historialTransaccion; //
 	public ArrayList<Platillo> menuPlatillos; //
 	public ArrayList<Bebida> menuBebidas; //
-	private Map<Calendar, Empleado> turnoEmpleados;
-	private ArrayList<Producto> sugerenciasPendientes;
+	private Map<Empleado, Turno> turnoEmpleados; 
+	private ArrayList<Producto> sugerenciasPendientes; //
 
 
 	// Constructor
@@ -45,7 +45,7 @@ public class Cafe {
 		this.menuPlatillos = new ArrayList<Platillo>();
 		this.reservasPrevias = new ArrayList<Reserva>();
 		this.sugerenciasPendientes = new ArrayList<Producto>();
-		this.turnoEmpleados = new HashMap<Calendar, Empleado>();
+		this.turnoEmpleados = new HashMap<Empleado, Turno>();
 		this.historialTransaccion = new ArrayList<Transaccion>();
 		this.juegosCliente = new HashMap<Integer, ArrayList<Juego>>();
 		this.historialUsoJuegos = new HashMap<Calendar, HashMap<Usuario, Juego>>();
@@ -117,7 +117,7 @@ public class Cafe {
 		historialTransaccion.add(transaccion);
 	}
 
-	public Map<Calendar, Empleado> getTurnoEmpleados() {
+	public Map<Empleado, Turno> getTurnoEmpleados() {
 		return turnoEmpleados;
 	}
 
@@ -172,18 +172,47 @@ public class Cafe {
 				String bebidasArchivo, String platillosArchivo, String administradorArchivo,
 				String cocinerosArchivo, String meserosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, String sugerenciasPendientesArchivo,
-				String transaccionesArchivo,String mesasArchivo) throws IOException, FileNotFoundException { 
+				String transaccionesArchivo,String mesasArchivo, String turnosArchivo) throws IOException, FileNotFoundException { 
 		
 		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 						bebidasArchivo,platillosArchivo, this);
 		PersistenciaUsuarios.descargarUsuarios(administradorArchivo, cocinerosArchivo, meserosArchivo, clientesArchivo,  this);
 		PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,sugerenciasPendientesArchivo,
-				transaccionesArchivo,mesasArchivo,this);
+				transaccionesArchivo,mesasArchivo, turnosArchivo, this);
 			
 		}
 		
 	
 	// Métodos	
+	public void sugerirPlatillo(Platillo platillo) {
+		this.sugerenciasPendientes.add(platillo);
+	}
+	
+	public boolean verificarDisponibilidad(Calendar fecha, int numPersonas) {
+		if ((numPersonas <= capacidad || numPersonas > 0)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void registrarProductoEnTransaccion(Transaccion t, Producto p) {
+	    t.agregarProducto(p);
+	    if (!historialTransaccion.contains(t)) {
+	        historialTransaccion.add(t);
+	    }
+	}
+	
+	public Cocinero turnoCocineros(Calendar fecha) {
+	    for (Map.Entry<Empleado, Turno> entry : turnoEmpleados.entrySet()) {
+	        Empleado empleado = entry.getKey();
+	        Turno turno = entry.getValue();
+	        if (empleado instanceof Cocinero && turno != null && turno.isActivo() && turno.esMismaFecha(fecha)) {
+	            return (Cocinero) empleado;
+	        }
+	    }
+	    return null;
+	}
+	
 	public void registrarNuevaReserva(Reserva r) {
 	    if (verificarDisponibilidad(r.getFecha(), r.getNumPersonas()) && asignarMesa(r)) {
 	    	reservasPrevias.add(r);
@@ -191,39 +220,27 @@ public class Cafe {
 	        for (Cliente c : r.getClientes()) {
 	            c.sumarPuntosFidelidad(puntosPorReserva);
 	        }
-	        
 	    } 
 	}
 
-	public boolean verificarDisponibilidad(Calendar fecha, int numPersonas) {
-		if ((numPersonas <= capacidad || numPersonas > 0)) {
-			return true;
-		}
-		return false;
-	}
-
 	public boolean aptoApertura(Calendar fechaConsulta) {
-		int cocineros = 0;
-		int meseros = 0;
+	    int cocineros = 0;
+	    int meseros = 0;
 
-		for (Map.Entry<Calendar, Empleado> entrada : turnoEmpleados.entrySet()) {
-			Calendar fechaTurno = entrada.getKey();
-			Empleado e = entrada.getValue();
-			if (esMismaFecha(fechaTurno, fechaConsulta)) {
-				if (e instanceof Mesero) {
-					meseros++;
-				} else if (e instanceof Cocinero) {
-					cocineros++;
-				}
-			}
-		}
-		return (cocineros >= 1 && meseros >= 2);
+	    for (Map.Entry<Empleado, Turno> entrada : turnoEmpleados.entrySet()) {
+	        Empleado e = entrada.getKey();
+	        Turno turno = entrada.getValue();
+	        if (turno != null && turno.esMismaFecha(fechaConsulta) && turno.isActivo()) {
+	            if (e instanceof Mesero) {
+	                meseros++;
+	            } else if (e instanceof Cocinero) {
+	                cocineros++;
+	            }
+	        }
+	    }
+	    return (cocineros >= 1 && meseros >= 2);
 	}
 
-	private boolean esMismaFecha(Calendar cal1, Calendar cal2) {
-		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
-				&& cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-	}
 
 	public boolean asignarMesa(Reserva r) {
 		for (Mesa mesita : mesas) {
@@ -237,13 +254,6 @@ public class Cafe {
 	}
 
 	
-	
-	public void sugerirPlatillo(Platillo platillo) {
-		this.sugerenciasPendientes.add(platillo);
-	}
-	
-	
-	
 	public boolean reservarJuego(Juego juego, Reserva r) {
 	    if (!juegosPrestamo.contains(juego)) {
 	        return false;
@@ -255,7 +265,6 @@ public class Cafe {
 	    
 	    if (integrantes == null || integrantes.isEmpty()) return false;
 	    
-	    // Identificamos al cliente que lidera la reserva (el primero de la lista)
 	    Cliente clientePrincipal = integrantes.get(0);
 	    int idPrincipal = clientePrincipal.getId();
 
@@ -322,22 +331,7 @@ public class Cafe {
 		return total;
 	}
 	
-	public void registrarProductoEnTransaccion(Transaccion t, Producto p) {
-	    t.agregarProducto(p);
-	    // Si la transacción no estaba en el historial, la agregamos (evita duplicados)
-	    if (!historialTransaccion.contains(t)) {
-	        historialTransaccion.add(t);
-	    }
-	}
-
-	public Cocinero turnoCocineros(Calendar fecha) {
-	    Empleado empleadoAsignado = turnoEmpleados.get(fecha);
-	    if (empleadoAsignado != null && empleadoAsignado instanceof Cocinero) {
-	        return (Cocinero) empleadoAsignado;
-	    }
-
-	    return null;
-	}
+	
 
 
 }

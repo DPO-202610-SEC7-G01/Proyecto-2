@@ -1,0 +1,37 @@
+[
+  {
+    "empleado": {
+      "id": 101,
+      "login": "mesero_carlos",
+      "password": "pass_carlos_2024",
+      "nombre": "Carlos Alberto Ruiz",
+      "juegosConocidos": [],
+      "puntosFidelidad": 0,
+      "juegosFavoritos": [],
+      "amigos": [],
+      "turnos": []
+    },
+    "turno_asignado": {
+      "fecha": "2026-04-26T08:00:00Z",
+      "activo": true
+    }
+  },
+  {
+    "empleado": {
+      "id": 201,
+      "login": "chef_ramiro",
+      "password": "clave_segura_1",
+      "nombre": "Ramiro Gutiérrez",
+      "juegosConocidos": [],
+      "puntosFidelidad": 10,
+      "juegosFavoritos": ["Catan"],
+      "amigos": [],
+      "turnos": []
+    },
+    "turno_asignado": {
+      "fecha": "2026-04-26T14:00:00Z",
+      "activo": true
+    }
+  },
+ 
+]

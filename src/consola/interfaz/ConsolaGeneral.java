@@ -52,6 +52,7 @@ public class ConsolaGeneral {
 		            "data/historialPrestamos.json", 
 		            "data/sugerenciasPendientes.json",
 		            "data/transacciones.json" ,
+		            "data/turnos.json",
 		            "data/mesas.json"
 		        );
 		this.consolaAdmin = new ConsolaAdministrador(miCafe);

@@ -46,8 +46,14 @@ public class Empleado extends Usuario {
         juegosFavoritos.add(juegoFav);
     }
     
+    public ArrayList<Turno> getTurnos() {
+		return turnos;
+	}
+    
     // Métodos    
-    public void sugerencias(Producto producto) { 
+    
+
+	public void sugerencias(Producto producto) { 
         miCafe.agregarSugerencia(producto);
     }
     
@@ -67,7 +73,26 @@ public class Empleado extends Usuario {
         return factura;
     }
     
-    // FUNCIONES DE TURNO
+    // FUNCIONES DE TURNO en EMPLEADO
+    public Turno getTurnoPorFecha(Calendar fecha) {
+        for (Turno turno : turnos) {
+            if (turno.esMismaFecha(fecha)) {
+                return turno;
+            }
+        }
+        return null;
+    }
+    
+    
+    public void cambiarFechaTurno(Calendar fechaAntigua, Calendar fechaNueva) {
+        for (Turno turno : turnos) {
+            if (turno.esMismaFecha(fechaAntigua) && turno.isActivo()) {
+                turno.setFecha(fechaNueva);
+                break;
+            }
+        }
+    }
+    
     public boolean trabajaEnFecha(Calendar fechaConsulta) {
         for (Turno turno : this.turnos) {
             if (turno.esMismaFecha(fechaConsulta) && turno.isActivo()) {

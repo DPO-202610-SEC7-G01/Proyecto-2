@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import modelo.Cafe;
 import modelo.Transaccion;
+import modelo.Turno;
 import modelo.producto.*;
 import modelo.producto.Juego;
 import modelo.producto.Platillo;
@@ -59,34 +60,28 @@ public class Administrador extends Usuario {
   
 
 	public boolean procesarCambioTurno(Empleado solicitante, Empleado companero, Calendar fechaS, Calendar fechaC) {
-	    
-	    // 1. Validaciones de existencia y cargo (Igual que antes)
-	    if (!solicitante.getTurno().contains(fechaS) || !companero.getTurno().contains(fechaC)) {
+	    Turno turnoSol = solicitante.getTurnoPorFecha(fechaS);
+	    Turno turnoComp = companero.getTurnoPorFecha(fechaC);
+	    if (turnoSol == null || !turnoSol.isActivo() || turnoComp == null || !turnoComp.isActivo()) {
 	        return false;
 	    }
-
 	    if (!solicitante.getClass().equals(companero.getClass())) {
 	        return false;
 	    }
-
-	    // 2. SIMULACIÓN: Guardamos quiénes están actualmente para poder revertir si falla
-	    Empleado originalS = this.miCafe.getTurnoEmpleados().get(fechaS);
-	    Empleado originalC = this.miCafe.getTurnoEmpleados().get(fechaC);
-
-	    this.miCafe.getTurnoEmpleados().put(fechaS, companero);
-	    this.miCafe.getTurnoEmpleados().put(fechaC, solicitante);
-
-	    // 3. VERIFICACIÓN: ¿El café sigue siendo apto para abrir en ambas fechas?
+	    
+	    Calendar fechaSolOriginal = turnoSol.getFecha();
+	    Calendar fechaCompOriginal = turnoComp.getFecha();
+	    turnoSol.setFecha(fechaC);
+	    turnoComp.setFecha(fechaS);
+	    
 	    boolean esAptoS = this.miCafe.aptoApertura(fechaS);
 	    boolean esAptoC = this.miCafe.aptoApertura(fechaC);
-
+	    
 	    if (esAptoS && esAptoC) {
-	        solicitante.cambioDeTurno(fechaS, fechaC);
-	        companero.cambioDeTurno(fechaC, fechaS);
 	        return true;
 	    } else {
-	        this.miCafe.getTurnoEmpleados().put(fechaS, originalS);
-	        this.miCafe.getTurnoEmpleados().put(fechaC, originalC);
+	        turnoSol.setFecha(fechaSolOriginal);
+	        turnoComp.setFecha(fechaCompOriginal);
 	        return false;
 	    }
 	}
