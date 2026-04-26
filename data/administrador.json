@@ -3,10 +3,5 @@
   "login": "admin0",
   "password": "passwordSeguro123",
   "nombre": "Carlos Pérez",
-  "miCafe": {
-    "id_cafe": 101,
-    "nombre_cafe": "Café Central",
-    "ubicacion": "Calle Principal 123",
-    "capacidad": 50
-  }
+
 }

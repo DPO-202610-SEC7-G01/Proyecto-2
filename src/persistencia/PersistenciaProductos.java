@@ -52,12 +52,115 @@ public class PersistenciaProductos {
     public static void salvarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
     		String juegosDificilesArchivo, String bebidasArchivo, String platillosArchivo, 
             Cafe miCafe) throws IOException, FileNotFoundException {
+    	
     	salvarJuegos(juegosVentaArchivo,juegosPrestamoArchivo, juegosDificilesArchivo, miCafe);
     	salvarPlatillos(platillosArchivo, miCafe);
     	salvarBebidas(bebidasArchivo,miCafe);
     	
     }
     
+    
+    // descargar
+    public static ArrayList<Juego> descargarJuegos(String juegoArchivo)  throws  IOException,FileNotFoundException {     
+        File archivoJuego = new File(juegoArchivo);
+        if (!archivoJuego.exists()) {
+            throw new FileNotFoundException( juegoArchivo);
+        }
+        
+        String contenido = new String(Files.readAllBytes(archivoJuego.toPath()));
+        JSONArray jJuegos = new JSONArray(contenido);
+        return descargarJuegos(jJuegos);  
+    }
+    
+    public static ArrayList<Juego> descargarJuegos(JSONArray jJuegos)  throws  IOException,FileNotFoundException {
+    	ArrayList<Juego> juegosCargados = new ArrayList<>();
+    	 for (int i = 0; i < jJuegos.length(); i++) {
+             JSONObject jJuego = jJuegos.getJSONObject(i);
+             
+             int id = jJuego.getInt("id");
+             String nombre = jJuego.getString("nombre");
+             int precio = jJuego.getInt("precio");
+             int anioPublicacion = jJuego.getInt("anioPublicacion");
+             String empresMatriz = jJuego.getString("empresMatriz");
+             int numJugadores = jJuego.getInt("numJugadores");
+             String restriccionEdad = jJuego.getString("restriccionEdad");
+             String categoria = jJuego.getString("categoria");
+             
+             Juego nuevoJuego;
+             if (jJuego.has("instrucciones")) {
+                 String instrucciones = jJuego.getString("instrucciones");
+                 nuevoJuego = new JuegoDificil(id, precio, nombre, anioPublicacion, 
+                                               empresMatriz, numJugadores, restriccionEdad, 
+                                               categoria, instrucciones);
+             } else {
+                 nuevoJuego = new Juego(id, precio, nombre, anioPublicacion, 
+                                        empresMatriz, numJugadores, restriccionEdad, categoria);
+             }
+             
+             juegosCargados.add(nuevoJuego); 
+    	 }
+    	return juegosCargados;
+    }
+    
+    public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo)
+    		 throws  IOException,FileNotFoundException {       
+        File archivoPlatillo = new File(platilloArchivo);
+        if (!archivoPlatillo.exists()) {
+            throw new FileNotFoundException(platilloArchivo);
+        }
+        
+        String contenido = new String(Files.readAllBytes(archivoPlatillo.toPath())); 
+        JSONArray jPlatillos = new JSONArray(contenido);
+		return descargarPlatillos(jPlatillos);
+    }
+
+    public static ArrayList<Platillo> descargarPlatillos(JSONArray jPlatillos) throws IOException, FileNotFoundException {
+        ArrayList<Platillo> platillos = new ArrayList<>();
+        
+        for (int i = 0; i < jPlatillos.length(); i++) {
+            JSONObject jPlatillo = jPlatillos.getJSONObject(i);
+            
+            int id = jPlatillo.getInt("id");
+            String nombre = jPlatillo.getString("nombre");
+            int precio = jPlatillo.getInt("precio");
+            String alergenos = jPlatillo.getString("alergenos");
+            Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
+            platillos.add(nuevoPlatillo);  
+        }
+        return platillos;
+    }
+    
+    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo) throws IOException, FileNotFoundException {
+        File archivoBebidas = new File(bebidaArchivo);
+        if (!archivoBebidas.exists()) {
+            throw new FileNotFoundException(bebidaArchivo);
+        }
+        
+        String contenido = new String(Files.readAllBytes(archivoBebidas.toPath())); 
+        JSONArray jBebidas = new JSONArray(contenido);
+        
+        return descargarBebidas(jBebidas); 
+    }
+    
+    public static ArrayList<Bebida> descargarBebidas(JSONArray jBebidas) throws IOException, FileNotFoundException {
+        ArrayList<Bebida> bebidas = new ArrayList<>();
+        
+        for (int i = 0; i < jBebidas.length(); i++) {
+            JSONObject jBebida = jBebidas.getJSONObject(i);
+            
+            int id = jBebida.getInt("id");
+            String nombre = jBebida.getString("nombre");
+            int precio = jBebida.getInt("precio"); 
+            String temperatura = jBebida.getString("temperatura");
+            boolean alcohol = jBebida.getBoolean("esAlcoholica");
+            
+            Bebida nuevaBebida = new Bebida(id, precio, nombre, temperatura, alcohol);
+            bebidas.add(nuevaBebida);  
+        }
+        return bebidas;
+    }
+    
+    //cargar  
     public static void salvarJuegos( String juegosPrestamoArchivo, String juegosVentaArchivo, 
         	String juegosDificilesArchivo, Cafe miCafe) throws  IOException,FileNotFoundException {
         	
@@ -144,96 +247,4 @@ public class PersistenciaProductos {
     		pwPlatillo.print(bebidasArray.toString(4));
     	}
 	    }
-    //
-    public static ArrayList<Juego> descargarJuegos(String juegoArchivo)  throws  IOException,FileNotFoundException {
-        ArrayList<Juego> juegosCargados = new ArrayList<>();
-        
-        File archivoJuego = new File(juegoArchivo);
-        if (!archivoJuego.exists()) {
-            throw new FileNotFoundException( juegoArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoJuego.toPath()));
-        JSONArray jJuegos = new JSONArray(contenido);
-        
-        for (int i = 0; i < jJuegos.length(); i++) {
-            JSONObject jJuego = jJuegos.getJSONObject(i);
-            
-            int id = jJuego.getInt("id");
-            String nombre = jJuego.getString("nombre");
-            int precio = jJuego.getInt("precio");
-            int anioPublicacion = jJuego.getInt("anioPublicacion");
-            String empresMatriz = jJuego.getString("empresMatriz");
-            int numJugadores = jJuego.getInt("numJugadores");
-            String restriccionEdad = jJuego.getString("restriccionEdad");
-            String categoria = jJuego.getString("categoria");
-            
-            Juego nuevoJuego;
-            if (jJuego.has("instrucciones")) {
-                String instrucciones = jJuego.getString("instrucciones");
-                nuevoJuego = new JuegoDificil(id, precio, nombre, anioPublicacion, 
-                                              empresMatriz, numJugadores, restriccionEdad, 
-                                              categoria, instrucciones);
-            } else {
-                nuevoJuego = new Juego(id, precio, nombre, anioPublicacion, 
-                                       empresMatriz, numJugadores, restriccionEdad, categoria);
-            }
-            
-            juegosCargados.add(nuevoJuego);  
-        }
-        
-        return juegosCargados;  
-    }
-    
-    public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo)
-    		 throws  IOException,FileNotFoundException {
-    	ArrayList<Platillo> platillos = new ArrayList<>();
-        
-        File archivoPlatillo = new File(platilloArchivo);
-        if (!archivoPlatillo.exists()) {
-            throw new FileNotFoundException(platilloArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoPlatillo.toPath())); 
-        JSONArray jPlatillos = new JSONArray(contenido);
-        
-        for (int i = 0; i < jPlatillos.length(); i++) {
-            JSONObject jPlatillo = jPlatillos.getJSONObject(i);
-            
-            int id = jPlatillo.getInt("id");
-            String nombre = jPlatillo.getString("nombre");
-            int precio = jPlatillo.getInt("precio");
-            String alergenos = jPlatillo.getString("alergenos");
-            Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
-            platillos.add(nuevoPlatillo);  
-    	}
-		return platillos;
-    }
-
-    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo) throws  IOException,FileNotFoundException {
-    	ArrayList<Bebida> bebidas = new ArrayList<>();
-        
-        File archivoBebidas = new File(bebidaArchivo);
-        if (!archivoBebidas.exists()) {
-            throw new FileNotFoundException(bebidaArchivo);
-        }
-        
-        String contenido = new String(Files.readAllBytes(archivoBebidas.toPath())); 
-        JSONArray jBebidas= new JSONArray(contenido);
-        
-        for (int i = 0; i < jBebidas.length(); i++) {
-            JSONObject jBebida = jBebidas.getJSONObject(i);
-            
-            int id = jBebida.getInt("id");
-            String nombre = jBebida.getString("nombre");
-            int precio = jBebida.getInt("temperatura");
-            String temperatura = jBebida.getString("temperatura");
-            boolean alcohol = jBebida.getBoolean("esAlcoholica");
-            Bebida nuevaBebida= new Bebida(id, precio, nombre, temperatura, alcohol);
-            bebidas.add(nuevaBebida);  
-    	}
-		return bebidas;
-    }
-    
-    
 }

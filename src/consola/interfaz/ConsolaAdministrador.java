@@ -30,5 +30,10 @@ public class ConsolaAdministrador {
 	}
 	
 	
-	
+	public static void main(String[] args) {
+		Scanner lectorMenu = new Scanner(System.in);
+		int opcion = 0;
+		
+		//Quiero sacar un menu solo para los admins
+	}
 }

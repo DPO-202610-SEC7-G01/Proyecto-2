@@ -3,75 +3,32 @@ package consola.interfaz;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
-import modelo.Reserva;
-import modelo.Transaccion;
-import modelo.producto.Bebida;
-import modelo.producto.Juego;
-import modelo.producto.Platillo;
-import modelo.producto.Producto;
-import modelo.usuario.Cliente;
-import modelo.usuario.Cocinero;
-import modelo.usuario.Empleado;
-import modelo.usuario.Mesero;
-import modelo.usuario.Usuario;
+import modelo.*;
+import modelo.producto.*;
+import modelo.usuario.*;
 
 public class ConsolaEmpleado {
-	public void registrarUsuarioNuevo() {
-		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
-		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
-		System.out.print("Seleccione: ");
-		int tipo = lector.nextInt();
-		lector.nextLine();
-
-		System.out.print("Nombre completo: ");
-		String nombre = lector.nextLine();
-
-		// 1. Generar Login y Verificar Unicidad
-		int id = aleatorio.nextInt(1001);
-		String loginBase = nombre.split(" ")[0].toLowerCase() + id;
-
-		// Si el login ya existe (por pura mala suerte del azar), generamos otro
-		while (buscarUsuario(loginBase) != null) {
-			id = aleatorio.nextInt(1001);
-			loginBase = nombre.split(" ")[0].toLowerCase() + id;
-		}
-
-		final String login = loginBase; // Lo hacemos final para usarlo con seguridad
-		System.out.print("Ingrese Password: ");
-		String password = lector.nextLine();
-
-		// 2. Creación según el tipo
-		switch (tipo) {
-		case 1:
-			System.out.print("Edad: ");
-			int edad = lector.nextInt();
-			lector.nextLine();
-			System.out.print("Alérgenos: ");
-			String alergenos = lector.nextLine();
-
-			Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenos);
-			miCafe.agregarUsuario(nuevoC);
-			break;
-
-		case 2:
-			miCafe.getEmpleados().add(new Mesero(id, login, password, nombre));
-			break;
-
-		case 3:
-			miCafe.getEmpleados().add(new Cocinero(id, login, password, nombre));
-			break;
-
-		default:
-			System.out.println("❌ Opción inválida.");
-			return;
-		}
-
-		System.out.println("Registro exitoso con el login: " + login);
+	static private Cafe miCafe;
+	private Scanner lector;
+	private Random aleatorio;
+	
+	public ConsolaEmpleado(Cafe cafe) {
+        ConsolaEmpleado.miCafe = cafe;
+    }
+	
+	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Mesero nuevoM = new Mesero(id, login, password, nombre);
+		miCafe.getEmpleados().add(nuevoM);
 	}
 	
-}
+	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
+		miCafe.getEmpleados().add(nuevoC);
+	}
+
 	public void solicitarJuego() {
 	    System.out.println("\n--- PRÉSTAMO DE JUEGOS ---");
 	    Empleado empleadoActivo = autenticarEmpleado();

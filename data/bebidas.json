@@ -1,4 +1,4 @@
-{[
+{
   {
     "id": 201,
     "precio": 12000,
@@ -41,4 +41,4 @@
     "temperatura": "Caliente",
     "esAlcoholica": false
   }
-]}
+}

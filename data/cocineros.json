@@ -4,7 +4,13 @@
     "login": "chef_ramiro",
     "password": "clave_segura_1",
     "nombre": "Ramiro Gutiérrez",
-    "bebidasConocidas": [],
+    "bebidasConocidas": [	{
+	   "id": 201,
+	   "precio": 12000,
+	   "nombre": "Café Americano",
+	   "temperatura": "Caliente",
+	   "esAlcoholica": false
+	 }],
     "platillosConocidos": []
   },
   {
@@ -13,7 +19,14 @@
     "password": "clave_segura_2",
     "nombre": "Claudia Méndez",
     "bebidasConocidas": [],
-    "platillosConocidos": []
+    "platillosConocidos": [
+		{
+		    "id": 101,
+		    "precio": 25000,
+		    "nombre": "Sandwich de Pavo",
+		    "alergenos": "Gluten, Lácteos"
+		  }
+	]
   },
   {
     "id": 203,
