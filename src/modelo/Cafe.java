@@ -15,20 +15,20 @@ import persistencia.*;
 public class Cafe {
 
 	private int capacidad;
-	private Administrador admin;
-	private ArrayList<Mesa> mesas;
-	private ArrayList<Cliente> clientes;
-	private ArrayList<Empleado> empleados;
-	private ArrayList<Reserva> reservasPrevias;
-	public ArrayList<Juego> juegosPrestamo;
-	public ArrayList<Juego> juegosVenta;
+	private Administrador admin; //Persistencia Implementada
+	private ArrayList<Mesa> mesas; // 
+	private ArrayList<Cliente> clientes; //
+	private ArrayList<Empleado> empleados; //
+	private ArrayList<Reserva> reservasPrevias; // 
+	public ArrayList<Juego> juegosPrestamo; //
+	public ArrayList<Juego> juegosVenta; // 
 	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;
-	private HashMap<Integer, ArrayList<Juego>> juegosCliente;
-	private ArrayList<Transaccion> historialTransaccion;
-	public ArrayList<Platillo> menuPlatillos;
-	public ArrayList<Bebida> menuBebidas;
+	private HashMap<Integer, ArrayList<Juego>> juegosCliente; 
+	private ArrayList<Transaccion> historialTransaccion; //
+	public ArrayList<Platillo> menuPlatillos; //
+	public ArrayList<Bebida> menuBebidas; //
 	private Map<Calendar, Empleado> turnoEmpleados;
-	private List<Platillo> sugerenciasPendientes;
+	private ArrayList<Producto> sugerenciasPendientes;
 
 
 	// Constructor
@@ -44,7 +44,7 @@ public class Cafe {
 		this.juegosPrestamo = new ArrayList<Juego>();
 		this.menuPlatillos = new ArrayList<Platillo>();
 		this.reservasPrevias = new ArrayList<Reserva>();
-		this.sugerenciasPendientes = new ArrayList<Platillo>();
+		this.sugerenciasPendientes = new ArrayList<Producto>();
 		this.turnoEmpleados = new HashMap<Calendar, Empleado>();
 		this.historialTransaccion = new ArrayList<Transaccion>();
 		this.juegosCliente = new HashMap<Integer, ArrayList<Juego>>();
@@ -97,8 +97,18 @@ public class Cafe {
 
 	public HashMap<Calendar, HashMap<Usuario, Juego>> getHistorialUsoJuegos() {
 		return historialUsoJuegos; 
-	}  
-
+	} 
+	
+	public void registrarJuegoEnHistorial(Calendar fecha, Usuario usuario, Juego juego) {
+	    if (!historialUsoJuegos.containsKey(fecha)) {
+	        historialUsoJuegos.put(fecha, new HashMap<Usuario, Juego>());
+	    }
+	    
+	    HashMap<Usuario, Juego> mapUsuarioJuego = historialUsoJuegos.get(fecha);
+	    mapUsuarioJuego.put(usuario, juego);
+	}
+	
+	
 	public ArrayList<Transaccion> getHistorialTransaccion() {
 		return historialTransaccion;
 	}
@@ -135,10 +145,15 @@ public class Cafe {
 		return menuBebidas;
 	}
 	
-	public List<Platillo> getSugerenciasPendientes(){
+	public ArrayList<Producto> getSugerenciasPendientes(){
 		return sugerenciasPendientes;
 	}
 	
+	public void agregarSugerencia(Producto producto) {
+	    sugerenciasPendientes.add(producto);
+	}
+	
+
 	public void cambiarAdmin(Administrador adminNuevo) {
 		admin= adminNuevo;
 	}
@@ -156,23 +171,19 @@ public class Cafe {
 	public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,
 				String bebidasArchivo, String platillosArchivo, String administradorArchivo,
 				String cocinerosArchivo, String meserosArchivo, String clientesArchivo,
-				String reservasArchivo, String  historialPrestamosArchivo, 
+				String reservasArchivo, String  historialPrestamosArchivo, String sugerenciasPendientesArchivo,
 				String transaccionesArchivo,String mesasArchivo) throws IOException, FileNotFoundException { 
 		
 		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 						bebidasArchivo,platillosArchivo, this);
 		PersistenciaUsuarios.descargarUsuarios(administradorArchivo, cocinerosArchivo, meserosArchivo, clientesArchivo,  this);
-		PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,transaccionesArchivo,mesasArchivo,this);
+		PersistenciaCafe.descargarCafe(reservasArchivo,historialPrestamosArchivo,sugerenciasPendientesArchivo,
+				transaccionesArchivo,mesasArchivo,this);
 			
 		}
 		
 	
-	// Métodos
-	
-	
-	public void agregarSugerencias(Platillo p) {
-		sugerenciasPendientes.add(p);
-	}
+	// Métodos	
 	public void registrarNuevaReserva(Reserva r) {
 	    if (verificarDisponibilidad(r.getFecha(), r.getNumPersonas()) && asignarMesa(r)) {
 	    	reservasPrevias.add(r);
@@ -328,14 +339,5 @@ public class Cafe {
 	    return null;
 	}
 
-
-	
-	
-	
-	
-	
-	
-
-	
 
 }

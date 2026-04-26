@@ -1,7 +1,12 @@
 package persistencia;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,13 +18,15 @@ import modelo.producto.*;
 
 public class PersistenciaCafe extends PersistenciaCentral{
 
-	public static void descargarCafe(String reservasArchivo, String historialPrestamosArchivo, String transaccionesArchivo,
-			String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
+	public static void descargarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
+			String transaccionesArchivo, String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
 		
 		//Aun que el café empieza con 0 de disponibilidad entonces voy a aumentarlo acorde a la mesa
 		descargarMesas(mesasArchivo,miCafe);
 		descargarReservas(reservasArchivo,miCafe);
 		descargarTransaccion(transaccionesArchivo,miCafe);
+		descargarHistorialPrestamos(historialPrestamosArchivo,miCafe);
+		descargarSugerenciasPendientes(sugerenciasPendientesArchivo, miCafe);
 		
 		}
 	
@@ -81,7 +88,6 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	        JSONArray jProductos = jTransaccion.optJSONArray("productos");
 	        ArrayList<Producto> productos = PersistenciaProductos.descargarProductos(jProductos);
 	        
-	        // Procesar el cliente final directamente, sin crear un JSONArray adicional
 	        JSONObject jClienteFinal = jTransaccion.getJSONObject("cliente_final");
 	        Cliente clienteFinal = PersistenciaUsuarios.descargarClientes(jClienteFinal);
 	        
@@ -97,11 +103,191 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	    }
 	}
 	
-	public void salvarCafe(String reservasArchivo, String historialPrestamosArchivo, String transaccionesArchivo,
-			String mesasArchivo, Cafe micafe){
+	public static void descargarHistorialPrestamos(String historialPrestamosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+	    JSONObject jHistorialCompleto = new JSONObject(new String(Files.readAllBytes(new File(historialPrestamosArchivo).toPath())));
+	    JSONArray jHistorialPrestamos = jHistorialCompleto.getJSONArray("historialUsoJuegos");
+	    
+	    for (int i = 0; i < jHistorialPrestamos.length(); i++) {
+	        JSONObject jRegistro = jHistorialPrestamos.getJSONObject(i);
+	        
+	        String fechaString = jRegistro.getString("fecha");
+	        Calendar fecha = fechaEnCalendar(fechaString);
+	        JSONObject jRegistroInterno = jRegistro.getJSONObject("registro");
+	        
+	        Cliente usuario = PersistenciaUsuarios.descargarClientes(jRegistroInterno.getJSONObject("usuario"));
+	        Juego juego = PersistenciaProductos.descargarJuegos(jRegistroInterno.getJSONObject("juego"));
+	        
+	        miCafe.registrarJuegoEnHistorial(fecha, usuario, juego);
+	        juego.setPrestado(true);
+	    }
+	}
+	
+	public static void descargarSugerenciasPendientes(String sugerenciasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+	    JSONObject jSugerenciasCompleto = new JSONObject(new String(Files.readAllBytes(new File(sugerenciasArchivo).toPath())));
+	    JSONArray jPlatillos = jSugerenciasCompleto.optJSONArray("platillos");
+	    
+	    if (jPlatillos != null) {
+	        for (int i = 0; i < jPlatillos.length(); i++) {
+	            Platillo platillo = PersistenciaProductos.descargarPlatillos(jPlatillos.getJSONObject(i));
+	            miCafe.agregarSugerencia(platillo);
+	        }
+	    }
+	    
+	    JSONArray jBebidas = jSugerenciasCompleto.optJSONArray("bebidas");
+	    if (jBebidas != null) {
+	        for (int i = 0; i < jBebidas.length(); i++) {
+	            Bebida bebida = PersistenciaProductos.descargarBebidas(jBebidas.getJSONObject(i));
+	            miCafe.agregarSugerencia(bebida);
+	        }
+	    }
+	}
 		
+	
+	public void salvarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
+			String transaccionesArchivo, String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException{
 		
+		salvarMesas(mesasArchivo,miCafe);
+		salvarReservas(reservasArchivo,miCafe);
+		salvarTransacciones(transaccionesArchivo,miCafe);
+		salvarHistorialPrestamos(historialPrestamosArchivo,miCafe);
+		descargarSugerenciasPendientes(sugerenciasPendientesArchivo, miCafe);
 		
 		}
 	
+	public static void salvarMesas(String mesasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+        JSONArray jMesas = new JSONArray();
+        for (Mesa mesa : miCafe.getMesas()) {
+            JSONObject jMesa = new JSONObject();
+            jMesa.put("id", mesa.getId());         
+            jMesa.put("numSillas", mesa.getNumSillas());
+            jMesa.put("disponible", mesa.isDisponible());
+            jMesas.put(jMesa);
+        }
+        guardarArchivoJSON(mesasArchivo, jMesas);
+    }
+	
+	public static void salvarReservas(String reservasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+        JSONArray jReservas = new JSONArray();
+        for (Reserva reserva : miCafe.getReservasPrevias()) {
+            JSONObject jReserva = new JSONObject();
+
+    
+            JSONArray jClientes = new JSONArray();
+            for (Cliente c : reserva.getClientes()) {
+                jClientes.put(PersistenciaUsuarios.AsalvarClientes(c));
+            }
+            jReserva.put("clientes", jClientes);
+
+            JSONArray jProductos = new JSONArray();
+            for (Producto p : reserva.getFactura()) {
+                if (p instanceof Platillo) {
+                    jProductos.put(PersistenciaProductos.AsalvarPlatillos((Platillo) p));
+                } else if (p instanceof Bebida) {
+                    jProductos.put(PersistenciaProductos.AsalvarBebidas((Bebida) p));
+                } else if (p instanceof Juego) {
+                    jProductos.put(PersistenciaProductos.AsalvarJuegos((Juego) p));
+                }
+            }
+            jReserva.put("productos", jProductos);
+
+            jReserva.put("numPersonas", reserva.getNumPersonas());
+            jReserva.put("fecha", calendarToString(reserva.getFecha()));
+            jReserva.put("totalFactura", reserva.getTotalFactura());
+
+            if (reserva.getMesa() != null) {
+                jReserva.put("mesaId", reserva.getMesa().getId());
+            }
+
+            jReservas.put(jReserva);
+        }
+        guardarArchivoJSON(reservasArchivo, jReservas);
+    }
+	
+	public static void salvarTransacciones(String transaccionesArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+        JSONArray jTransacciones = new JSONArray();
+        for (Transaccion t : miCafe.getHistorialTransaccion()) {
+            JSONObject jTrans = new JSONObject();
+            jTrans.put("id", t.getId());
+            jTrans.put("fecha", calendarToString(t.getFecha()));
+            jTrans.put("amigoEmpleado", t.isAmigoEmpleado());
+
+            JSONArray jProductos = new JSONArray();
+            for (Producto p : t.getProductos()) {
+                if (p instanceof Platillo) {
+                    jProductos.put(PersistenciaProductos.AsalvarPlatillos((Platillo) p));
+                } else if (p instanceof Bebida) {
+                    jProductos.put(PersistenciaProductos.AsalvarBebidas((Bebida) p));
+                } else if (p instanceof Juego) {
+                    jProductos.put(PersistenciaProductos.AsalvarJuegos((Juego) p));
+                }
+            }
+            jTrans.put("productos", jProductos);
+
+            Usuario u = t.getCliente_final();
+            if (u instanceof Cliente) {
+                jTrans.put("cliente_final", PersistenciaUsuarios.AsalvarClientes((Cliente) u));
+            } else {
+                JSONObject jUser = new JSONObject();
+                jUser.put("id", u.getId());
+                jUser.put("login", u.getLogin());
+                jUser.put("nombre", u.getNombre());
+                jTrans.put("cliente_final", jUser);
+            }
+
+            jTransacciones.put(jTrans);
+        }
+        guardarArchivoJSON(transaccionesArchivo, jTransacciones);
+    }
+	
+	public static void salvarHistorialPrestamos(String historialPrestamosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+        JSONObject root = new JSONObject();
+        JSONArray jHistorial = new JSONArray();
+
+        HashMap<Calendar, HashMap<Usuario, Juego>> historial = miCafe.getHistorialUsoJuegos();
+        for (Entry<Calendar, HashMap<Usuario, Juego>> entry : historial.entrySet()) {
+            Calendar fecha = entry.getKey();
+            HashMap<Usuario, Juego> mapaUsuarioJuego = entry.getValue();
+
+            for (Entry<Usuario, Juego> subEntry : mapaUsuarioJuego.entrySet()) {
+                Usuario usuario = subEntry.getKey();
+                Juego juego = subEntry.getValue();
+
+                JSONObject jRegistro = new JSONObject();
+                jRegistro.put("fecha", calendarToString(fecha));
+
+                JSONObject jRegistroInterno = new JSONObject();
+
+                JSONObject jUsuario = new JSONObject();
+                jUsuario.put("id", usuario.getId());
+                jUsuario.put("login", usuario.getLogin());
+                jUsuario.put("nombre", usuario.getNombre());
+                jRegistroInterno.put("usuario", jUsuario);
+
+                jRegistroInterno.put("juego", PersistenciaProductos.AsalvarJuegos(juego));
+
+                jRegistro.put("registro", jRegistroInterno);
+                jHistorial.put(jRegistro);
+            }
+        }
+
+        root.put("historialUsoJuegos", jHistorial);
+        guardarArchivoJSON(historialPrestamosArchivo, root);
+    }
+	
+	public static void salvarSugerenciasPendientes(String sugerenciasPendientesArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+        JSONObject root = new JSONObject();
+        JSONArray jPlatillos = new JSONArray();
+        JSONArray jBebidas = new JSONArray();
+
+        for (Producto p : miCafe.getSugerenciasPendientes()) {
+            if (p instanceof Platillo) {
+                jPlatillos.put(PersistenciaProductos.AsalvarPlatillos((Platillo) p));
+            } else if (p instanceof Bebida) {
+                jBebidas.put(PersistenciaProductos.AsalvarBebidas((Bebida) p));
+            }
+        }
+        root.put("platillos", jPlatillos);
+        root.put("bebidas", jBebidas);
+        guardarArchivoJSON(sugerenciasPendientesArchivo, root);
+    }
 }

@@ -1,0 +1,45 @@
+{
+  "platillos": [
+    {
+      "id": 110,
+      "precio": 38000,
+      "nombre": "Sushi Roll Tempura",
+      "alergenos": "Gluten, Crustáceos, Sésamo"
+    },
+    {
+      "id": 111,
+      "precio": 26500,
+      "nombre": "Pasta Carbonara Original",
+      "alergenos": "Gluten, Huevo, Lácteos (Pecorino)"
+    },
+    {
+      "id": 112,
+      "precio": 24000,
+      "nombre": "Tacos de Setas al Pastor",
+      "alergenos": "Ninguno (Vegano)"
+    }
+  ],
+  "bebidas": [
+    {
+      "id": 210,
+      "precio": 14500,
+      "nombre": "Cappuccino de Vainilla",
+      "temperatura": "Caliente",
+      "esAlcoholica": false
+    },
+    {
+      "id": 211,
+      "precio": 28000,
+      "nombre": "Gin Tonic con Frutos Rojos",
+      "temperatura": "Fría",
+      "esAlcoholica": true
+    },
+    {
+      "id": 212,
+      "precio": 16000,
+      "nombre": "Té Matcha Frío con Leche de Almendras",
+      "temperatura": "Fría",
+      "esAlcoholica": false
+    }
+  ]
+}

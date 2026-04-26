@@ -22,15 +22,14 @@ public class Cocinero extends Empleado{
 	public List<Platillo> getPlatillosConocidos() {
 		return platillosConocidos;
 	}
-	public List<Bebida> getBebidasConocidas() {
-		return bebidasConocidas;
-	}
-	
-	//Métodos
-	public void aprenderPLatillo(Platillo platillo) {
+	public void aprenderPlatillo(Platillo platillo) {
 		this.platillosConocidos.add(platillo);
 	}
 	
+	
+	public List<Bebida> getBebidasConocidas() {
+		return bebidasConocidas;
+	}
 	public void aprenderBebida(Bebida bebida) {
 		this.bebidasConocidas.add(bebida);
 	}

@@ -1,126 +1,93 @@
 package modelo.usuario;
 
-
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 
-import modelo.Transaccion;
-import modelo.Cafe;
-import modelo.producto.Juego;
-import modelo.producto.Platillo;
-import modelo.producto.Producto;
+import modelo.*;
+import modelo.producto.*;
 
 public class Empleado extends Usuario {
-	private int puntosFidelidad;
-	private List <Calendar> turno;
-	private List<Cliente> amigos;
-    private List<Juego> juegosFavoritos;
+    private int puntosFidelidad;
+    private ArrayList<Turno> turnos; 
+    private ArrayList<Cliente> amigos;
+    private ArrayList<Juego> juegosFavoritos;
     private Cafe miCafe;
-	
-	//Constructor
+    
+    // Constructor
     public Empleado(int id, String login, String password, String nombre) {
         super(id, login, password, nombre);
         this.puntosFidelidad = 0;
-        this.turno = new ArrayList<>();
+        this.turnos = new ArrayList<>();
         this.amigos = new ArrayList<>();
         this.juegosFavoritos = new ArrayList<>();
     }
-	
-	//Getters y Setters
+    
+    // Getters y Setters
     public int getPuntosFidelidad() {
-		return puntosFidelidad;
-	}
-	public List<Calendar> getTurno() {
-		return turno;
-	}
-	public List<Cliente> getAmigos() {
-		return amigos;
-	}
-	public List<Juego> getJuegosFavoritos() {
-		return juegosFavoritos;
-	}
-
-	//Métodos
-	public void sumarPuntosFidelidad(int puntosFidelidad) {
-		this.puntosFidelidad += puntosFidelidad;
-	}
-	
-	public void agregarAmigo(Cliente cliente) {
-		this.amigos.add(cliente);
-	}
-	
+        return puntosFidelidad;
+    }
+    public void sumarPuntosFidelidad(int puntosFidelidad) {
+        this.puntosFidelidad += puntosFidelidad;
+    }
+    
+    public ArrayList<Cliente> getAmigos() {
+        return amigos;
+    }
+    public void agregarAmigo(Cliente cliente) {
+        this.amigos.add(cliente);
+    }
+    
+    public ArrayList<Juego> getJuegosFavoritos() {
+        return juegosFavoritos;
+    }
+    
+    public void agregarJuegoFavorito(Juego juegoFav) {
+        juegosFavoritos.add(juegoFav);
+    }
+    
+    // Métodos    
+    public void sugerencias(Producto producto) { 
+        miCafe.agregarSugerencia(producto);
+    }
+    
     public boolean aptoPrestamo(Administrador admin, Juego juego, Calendar fechaConsulta) {
-        boolean estaEnTurno = false;
-        for (Calendar fechaTurno : this.turno) {
-            if (esMismaFecha(fechaTurno, fechaConsulta)) {
-                estaEnTurno = true;
-                break;
-            }
-        }
-
-        if (!estaEnTurno) {
-            return true; 
+        boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);
+        
+        if (!trabajaEnFecha) {
+            return true;  // Si no trabaja ese día, puede pedir préstamo
         }
         return admin.gestionarPrestamo(this, juego, fechaConsulta);
     }
-
-    private boolean esMismaFecha(Calendar c1, Calendar c2) {
-        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
-               c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    
+    public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
+        Calendar hoy = Calendar.getInstance();
+        Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, false);    
+        this.sumarPuntosFidelidad(productosComprados.size()); 
+        return factura;
+    }
+    
+    // FUNCIONES DE TURNO
+    public boolean trabajaEnFecha(Calendar fechaConsulta) {
+        for (Turno turno : this.turnos) {
+            if (turno.esMismaFecha(fechaConsulta) && turno.isActivo()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean pedirCambioTurno(Administrador admin, Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
+        return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
     }
 
-
-	
-	
-	public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
-	    Calendar hoy = Calendar.getInstance();
-	    Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, false);    
-	    this.sumarPuntosFidelidad(productosComprados.size() ); 
-	    return factura; // Existe un método que calcula el monto final c: 
-	}
-	
-	public void agregarAmigos(Cliente cliente) {
-		amigos.add(cliente);
-	}
-	
-	public void agregarJuegoFavorito(Juego juegoFav) {
-		juegosFavoritos.add(juegoFav);
-	}
-
-	
-	public void cambioDeTurno(Calendar miFecha, Calendar nuevaFecha) {
-	    int indiceEncontrado = -1;
-
-	    for (int i = 0; i < turno.size(); i++) {
-	        Calendar fechaActual = turno.get(i);
-	        
-	        if (fechaActual.get(Calendar.YEAR) == miFecha.get(Calendar.YEAR) &&
-	            fechaActual.get(Calendar.DAY_OF_YEAR) == miFecha.get(Calendar.DAY_OF_YEAR)) {
-	            indiceEncontrado = i;
-	            break;
-	        }
-	    }
-
-	    if (indiceEncontrado != -1) {
-	        turno.set(indiceEncontrado, nuevaFecha);
-	    }
-	}
-	
-	public boolean pedirCambioTurno(Administrador admin, Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
-	    boolean res =admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
-	    return res;
-	}
-	
-	
-	public void sugerencias(Platillo p){ 
-		miCafe.agregarSugerencias(p);
-	}
-	public void agregarTurno(Calendar fecha) {
-		this.turno.add(fecha);
-	}
-	
-	
-
-	
+    public ArrayList<Calendar> getDiasTrabajo() {
+        ArrayList<Calendar> diasTrabajo = new ArrayList<>();
+        for (Turno turno : turnos) {
+            if (turno.isActivo()) {
+                diasTrabajo.add(turno.getFecha());
+            }
+        }
+        return diasTrabajo;
+    }
 }

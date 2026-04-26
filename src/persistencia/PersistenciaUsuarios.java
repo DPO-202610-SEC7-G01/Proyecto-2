@@ -131,14 +131,14 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	        if (platillosArray != null) {
 	            for (int j = 0; j < platillosArray.length(); j++) {
 	            	 Platillo platillo =PersistenciaProductos.descargarPlatillos(platillosArray.getJSONObject(i));  
-	            	 nuevoChef.getPlatillosConocidos().add(platillo);
+	            	 nuevoChef.aprenderPlatillo(platillo);
 	            }	
 	        }
 	        
 	        if (bebidasArray != null) {
 	        	for (int j = 0; j < bebidasArray.length(); j++) {
 	            	 Bebida bebida =PersistenciaProductos.descargarBebidas(bebidasArray.getJSONObject(i));  
-	            	 nuevoChef.getBebidasConocidas().add(bebida);
+	            	 nuevoChef.aprenderBebida(bebida);
 	            }	   
 	        }
 	        

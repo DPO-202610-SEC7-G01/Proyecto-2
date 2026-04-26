@@ -50,6 +50,7 @@ public class ConsolaGeneral {
 		            "data/clientes.json",
 		            "data/reservas.json",         
 		            "data/historialPrestamos.json", 
+		            "data/sugerenciasPendientes.json",
 		            "data/transacciones.json" ,
 		            "data/mesas.json"
 		        );

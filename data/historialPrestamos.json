@@ -1,0 +1,52 @@
+{
+  "historialUsoJuegos": [
+    {
+      "fecha": "2026-04-24T10:00:00Z",
+      "registro": {
+        "usuario": {
+          "id": 1,
+          "login": "juanito_99",
+          "nombre": "Juan Pérez"
+        },
+        "juego": {
+          "id": 501,
+          "nombre": "Catan",
+          "tipo": "Tablero",
+          "precio": 150000
+        }
+      }
+    },
+    {
+      "fecha": "2026-04-25T14:30:00Z",
+      "registro": {
+        "usuario": {
+          "id": 2,
+          "login": "marta_gamer",
+          "nombre": "Marta Gómez"
+        },
+        "juego": {
+          "id": 504,
+          "nombre": "Dixit",
+          "tipo": "Cartas",
+          "precio": 95000
+        }
+      }
+    },
+    {
+      "fecha": "2026-04-26T16:15:00Z",
+      "registro": {
+        "usuario": {
+          "id": 4,
+          "login": "sofia_dev",
+          "nombre": "Sofía Castro"
+        },
+        "juego": {
+          "id": 505,
+          "nombre": "Gloomhaven",
+          "tipo": "Tablero",
+          "precio": 320000
+        }
+      }
+    }
+  ]
+}
