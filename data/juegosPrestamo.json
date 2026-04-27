@@ -6,27 +6,7 @@
     "anioLanzamiento": 1995,
     "editorial": "Devir",
     "numeroJugadores": 4,
-    "clasificacion": "apto 5 anios",
-    "tipo": "Tablero"
-  },
-  {
-    "id": 502,
-    "precio": 210000,
-    "nombre": "Ticket to Ride",
-    "anioLanzamiento": 2004,
-    "editorial": "Days of Wonder",
-    "numeroJugadores": 5,
-    "clasificacion": "apto 8 anios",
-    "tipo": "Tablero"
-  },
-  {
-    "id": 503,
-    "precio": 180000,
-    "nombre": "Catan",
-    "anioLanzamiento": 1995,
-    "editorial": "Devir",
-    "numeroJugadores": 4,
-    "clasificacion": "apto 5 anios",
+    "clasificacion": "-5 años",
     "tipo": "Tablero"
   },
   {
@@ -36,27 +16,7 @@
     "anioLanzamiento": 2008,
     "editorial": "Libellud",
     "numeroJugadores": 6,
-    "clasificacion": "apto 8 anios",
+    "clasificacion": "Adultos",
     "tipo": "Cartas"
-  },
-  {
-    "id": 505,
-    "precio": 320000,
-    "nombre": "Gloomhaven",
-    "anioLanzamiento": 2017,
-    "editorial": "Cephalofair Games",
-    "numeroJugadores": 4,
-    "clasificacion": "apto 14 anios",
-    "tipo": "Tablero"
-  },
-  {
-    "id": 506,
-    "precio": 150000,
-    "nombre": "Catan",
-    "anioLanzamiento": 1995,
-    "editorial": "Devir",
-    "numeroJugadores": 4,
-    "clasificacion": "apto 5 anios",
-    "tipo": "Tablero"
   }
 ]

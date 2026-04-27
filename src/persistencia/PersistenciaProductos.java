@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import modelo.*;
@@ -14,7 +15,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
     
     public static  void descargarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
              String juegosDificilesArchivo, String bebidasArchivo,
-             String platillosArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+             String platillosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
+            NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
         
     	
     	ArrayList<Juego> juegosVenta = descargarJuegos(juegosVentaArchivo);
@@ -58,7 +60,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
     
     
     // descargar
-    public static ArrayList<Juego> descargarJuegos(String juegoArchivo) throws IOException, FileNotFoundException {     
+    public static ArrayList<Juego> descargarJuegos(String juegoArchivo) throws IOException, FileNotFoundException, JSONException,
+    NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {     
         JSONArray jJuegos = leerArchivoJSON(juegoArchivo);
         ArrayList<Juego> juegos = new ArrayList<>();
         
@@ -69,7 +72,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return juegos;
     }
 
-    public static Juego descargarJuegos(JSONObject jJuego) throws IOException, FileNotFoundException {
+    public static Juego descargarJuegos(JSONObject jJuego) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException, 
+    RestriccionEdadInvalidaException, CategoriaInvalidaException {
         int id = jJuego.getInt("id");
         String nombre = jJuego.getString("nombre");
         int precio = jJuego.getInt("precio");
@@ -137,7 +141,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return nuevaBebida;
     }
     
-    public static ArrayList<Producto> descargarProductos(JSONArray jProductos) throws IOException, FileNotFoundException {
+    public static ArrayList<Producto> descargarProductos(JSONArray jProductos) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException,
+    RestriccionEdadInvalidaException, CategoriaInvalidaException {
         ArrayList<Producto> productos = new ArrayList<>();
         
         for (int i = 0; i < jProductos.length(); i++) {

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 
+import exceptions.JuegoNoAptoException;
 import modelo.producto.*;
 import modelo.usuario.*;
 
@@ -23,7 +24,9 @@ public class Reserva {
 	//Constructor
 	public Reserva(List<Cliente> clientes, int numPersonas, Calendar fecha) {
 		super();
-		this.clientes = clientes;
+		if (clientes != null) {
+			this.clientes = clientes;
+		}
 		this.numPersonas = numPersonas;
 		this.fecha = fecha;
 		this.transaccion = new ArrayList<Producto>();
@@ -36,7 +39,7 @@ public class Reserva {
 	public int getNumPersonas() {
 		return numPersonas;
 	}
-	
+
 	public Calendar getFecha() {
 		return fecha;
 	}
@@ -73,23 +76,69 @@ public class Reserva {
 	public Mesero getMeseroAsignado() {
 	    return meseroAsignado;
 	}
-	
-	//Métodos
-	public void cambiarMesero(Calendar fecha) {
+	public void pedirCambioMesero(Calendar fecha, Juego juego) {
 	    ArrayList<Empleado> empleados = miCafe.getEmpleados();
 	    
 	    for (Empleado empleado : empleados) {
 	        if (empleado instanceof Mesero) {
 	            Mesero posibleMesero = (Mesero) empleado;
 	            
+	            if (posibleMesero.libreParaReserva(fecha) && posibleMesero.conoceJuego(juego)) {
+	                posibleMesero.nuevaReserva(this, fecha);  
+	                this.meseroAsignado = posibleMesero;
+	                return;
+	            }
+	        }
+	    }
+	    
+	    for (Empleado empleado : empleados) {
+	        if (empleado instanceof Mesero) {
+	            Mesero posibleMesero = (Mesero) empleado;
 	            if (posibleMesero.libreParaReserva(fecha)) {
 	                posibleMesero.nuevaReserva(this, fecha);  
 	                this.meseroAsignado = posibleMesero;
-	                break;  
+	                break;
 	            }
 	        }
 	    }
 	}
+	
+	//Métodos
+	
+	//// PEDIR COSAS A LA MESA /////
+	//RESERVAR JUEGOS
+	public int edadMinima() {
+		int menor = 1000;
+		for (Cliente c : this.clientes) { 
+	        if (c.getEdad() < menor) {
+	        	menor = c.getEdad();
+	        }
+		}
+		return menor;
+		
+	}
+	
+	public void agregarAlPrestamo(Juego juego) throws JuegoNoAptoException {
+	    Cliente usuario = clientes.get(0);
+	    
+	    if(miCafe.reservarJuego( juego, usuario, this)) {//Mandamos la solicitud al sistema del café  y  un mesero de forma "manual " lo verificará
+	    	juegosPrestados.add(juego);
+	    }
+	}
+	
+	//PEDIR COMIDA
+	public void pedirPlatillo(Platillo platillo) {
+	    if (this.meseroAsignado != null) {
+	        this.meseroAsignado.servirPlatillos(this, platillo);
+	    } 
+	}
+
+	public void pedirBebida(Bebida bebida) {
+	    if (this.meseroAsignado != null) {
+	        this.meseroAsignado.servirBebidas(this, bebida);
+	    } 
+	}
+	
 	
     public void addTransaccion(Producto p) {
         this.transaccion.add(p); 
@@ -97,14 +146,7 @@ public class Reserva {
         this.totalFactura += (p.getPrecio() + impuesto);
     }
 	
-	public boolean tieneMenoresDeEdad() {
-	    for (Cliente c : this.clientes) { 
-	        if (c.getEdad() < 18) {
-	            return true; 
-	        }
-	    }
-	    return false; 
-	}
+	
 	
 	public boolean tieneBebidasCalientes() {
 	    for (Producto p : this.transaccion) {
@@ -118,27 +160,9 @@ public class Reserva {
 	    return false;
 	}
 	
-	public void agregarAlPrestamo(Juego juego) {
-	    if (miCafe.reservarJuego(juego, this)) {
-	        juegosPrestados.add(juego);
-	        Usuario usuario = (clientes != null && !clientes.isEmpty()) ? clientes.get(0) : null;
-	        if (usuario != null) {
-	            miCafe.registrarJuegoEnHistorial(fecha, usuario, juego);
-	        }
-	    }
-	}
 	
-	public void pedirPlatillo(Platillo platillo) {
-	    if (this.meseroAsignado != null) {
-	        this.meseroAsignado.servirPlatillos(this, platillo);
-	    } 
-	}
-
-	public void pedirBebida(Bebida bebida) {
-	    if (this.meseroAsignado != null) {
-	        this.meseroAsignado.servirBebidas(this, bebida);
-	    } 
-	}
+	
+	
 	
 	public void finalizarReserva() {
 		for (Juego j : juegosPrestados) {

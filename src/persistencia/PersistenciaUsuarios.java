@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import exceptions.CategoriaInvalidaException;
 import exceptions.FileNotFoundException;
+import exceptions.NumeroJugadoresExcedidoException;
+import exceptions.RestriccionEdadInvalidaException;
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
@@ -15,7 +19,7 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	public static void descargarUsuarios(String administradorArchivo, String cocinerosArchivo,
 			String meserosArchivo, String clientesArchivo, Cafe miCafe) 
-			throws FileNotFoundException, IOException{
+			throws FileNotFoundException, IOException, JSONException, NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException{
 		
 		descargarAdministrador(administradorArchivo, miCafe);
 		
@@ -65,7 +69,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	        
 		}
  
-	public static ArrayList<Cliente> descargarClientes(String clientesArchivo) throws IOException, FileNotFoundException {             
+	public static ArrayList<Cliente> descargarClientes(String clientesArchivo) throws IOException, FileNotFoundException, JSONException,
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {             
 	    JSONArray jClientes = leerArchivoJSON(clientesArchivo);
 	    ArrayList<Cliente> clientes = new ArrayList<>();
 	    
@@ -76,7 +81,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    return clientes;
 	}
 
-	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException {
+	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException, JSONException,
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    Cliente nuevoCliente = new Cliente(
 	        jCliente.getInt("id"),
 	        jCliente.getString("login"),
@@ -107,7 +113,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 
 	
 	
-	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) throws IOException, FileNotFoundException {
+	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) throws IOException, FileNotFoundException, JSONException,
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    ArrayList<Cocinero> chefsCargados = new ArrayList<>();
 	    JSONArray jEmpleados = leerArchivoJSON(cocinerosArchivo);
 	    
@@ -147,7 +154,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    return chefsCargados;
 	}
 
-	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo) throws IOException, FileNotFoundException {
+	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo) throws IOException, FileNotFoundException, JSONException, 
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    ArrayList<Mesero> empleadosCargados = new ArrayList<>();
 	    JSONArray jEmpleados = leerArchivoJSON(meserosArchivo);
 	    
@@ -188,7 +196,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    }
 	}
 	
-	private static void cargarJuegosFavoritos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException {
+	private static void cargarJuegosFavoritos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException, JSONException,
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    JSONArray juegosArray = jEmpleado.optJSONArray("juegosFavoritos");
 	    if (juegosArray != null) {
             for (int j = 0; j < juegosArray.length(); j++) {
@@ -198,7 +207,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    }
 	}
 	
-	private static void cargarAmigos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException {
+	private static void cargarAmigos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException, JSONException,
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    JSONArray amigosArray = jEmpleado.optJSONArray("amigos");
 	    if (amigosArray != null) {
 	    	for (int j=0; j< amigosArray.length(); j++) {

@@ -1,7 +1,11 @@
 package modelo.usuario;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+
+import exceptions.TorneoException;
+
 import java.util.ArrayList;
 
 import modelo.*;
@@ -13,6 +17,7 @@ public class Empleado extends Usuario {
     private ArrayList<Cliente> amigos;
     private ArrayList<Juego> juegosFavoritos;
     private Cafe miCafe;
+    private ArrayList<Torneo> torneosInscritos;
     
     // Constructor
     public Empleado(int id, String login, String password, String nombre) {
@@ -21,6 +26,7 @@ public class Empleado extends Usuario {
         this.turnos = new ArrayList<>();
         this.amigos = new ArrayList<>();
         this.juegosFavoritos = new ArrayList<>();
+        this.torneosInscritos = new ArrayList<>();
     }
     
     // Getters y Setters
@@ -49,21 +55,33 @@ public class Empleado extends Usuario {
     public ArrayList<Turno> getTurnos() {
 		return turnos;
 	}
-    
-    // Métodos    
-    
-
-	public void sugerencias(Producto producto) { 
-        miCafe.agregarSugerencia(producto);
+    public void agregarTurno(Turno e) {
+    	turnos.add(e);
     }
     
-    public boolean aptoPrestamo(Administrador admin, Juego juego, Calendar fechaConsulta) {
+    // Métodos    
+    //PRESTAMO DE JUEGOS
+    public boolean aptoPrestamo(Juego juego, Calendar fechaConsulta) {
         boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);
         
-        if (!trabajaEnFecha) {
-            return true;  // Si no trabaja ese día, puede pedir préstamo
+        HashMap<Calendar, HashMap<Usuario, Juego>> historial = miCafe.getHistorialUsoJuegos();
+        if (historial.containsKey(fechaConsulta) && historial.get(fechaConsulta).containsValue(juego)) { //Acá vemos que si  está en el historial para ese día NO estará disponible
+            return false;
         }
-        return admin.gestionarPrestamo(this, juego, fechaConsulta);
+        
+        if (trabajaEnFecha) {
+            return false;
+        }
+        juego.setPrestado(true);
+        historial.putIfAbsent(fechaConsulta, new HashMap<>());
+        historial.get(fechaConsulta).put(this, juego);
+        return true;
+    }
+    
+    
+    
+	public void sugerencias(Producto producto) { 
+        miCafe.agregarSugerencia(producto);
     }
     
     public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
@@ -115,4 +133,47 @@ public class Empleado extends Usuario {
         }
         return diasTrabajo;
     }
+    //TORNEO
+    public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException {
+	    Torneo torneo = null;
+	    
+	    for (Torneo t : miCafe.getTorneosActivos()) {
+	        if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
+	            torneo = t;
+	            break;
+	        }
+	    }
+	    
+	    if (torneo == null) {
+	        throw TorneoException.torneoNoEncontrado(nombreTorneo);
+	    }
+	    
+	    if (torneosInscritos.size() >= 3) {
+	        throw TorneoException.excesoTorneos(3);
+	    }
+	    
+	    if (torneosInscritos.contains(torneo)) {
+	        throw TorneoException.yaInscrito(nombreTorneo);
+	    }
+	    
+	    if (!trabajaEnFecha(torneo.getFecha())) {
+	    	String fechaStr = torneo.getFecha().get(Calendar.DAY_OF_MONTH) + "/" + 
+                    (torneo.getFecha().get(Calendar.MONTH) + 1) + "/" + 
+                    torneo.getFecha().get(Calendar.YEAR);
+	    	throw new TorneoException("El empleado " + getNombre() + " está en turno el día " + fechaStr, "EMPLEADO_EN_TURNO");
+	    }
+	    
+	    torneo.agregarParticipantes(this); // Hay que verificar que si hayan cupos 
+	    torneosInscritos.add(torneo);
+	}
+    
+    public boolean esFanatico(Juego juego) {
+	    for (Juego juegoFav : juegosFavoritos) {
+	        if (juegoFav.getId() == juego.getId()) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+    
 }

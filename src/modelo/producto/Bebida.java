@@ -37,16 +37,10 @@ public class Bebida extends Producto{
 	}
 	
 	// Métodos
+	//TRANSACCIÓN
 	@Override
 	public double getTasaImpuesto() {
-	    return super.IMPUESTOCONSUMO; // IVA estándar para alimentos procesados/pastelería
+	    return super.IMPUESTOCONSUMO; 
 	}
 
-	@Override
-	public String getCategoriaProducto() {
-		return "Bebida";
-	}
-	
-	
-		
 }

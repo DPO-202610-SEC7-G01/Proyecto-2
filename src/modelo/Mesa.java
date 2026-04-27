@@ -14,6 +14,7 @@ public class Mesa {
 		this.disponible = disponible;
 	}
 
+	//Getters y Setters
 	public int getId() {
 		return id;
 	}
@@ -37,9 +38,6 @@ public class Mesa {
 	public void setDisponible(boolean disponible) {
 		this.disponible = disponible;
 	}
-	
-	
-	
-	
+		
 
 }

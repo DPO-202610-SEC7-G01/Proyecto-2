@@ -1,21 +1,14 @@
-[
+[[
   {
     "id": 1001,
     "fecha": "2026-04-20",
     "productos": [
-      {
-        "id": 101,
-        "precio": 25000,
-        "nombre": "Sandwich de Pavo",
-        "alergenos": "Gluten, Lácteos"
-      },
-      {
-        "id": 201,
-        "precio": 12000,
-        "nombre": "Café Americano",
-        "temperatura": "Caliente",
-        "esAlcoholica": false
-      },
+		{
+		    "id": 101,
+		    "precio": 25000,
+		    "nombre": "Sandwich de Pavo",
+		    "alergenos": "Gluten, Lácteos"
+		  },
       {
         "id": 504,
         "precio": 95000,
@@ -23,52 +16,22 @@
         "anioLanzamiento": 2008,
         "editorial": "Libellud",
         "numeroJugadores": 6,
-        "clasificacion": "apto 8 anios",
+        "clasificacion": "Adultos",
         "tipo": "Cartas"
       }
     ],
-    "cliente_final": {
-      "id": 1,
-      "login": "juanito_99",
-      "password": "hashed_password_1",
-      "nombre": "Juan Pérez",
-      "edad": 24,
-      "alergenos": "Gluten",
-      "puntosFidelidad": 0,
-      "juegosFavoritos": [],
-      "amigos": false
-    },
-    "amigoEmpleado": false
-  },
-  {
-    "id": 1002,
-    "fecha": "2026-04-21",
-    "productos": [
-      {
-        "id": 104,
-        "precio": 45000,
-        "nombre": "Filete de Res",
-        "alergenos": "Ninguno"
-      },
-      {
-        "id": 204,
-        "precio": 25000,
-        "nombre": "Vino Tinto Reserva",
-        "temperatura": "Ambiente",
-        "esAlcoholica": true
-      }
-    ],
-    "cliente_final": {
-      "id": 2,
-      "login": "marta_gamer",
-      "password": "hashed_password_2",
-      "nombre": "Marta Gómez",
-      "edad": 30,
-      "alergenos": "Ninguno",
-      "puntosFidelidad": 0,
-      "juegosFavoritos": [],
-      "amigos": true
-    },
-    "amigoEmpleado": true
+    "cliente_final": 	{
+	    "id": 1,
+	    "login": "juanito_99",
+	    "password": "hashed_password_1",
+	    "nombre": "Juan Pérez",
+	    "edad": 24,
+	    "alergenos": "Gluten",
+	    "puntosFidelidad": 0,
+	    "juegosFavoritos": [],
+	    "amigos": false
+	  },
+    "amigoEmpleado": false,
+    "total_final": 120000
   }
 ]

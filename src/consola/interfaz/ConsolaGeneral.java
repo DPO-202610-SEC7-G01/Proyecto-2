@@ -2,8 +2,13 @@ package consola.interfaz;
 
 import java.util.Scanner;
 
+import org.json.JSONException;
+
+import exceptions.CategoriaInvalidaException;
 //Exceptiones
 import exceptions.FileNotFoundException;
+import exceptions.NumeroJugadoresExcedidoException;
+import exceptions.RestriccionEdadInvalidaException;
 import exceptions.UserNotFoundException;
 import java.io.IOException;
 
@@ -34,7 +39,8 @@ public class ConsolaGeneral {
 	Scanner aleatorio;
 
 	
-	public void NuevoCafe() throws IOException, FileNotFoundException { // Método de Carga
+	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException, 
+	RestriccionEdadInvalidaException, CategoriaInvalidaException { // Método de Carga
 		miCafe = new Cafe(0); 
 		
 		
@@ -146,11 +152,11 @@ public class ConsolaGeneral {
 		throw new UserNotFoundException("Usuario con login '" + loginBusqueda + "' no encontrado");
 	}
 
-	public static void main(String[] args) throws IOException, FileNotFoundException {
+	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException,
+	RestriccionEdadInvalidaException, CategoriaInvalidaException {
 		ConsolaGeneral consola = new ConsolaGeneral();
 		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
-		ConsolaEmpleado consolaEmpleado = new ConsolaEmpleado(miCafe);
-		ConsolaCliente consolaCliente = new ConsolaCliente(miCafe);
+
 		Scanner lectorMenu = new Scanner(System.in);
 		int opcion = 0;
 		

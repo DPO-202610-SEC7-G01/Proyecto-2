@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import modelo.producto.Juego;
-import modelo.producto.Producto;
-import modelo.Transaccion;
+import exceptions.*;
+import modelo.producto.*;
+import modelo.*;
 
 public class Cliente extends Usuario {
 	private int edad;
 	private String alergenos;
 	private int puntosFidelidad;
 	private boolean amigos;
-	private List<Juego> juegosFavoritos;
+	private ArrayList<Juego> juegosFavoritos;
+	private String premio;
+	private ArrayList<Torneo> torneosInscritos;
 	
 	//Constructor
 	public Cliente(int id, String login, String password, String nombre, int edad,String alergenos) {
@@ -23,6 +25,9 @@ public class Cliente extends Usuario {
 		this.alergenos= alergenos;
 		this.juegosFavoritos = new ArrayList<Juego>();
 		this.amigos = false;
+		this.premio = "";
+		this.torneosInscritos = new ArrayList<>();
+
 	}
 	
 	//Getters Y Setter
@@ -32,7 +37,7 @@ public class Cliente extends Usuario {
 	public int getEdad() {
 		return edad;
 	}
-	public List<Juego> getJuegosFavoritos() {
+	public ArrayList<Juego> getJuegosFavoritos() {
 		return juegosFavoritos;
 	}
 	
@@ -48,6 +53,14 @@ public class Cliente extends Usuario {
 		this.amigos= amigo;
 	}
 	
+		
+
+
+
+	public ArrayList<Torneo> getTorneosInscritos() {
+		return torneosInscritos;
+	}
+
 	//Métodos
 	public void nuevoAmigo() {
 		amigos = true;
@@ -67,6 +80,58 @@ public class Cliente extends Usuario {
 	    this.sumarPuntosFidelidad(productosComprados.size() ); 
 	    return factura; // Existe un método que calcula el monto final c: 
 	}
+	
+	public String getPremio() {
+		return premio;
+	}
+	public void agregarPremio(String premio) {
+		this.premio= premio;
+	}
+	
+	//Métodos
+	//TORNEOS
+	public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException {
+	    Torneo torneo = null;
+	    
+	    for (Torneo t : miCafe.getTorneosActivos()) {
+	        if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
+	            torneo = t;
+	            break;
+	        }
+	    }
+	    
+	    if (torneo == null) {
+	        throw TorneoException.torneoNoEncontrado(nombreTorneo);
+	    }
+	    
+	    if (torneosInscritos.size() >= 3) {
+	        throw TorneoException.excesoTorneos(3);
+	    }
+	    
+	    if (torneosInscritos.contains(torneo)) {
+	        throw TorneoException.yaInscrito(nombreTorneo);
+	    }
+	    
+	    torneo.agregarParticipantes(this); // Hay que verificar que si hayan cupos 
+	    torneosInscritos.add(torneo);
+	}
+	
+	public void desinscribirseDeTodosLosTorneos() {
+	    for (Torneo torneo : torneosInscritos) {
+	        torneo.eliminarParticipante(this);
+	    }
+	    torneosInscritos.clear();
+	}
+	
+	public boolean esFanatico(Juego juego) {
+	    for (Juego juegoFav : juegosFavoritos) {
+	        if (juegoFav.getId() == juego.getId()) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	
 	
 }

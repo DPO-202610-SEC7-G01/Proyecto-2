@@ -3,14 +3,17 @@ package modelo.usuario;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import exceptions.JuegoNoAptoException;
 import modelo.producto.*;
 import modelo.*;
 
 
 public class Mesero extends Empleado{
 	private ArrayList<JuegoDificil> juegosConocidos;
-	private Cafe miCafe;
 	private ArrayList<Reserva> reservasAsignadas;
+	private Cafe miCafe;
+	
 	
 	//Constructor
 	public Mesero(int id, String login, String password, String nombre) {
@@ -26,7 +29,16 @@ public class Mesero extends Empleado{
 	public void aprenderJuegoDificil(JuegoDificil juego) {
 		juegosConocidos.add(juego);
 	}
-
+	public boolean conoceJuego(Juego juego) {
+	    for (JuegoDificil juegoConocido : juegosConocidos) {
+	        if (juegoConocido.getId() == juego.getId() || 
+	            juegoConocido.getNombre().equals(juego.getNombre())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
 	public ArrayList<Reserva> getReservasAsignadas() {
 		return reservasAsignadas;
 	}
@@ -42,23 +54,37 @@ public class Mesero extends Empleado{
 	}
 	
 	
-	public boolean autorizarPrestamo(Reserva r, Juego juego) {
-	    if (r.getNumPersonas() < juego.getNumJugadores() || r.getNumPersonas() > juego.getNumJugadores()) {
-	        return false;
+	//PRESTAR JUEGOS
+	public boolean autorizarPrestamo(Reserva r, Juego juego) throws JuegoNoAptoException {
+	    if (r.getNumPersonas() > juego.getNumJugadores()) {
+	        throw new JuegoNoAptoException("El juego requiere " + juego.getNumJugadores() + " jugadores o menos.");
 	    }
-
-	    if (juego.getRestriccionEdad().equals("apto adultos") && r.tieneMenoresDeEdad()) {
-	        return false;
+	    if (juego.getRestriccionEdad().equals("Adultos") && r.edadMinima() < 18) {
+	        throw new JuegoNoAptoException("Juego para adultos con menores presentes");
 	    }
-
 	    if (juego.getCategoria().equals("Acción") && r.tieneBebidasCalientes()) {
-	        return false;
+	        throw new JuegoNoAptoException("No se pueden servir juegos de acción con bebidas calientes");
 	    }
-
+	    
+	    if (r.getJuegosPrestados().size() >= 2) {
+	        throw new JuegoNoAptoException("La reserva ya tiene el máximo de 2 juegos");
+	    }
+	    if (miCafe.estaJuegoReservadoEnFecha(juego, r.getFecha())) {
+	        throw new JuegoNoAptoException("El juego ya está reservado en esta fecha");
+	    }
+	    
+	    if (juego instanceof JuegoDificil) {
+	        if (!this.juegosConocidos.contains(juego)) { // En un futuro se espera que se pueda imprimir las instrucciones si es dificil
+	            r.pedirCambioMesero(r.getFecha(), juego);
+	        }
+	    }
+	    
 	    r.agregarAlPrestamo(juego);
 	    return true;
 	}
 	
+	
+	//SERVIR COMIDA
 	public void servirPlatillos(Reserva r, Platillo p) {
 	    Cocinero cocineroDeTurno = miCafe.turnoCocineros(r.getFecha());
 	    if (cocineroDeTurno == null || !cocineroDeTurno.getPlatillosConocidos().contains(p)) {
@@ -88,7 +114,7 @@ public class Mesero extends Empleado{
 	        return;
 	    }
 
-	    if (r.tieneMenoresDeEdad() && b.isTieneAlcohol()) {
+	    if (r.edadMinima()<18 && b.isTieneAlcohol()) {
 	        return;
 	    }
 

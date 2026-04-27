@@ -3,9 +3,8 @@ package modelo;
 import java.util.Calendar;
 import java.util.List;
 
-import modelo.producto.Producto;
-import modelo.usuario.Empleado;
-import modelo.usuario.Usuario;
+import modelo.producto.*;
+import modelo.usuario.*;
 
 public class Transaccion {
 	private int id;
@@ -23,7 +22,10 @@ public class Transaccion {
 		this.id = id;
 		this.fecha = fecha;
 		this.productos = productos;
-		this.cliente_final = usuario;
+		if ( cliente_final instanceof Empleado || cliente_final instanceof Cliente ) { // Nos aseguramos que los admins no pueden comprar
+			this.cliente_final = usuario;
+		}
+		
 		this.amigoEmpleado = amigoEmpleado;
 	}
 	
@@ -68,13 +70,29 @@ public class Transaccion {
 			total += producto.calcularPrecioFinal();
 		}
 		
-		if ( cliente_final instanceof Empleado) {
-			double descuento  = total * this.DESCUENTO_EMPLEADO;
-			total -= descuento;
+		int puntosFidelidad = (int) ((int) total*0.01);
+		if ( cliente_final instanceof Empleado ) { 
+			Empleado empleado = (Empleado) cliente_final;
+			empleado.sumarPuntosFidelidad(puntosFidelidad);
+		}else {
+			Cliente cliente = (Cliente) cliente_final;
+			cliente.sumarPuntosFidelidad(puntosFidelidad);
 		}
-		else if(this.amigoEmpleado) {
-			double descuento  = total * this.DESCUENTO_AMIGO_EMPLEADO;
-			total -= descuento;
+		
+		if ( cliente_final instanceof Cliente &&  ((Cliente) cliente_final).getPremio().contains("50")) {
+			double descuento = total* 0.5;
+			total -=descuento;
+			((Cliente) cliente_final).agregarPremio("");
+			
+		} else {
+			if ( cliente_final instanceof Empleado) {
+				double descuento  = total * this.DESCUENTO_EMPLEADO;
+				total -= descuento;
+			} else if(this.amigoEmpleado) {
+				double descuento  = total * this.DESCUENTO_AMIGO_EMPLEADO;
+				total -= descuento;
+			}
+			
 		}
 		
 		return (int) total;

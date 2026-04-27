@@ -10,8 +10,6 @@ public class Platillo extends Producto{
 	}
 	
 	//Getters y Setters
-	
-	
 	public String getAlergeneos() {
 		return alergeneos;
 	}
@@ -19,18 +17,10 @@ public class Platillo extends Producto{
 		this.alergeneos = alergeneos;
 	}
 
+	//TRANSACCIÓN
 	@Override
 	public double getTasaImpuesto() {
 	    return super.IMPUESTOCONSUMO; 
 	}
-
-	@Override
-	public String getCategoriaProducto() {
-		return "Platillo";
-	}
-	
-	
-	//Métodos
-	
 	
 }

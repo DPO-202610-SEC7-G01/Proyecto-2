@@ -1,12 +1,14 @@
 package modelo.producto;
 
+import exceptions.*;
+
 public class JuegoDificil extends Juego{
 	
 	
 	private String instrucciones;
 		
 	public JuegoDificil(int id, int precio, String nombre, int anioPublicacion, String empresMatriz, int numJugadores,
-			String restriccionEdad, String categoria,String instrucciones) {
+			String restriccionEdad, String categoria,String instrucciones) throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 		super(id, precio, nombre, anioPublicacion, empresMatriz, numJugadores, restriccionEdad, categoria);
 		this.instrucciones = instrucciones;
 	}

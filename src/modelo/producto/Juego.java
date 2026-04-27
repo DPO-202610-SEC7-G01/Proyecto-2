@@ -1,5 +1,6 @@
 package modelo.producto;
 
+import exceptions.*;
 public class Juego extends Producto{
 	
 	
@@ -13,30 +14,29 @@ public class Juego extends Producto{
 	
 	//Constructor
 	public Juego(int id, int precio, String nombre, int anioPublicacion, String empresMatriz, int numJugadores,
-	        String restriccionEdad, String categoria) {
+	        String restriccionEdad, String categoria) throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
 	    super(id, precio, nombre);
-	    this.anioPublicacion = anioPublicacion;
+	    if(anioPublicacion >0) {
+		    this.anioPublicacion = anioPublicacion;
+	    }
 	    this.empresMatriz = empresMatriz;
 	    
-	    // Validación: Máximo 40 y mínimo 1 jugador 
 	    if (numJugadores >= 1 && numJugadores <= 40) {
 	        this.numJugadores = numJugadores;
 	    } else {
-	        this.numJugadores = 1;
+	        throw new NumeroJugadoresExcedidoException(numJugadores, 1, 40);
 	    }
 
-	    // Validación: Restricción de edad específica 
-	    if (restriccionEdad.equals("apto 5 anios") || restriccionEdad.equals("apto adultos")) {
+	    if (restriccionEdad.contains("-5") || restriccionEdad.equalsIgnoreCase("Adultos")) {
 	        this.restriccionEdad = restriccionEdad;
 	    } else {
-	        this.restriccionEdad = "apto adultos"; 
+	        throw new RestriccionEdadInvalidaException(restriccionEdad, new String[]{"-5", "Adultos"});
 	    }
 
-	    // Validación: Categorías permitidas
 	    if (categoria.equals("Tablero") || categoria.equals("Cartas") || categoria.equals("Acción")) {
 	        this.categoria = categoria;
 	    } else {
-	        this.categoria = "Tablero"; 
+	        throw new CategoriaInvalidaException(categoria, new String[]{"Tablero", "Cartas", "Acción"});
 	    }
 
 	    this.estado = "nuevo";
@@ -45,13 +45,15 @@ public class Juego extends Producto{
 	
 	
 	//Getters y Setters
-
+	
 	public int getAnioPublicacion() {
 		return anioPublicacion;
 	}
 
 	public void setAnioPublicacion(int anioPublicacion) {
-		this.anioPublicacion = anioPublicacion;
+		if(anioPublicacion >0) {
+		    this.anioPublicacion = anioPublicacion;
+	    }
 	}
 
 	public String getEmpresMatriz() {
@@ -66,35 +68,51 @@ public class Juego extends Producto{
 		return numJugadores;
 	}
 
-	public void setNumJugadores(int numJugadores) {
-		 if (numJugadores >= 1 && numJugadores <= 40) {
-		       this.numJugadores = numJugadores;
-		    } else {
-		        this.numJugadores = 1;
-		    }
+	public void setNumJugadores(int numJugadores) throws NumeroJugadoresExcedidoException {
+		if (numJugadores >= 1 && numJugadores <= 40) {
+	        this.numJugadores = numJugadores;
+	    } else {
+	        throw new NumeroJugadoresExcedidoException(numJugadores, 1, 40);
+	    }
 	}
 
 	public String getRestriccionEdad() {
 		return restriccionEdad;
 	}
 
-	public void setRestriccionEdad(String restriccionEdad) {
-		if (restriccionEdad.equals("apto 5 anios") || restriccionEdad.equals("apto adultos")) {
-	        this.restriccionEdad = restriccionEdad;
-	    } else {
-	        this.restriccionEdad = "apto adultos"; 
-	    }
+	public void setRestriccionEdad(String restriccionEdad) throws RestriccionEdadInvalidaException {
+		 if (restriccionEdad.contains("-5") || restriccionEdad.equalsIgnoreCase("Adultos")) {
+		        this.restriccionEdad = restriccionEdad;
+		    } else {
+		        throw new RestriccionEdadInvalidaException(restriccionEdad, new String[]{"-5", "Adultos"});
+		    }
 	}
+	
+	public int extraerEdadMinima(String restriccionEdad) {
+	    String texto = restriccionEdad.toLowerCase();
 
+	    if (texto.contains("Adultos")) {
+	        return 18;
+	    }
+
+	    String numeros = texto.replaceAll("[^0-9]", "");
+
+	    if (!numeros.isEmpty()) {
+	        return Integer.parseInt(numeros);
+	    }
+
+	    return 0;
+	}
+	
 	public String getCategoria() {
 		return categoria;
 	}
 
-	public void setCategoria(String categoria) {
+	public void setCategoria(String categoria) throws CategoriaInvalidaException {
 		if (categoria.equals("Tablero") || categoria.equals("Cartas") || categoria.equals("Acción")) {
 	        this.categoria = categoria;
 	    } else {
-	        this.categoria = "Tablero"; 
+	        throw new CategoriaInvalidaException(categoria, new String[]{"Tablero", "Cartas", "Acción"});
 	    }
 	}
 
@@ -102,11 +120,11 @@ public class Juego extends Producto{
 		return estado;
 	}
 
-	public void setEstado(String estado) {
+	public void setEstado(String estado) { //unicamente para el admin 
 		this.estado = estado;
 	}
 
-	public boolean isPrestado() {
+	public boolean estaDisponible() {
 		return prestado;
 	}
 
@@ -116,18 +134,9 @@ public class Juego extends Producto{
 	
 	
 	//Métodos
-	@Override
-	public double getTasaImpuesto() {
-	    return super.IVA; // IVA para juegos
-	}
-	
-	@Override
-	public String getCategoriaProducto() {
-		return "Juego";
-	}
-	
-	public boolean requiereInstructor() {
-		return false;
+	//CONDICIONES PARA PRESTAMO
+	public boolean esCategoriaAccion() {
+	    return this.categoria != null && this.categoria.equals("Acción");
 	}
 	
 	public boolean esAptoParaEdad(int edad) {
@@ -135,25 +144,24 @@ public class Juego extends Producto{
 	        return true;
 	    }
 	    
-	    if (this.restriccionEdad.equals("apto 5 anios")) {
+	    if (this.restriccionEdad.contains("-5")) {
 	        return edad >= 5;
-	    } else if (this.restriccionEdad.equals("apto adultos")) {
+	    } else if (this.restriccionEdad.equals("Adulto")) {
 	        return edad >= 18;
 	    }
 	    
 	    return false;
 	}
 	
-	public boolean estaDisponible() {
-		return this.prestado;
+	public boolean requiereInstructor() {
+		return false;
 	}
 	
-	public boolean esCategoriaAccion() {
-	    return this.categoria != null && this.categoria.equals("Acción");
+	//TRANSACCIÓN
+	@Override
+	public double getTasaImpuesto() {
+	    return super.IVA; // IVA para juegos
 	}
-
-	
-
 	
 	
 	
