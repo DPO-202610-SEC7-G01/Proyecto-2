@@ -109,11 +109,19 @@ public class PersistenciaProductos extends PersistenciaCentral{
     }
 
     public static Platillo descargarPlatillos(JSONObject jPlatillo) throws IOException, FileNotFoundException {
+    	ArrayList<String> alergenos = new ArrayList<>();
+    	JSONArray jAlergenos = jPlatillo.optJSONArray("alergenos");
+		 for (int j = 0; j < jPlatillo.length(); j++) {
+			 String alergeno = jAlergenos.getJSONObject(j).toString();
+       	 alergenos.add(alergeno);
+       }
+		 
             Platillo nuevoPlatillo = new Platillo(
             		jPlatillo.getInt("id"),
             		jPlatillo.getInt("precio"),
-            		jPlatillo.getString("nombre"), 
-            		jPlatillo.getString("alergenos"));
+            		jPlatillo.getString("nombre"),
+            		alergenos
+            		);
         
         return nuevoPlatillo;
     }
@@ -221,12 +229,21 @@ public class PersistenciaProductos extends PersistenciaCentral{
     	guardarArchivoJSON(platillosArchivos,platillosArray);
     }
     
-    public static JSONObject AsalvarPlatillos(Platillo platillo)  throws  IOException,FileNotFoundException {   	
+    public static JSONObject AsalvarPlatillos(Platillo platillo)  throws  IOException,FileNotFoundException {  
+    	
         JSONObject jPlatillo = new JSONObject();
         jPlatillo.put("id", platillo.getId());
         jPlatillo.put("nombre", platillo.getNombre());
         jPlatillo.put("precio", platillo.getPrecio());
-        jPlatillo.put("alergenos", platillo.getAlergeneos());
+        
+        JSONArray alergenos = new JSONArray(); // Aun no se si funciona
+	       for (String alergeno: platillo.getAlergeneos()) {
+	    	   alergenos.put(alergeno);
+	       }
+	     
+	        jPlatillo.put("alergenos", alergenos);
+
+	       
         return jPlatillo;
     }
     

@@ -5,7 +5,7 @@
     "password": "hashed_password_1",
     "nombre": "Juan Pérez",
     "edad": 24,
-    "alergenos": "Gluten",
+    "alergenos": ["Gluten"],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": false
@@ -16,7 +16,7 @@
     "password": "hashed_password_2",
     "nombre": "Marta Gómez",
     "edad": 30,
-    "alergenos": "Ninguno",
+    "alergenos": [],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": true
@@ -27,7 +27,7 @@
     "password": "hashed_password_3",
     "nombre": "Lucas Silva",
     "edad": 19,
-    "alergenos": "Lactosa, Frutos Secos",
+    "alergenos": ["Lactosa"," Frutos Secos"],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": false
@@ -38,7 +38,7 @@
     "password": "hashed_password_4",
     "nombre": "Sofía Castro",
     "edad": 27,
-    "alergenos": "Marisco",
+    "alergenos": ["Marisco"],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": false
@@ -49,7 +49,7 @@
     "password": "hashed_password_5",
     "nombre": "Diego Ruiz",
     "edad": 22,
-    "alergenos": "Huevo",
+    "alergenos": ["Huevo"],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": true

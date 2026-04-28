@@ -93,8 +93,9 @@ public class Mesero extends Empleado{
 
 	    boolean aptoParaTodos = true;
 	    for (Cliente c : r.getClientes()) {
-	        for (String ingrediente : p.getAlergeneos().split(",")) {
-	            if (c.getAlergenos().toLowerCase().contains(ingrediente.trim().toLowerCase())) {
+	    	
+	        for (String ingrediente : p.getAlergeneos()) {
+	            if (c.getAlergenos().contains(ingrediente)) {
 	                aptoParaTodos = false;
 	                break; 
 	            }

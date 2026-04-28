@@ -3,36 +3,36 @@
     "id": 101,
     "precio": 25000,
     "nombre": "Sandwich de Pavo",
-    "alergenos": "Gluten, Lácteos"
+    "alergenos": ["Gluten", "Lácteos"]
   },
   {
     "id": 102,
     "precio": 32000,
     "nombre": "Hamburguesa Clásica",
-    "alergenos": "Gluten, Lácteos, Huevo"
+    "alergenos": ["Gluten", "Lácteos", "Huevo"]
   },
   {
     "id": 103,
     "precio": 28000,
     "nombre": "Ensalada César",
-    "alergenos": "Lácteos, Huevo, Anchoas"
+    "alergenos": ["Lácteos", "Huevo", "Anchoas"]
   },
   {
     "id": 104,
     "precio": 45000,
     "nombre": "Filete de Res",
-    "alergenos": "Ninguno"
+    "alergenos": []
   },
   {
     "id": 105,
     "precio": 18000,
     "nombre": "Sandwich de Pavo",
-    "alergenos": "Gluten, Lácteos"
+    "alergenos": ["Gluten", "Lácteos"]
   },
   {
     "id": 106,
     "precio": 22000,
     "nombre": "Sopa de Tomate",
-    "alergenos": "Lácteos"
+    "alergenos": ["Lácteos"]
   }
 ]

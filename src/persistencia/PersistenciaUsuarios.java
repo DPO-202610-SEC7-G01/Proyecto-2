@@ -83,14 +83,24 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 
 	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException, JSONException,
 	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
+		
+		ArrayList<String>  alergenos = new ArrayList<>();
+		JSONArray jAlergenos = jCliente.optJSONArray("alergenos");
+		 for (int j = 0; j < jAlergenos.length(); j++) {
+			 String alergeno = jAlergenos.getJSONObject(j).toString();
+        	 alergenos.add(alergeno);
+        }	
+		
 	    Cliente nuevoCliente = new Cliente(
 	        jCliente.getInt("id"),
 	        jCliente.getString("login"),
 	        jCliente.getString("password"),
 	        jCliente.getString("nombre"),
 	        jCliente.getInt("edad"),
-	        jCliente.getString("alergenos")
+	        alergenos
 	    );
+	    
+	    
 	    
 	    if (jCliente.has("puntosFidelidad")) {
 	        nuevoCliente.sumarPuntosFidelidad(jCliente.getInt("puntosFidelidad"));
@@ -251,14 +261,22 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 			jCliente.put("puntosFidelidad", cliente.getPuntosFidelidad());
 			jCliente.put("alergenos", cliente.getAlergenos());
 		    jCliente.put("amigos", cliente.getAmigos());  
-
+		    
 			
 			JSONArray juegosArray = new JSONArray();
 	        for (Juego juego : cliente.getJuegosFavoritos()) {
 	            juegosArray.put(PersistenciaProductos.AsalvarJuegos(juego)); 
 	        }
-	       
 	        
+	        jCliente.put("JuegosFavoritos", juegosArray); // No estoy segura de que esto si funciona 
+
+	       JSONArray alergenos = new JSONArray();
+	       for (String alergeno: cliente.getAlergenos()) {
+	    	   alergenos.put(alergeno);
+	       }
+	        
+	       jCliente.put("alergenos",alergenos);
+	       
 			return jCliente;
 		}
 		

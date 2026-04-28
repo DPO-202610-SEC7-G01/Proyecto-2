@@ -1,19 +1,21 @@
 package modelo.producto;
 
+import java.util.ArrayList;
+
 public class Platillo extends Producto{
 
-	protected String alergeneos; 
+	protected ArrayList<String> alergeneos; 
 	// Constructor
-	public Platillo(int id, int precio, String nombre, String alergenos) {
+	public Platillo(int id, int precio, String nombre, ArrayList<String> alergenos) {
 		super(id, precio, nombre);
 		this.alergeneos = alergenos;
 	}
 	
 	//Getters y Setters
-	public String getAlergeneos() {
+	public ArrayList<String> getAlergeneos() {
 		return alergeneos;
 	}
-	public void setAlergeneos(String alergeneos) {
+	public void setAlergeneos(ArrayList<String> alergeneos) {
 		this.alergeneos = alergeneos;
 	}
 

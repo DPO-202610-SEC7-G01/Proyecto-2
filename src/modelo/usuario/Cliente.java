@@ -10,7 +10,7 @@ import modelo.*;
 
 public class Cliente extends Usuario {
 	private int edad;
-	private String alergenos;
+	private ArrayList<String> alergenos;
 	private int puntosFidelidad;
 	private boolean amigos;
 	private ArrayList<Juego> juegosFavoritos;
@@ -18,11 +18,11 @@ public class Cliente extends Usuario {
 	private ArrayList<Torneo> torneosInscritos;
 	
 	//Constructor
-	public Cliente(int id, String login, String password, String nombre, int edad,String alergenos) {
+	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) {
 		super(id, login, password, nombre);
 		this.edad = edad;
 		this.puntosFidelidad = 0;
-		this.alergenos= alergenos;
+		this.alergenos= new ArrayList<String>();
 		this.juegosFavoritos = new ArrayList<Juego>();
 		this.amigos = false;
 		this.premio = "";
@@ -41,7 +41,7 @@ public class Cliente extends Usuario {
 		return juegosFavoritos;
 	}
 	
-	public String getAlergenos() {
+	public ArrayList<String> getAlergenos() {
 		return alergenos;
 	}
 	
@@ -54,9 +54,6 @@ public class Cliente extends Usuario {
 	}
 	
 		
-
-
-
 	public ArrayList<Torneo> getTorneosInscritos() {
 		return torneosInscritos;
 	}
