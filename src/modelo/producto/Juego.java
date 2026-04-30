@@ -103,7 +103,7 @@ public class Juego extends Producto{
 
 	    return 0;
 	}
-	
+
 	public String getCategoria() {
 		return categoria;
 	}
@@ -162,8 +162,6 @@ public class Juego extends Producto{
 	public double getTasaImpuesto() {
 	    return super.IVA; // IVA para juegos
 	}
-	
-	
 	
 	
 }

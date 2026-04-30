@@ -82,6 +82,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
         int numJugadores = jJuego.getInt("numJugadores");
         String restriccionEdad = jJuego.getString("restriccionEdad");
         String categoria = jJuego.getString("categoria");
+		String estado = jJuego.getString("estado");
         
         Juego nuevoJuego;
         if (jJuego.has("instrucciones")) {
@@ -211,6 +212,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
     	jJuego.put("numJugadores", juego.getNumJugadores());
     	jJuego.put("restriccionEdad", juego.getRestriccionEdad());
     	jJuego.put("categoria", juego.getCategoria());
+		jJuego.put("prestado", juego.estaDisponible());
     		
     	if (juego instanceof JuegoDificil) {
     			JuegoDificil juegoDif = (JuegoDificil) juego;

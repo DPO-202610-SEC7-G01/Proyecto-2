@@ -45,7 +45,7 @@ public class ConsolaEmpleado {
 	    System.out.println("Seleccione el juego a prestar:");
 	    for (int i = 0; i < juegosParaPrestamo.size(); i++) {
 	        Juego j = juegosParaPrestamo.get(i);
-	        String estado = j.isPrestado() ? "[PRESTADO]" : "[DISPONIBLE]";
+	        String estado = j.getEstado();
 	        System.out.println(i + ". " + j.getNombre() + " " + estado);
 	    }
 
