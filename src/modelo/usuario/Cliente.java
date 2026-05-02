@@ -74,7 +74,6 @@ public class Cliente extends Usuario {
 	public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
 	    Calendar hoy = Calendar.getInstance();
 	    Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, this.amigos);    
-	    this.sumarPuntosFidelidad(productosComprados.size() ); 
 	    return factura; // Existe un método que calcula el monto final c: 
 	}
 	

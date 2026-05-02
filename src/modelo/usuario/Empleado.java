@@ -94,7 +94,6 @@ public class Empleado extends Usuario {
     public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
         Calendar hoy = Calendar.getInstance();
         Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, false);    
-        this.sumarPuntosFidelidad(productosComprados.size()); 
         return factura;
     }
     

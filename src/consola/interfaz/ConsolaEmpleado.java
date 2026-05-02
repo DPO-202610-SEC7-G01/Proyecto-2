@@ -14,10 +14,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
         super(cafe);
 	}
 
-	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
-		Mesero nuevoM = new Mesero(id, login, password, nombre);
-		miCafe.getEmpleados().add(nuevoM);
-	}
+
 	public void registrarUsuarioNuevo() {
 		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
 		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
@@ -69,11 +66,6 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 		System.out.println("Registro exitoso con el login: " + login);
 	}
-
-	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
-		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
-		miCafe.getEmpleados().add(nuevoC);
-	}
 	public Empleado autenticarUsuario() {
 		// 1. Autenticación del Empleado
 		System.out.print("Login del Empleado: ");
@@ -85,10 +77,20 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 		if (auth instanceof Empleado && auth.getPassword().equals(passEmp)) {
-            return (Empleado) auth;
+			return (Empleado) auth;
 		}
 		System.out.println("El inicio de sesion ha fallado, intente de nuevo.");
 		return null;
+	}
+
+	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Mesero nuevoM = new Mesero(id, login, password, nombre);
+		miCafe.getEmpleados().add(nuevoM);
+	}
+
+	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
+		miCafe.getEmpleados().add(nuevoC);
 	}
 
 	public boolean tieneTurno(List<Calendar> turnos, Calendar buscado) {
@@ -335,19 +337,13 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 		}
 	}
-	
+
 	public void simularCompra() {
 		System.out.println("\n--- SIMULACIÓN DE COMPRA INTERACTIVA ---");
-		System.out.print("Ingrese su login: ");
-		String login = lector.nextLine();
-		Usuario u = buscarUsuario(login);
-
-		if (u == null) {
-			System.out.println("Usuario no encontrado. Por favor, regístrese:");
-			registrarUsuarioNuevo();
+		Empleado e = autenticarUsuario();
+		if(e== null){
 			return;
 		}
-
 		List<Producto> carrito = new ArrayList<>();
 		boolean comprando = true;
 
@@ -363,12 +359,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			lector.nextLine();
 
 			if (cat == 1) {
-				agregarProductoACarrito(miCafe.getJuegosVenta(), carrito);
+				mostrarYAgregar(miCafe.getJuegosVenta(), carrito);
 			} else if (cat == 2) {
 				List<Producto> menuCompleto = new ArrayList<>();
 				menuCompleto.addAll(miCafe.getMenuPlatillos());
 				menuCompleto.addAll(miCafe.getMenuBebidas());
-				agregarProductoACarrito(menuCompleto, carrito);
+				mostrarYAgregar(menuCompleto, carrito);
 			} else if (cat == 3) {
 				if (carrito.isEmpty()) {
 					System.out.println("El carrito está vacío. Compra cancelada.");
@@ -378,34 +374,14 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			}
 		}
 
-		// 2. Validación de Amistad (Solo para Clientes)
-		if (u instanceof Cliente) {
-			Cliente c = (Cliente) u;
-			System.out.print("¿Es amigo de algún empleado? (si/no): ");
-			if (lector.nextLine().equalsIgnoreCase("si")) {
-				for(Empleado empleado: miCafe.getEmpleados()) {
-					if (empleado.verificarSiEsAmigo(c)) {
-						c.nuevoAmigo();
-						System.out.println("✨ Descuento de amigo ACTIVADO.");
-						break;
-					} else {
-						System.out.println("❌ No estás en la lista de amigos oficial.");
-					}
-				}
-			}
-		}
-
-		// 3. Generación y Registro
+		// 2. Generación y Registro
 		int idT = aleatorio.nextInt(10000);
 		Transaccion t = null;
-		if (u instanceof Cliente)
-			t = ((Cliente) u).generarTransaccion(carrito, idT);
-		else if (u instanceof Empleado)
-			t = ((Empleado) u).generarTransaccion(carrito, idT);
+		t = e.generarTransaccion(carrito, idT);
 
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
-			imprimirFactura(t, u);
+			imprimirFactura(t, e);
 		}
 	}
 }

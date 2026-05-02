@@ -17,13 +17,12 @@ public class Transaccion {
 	private boolean amigoEmpleado;
 	
 	//Constructor
-	public Transaccion(int id, Calendar fecha, List<Producto> productos, Usuario usuario, boolean amigoEmpleado) {
-		super();
+	public Transaccion(int id, Calendar fecha, List<Producto> productos, Usuario cliente_final, boolean amigoEmpleado) {
 		this.id = id;
 		this.fecha = fecha;
 		this.productos = productos;
 		if ( cliente_final instanceof Empleado || cliente_final instanceof Cliente ) { // Nos aseguramos que los admins no pueden comprar
-			this.cliente_final = usuario;
+			this.cliente_final = cliente_final;
 		}
 		
 		this.amigoEmpleado = amigoEmpleado;

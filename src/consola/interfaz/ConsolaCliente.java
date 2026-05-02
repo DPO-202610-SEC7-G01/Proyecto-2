@@ -6,38 +6,62 @@ import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
 
-public class ConsolaCliente extends consolaAbstract{
+public class ConsolaCliente extends ConsolaAbstract{
 	
 	public ConsolaCliente(Cafe cafe){
 		super(cafe);
 	}
 
-	public void registrarUsuarioNuevo(int id, String nombre, String login, String password, Cafe miCafe) {
+	@Override
+	public void registrarUsuarioNuevo() {
+		System.out.print("Nombre completo: ");
+		String nombre = lector.nextLine();
+
+		// 1. Generar Login y Verificar Unicidad
+		int id = aleatorio.nextInt(1001);
+		String loginBase = nombre.split(" ")[0].toLowerCase() + id;
+
+		// Si el login ya existe (por pura mala suerte del azar), generamos otro
+		while (buscarUsuario(loginBase) != null) {
+			id = aleatorio.nextInt(1001);
+			loginBase = nombre.split(" ")[0].toLowerCase() + id;
+		}
+
+		final String login = loginBase; // Lo hacemos final para usarlo con seguridad
+		System.out.print("Ingrese Password: ");
+		String password = lector.nextLine();
 		System.out.print("Edad: ");
 		int edad = lector.nextInt();
 		lector.nextLine();
 		System.out.print("Alérgenos: ");
 		String alergenos = lector.nextLine();
-		ArrayList<String> alergenosLista;
-		if(alergenos.isBlank()) {
-			alergenosLista = new ArrayList<>();
-		}
-		else {
-			String[] alergenoslista = alergenos.split("\\s*,\\s*");
-			alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
-		}
+		ArrayList<String> alergenosLista = leerAlergenos(alergenos);
 		Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
 		miCafe.getClientes().add(nuevoC);
 	}
-	
+	@Override
+	public Cliente autenticarUsuario(){
+		// 1. Autenticación del Empleado
+		System.out.print("Login del Cliente: ");
+		String loginEmp = lector.nextLine();
+		System.out.print("Contraseña del Cliente: ");
+		String passEmp = lector.nextLine();
+
+		Usuario auth = buscarUsuario(loginEmp);
+
+		// Validamos que el usuario exista, sea un Cliente y la contraseña coincida
+		if (auth instanceof Cliente && auth.getPassword().equals(passEmp)) {
+			return (Cliente) auth;
+		}
+		System.out.println("El inicio de sesion ha fallado, intente de nuevo.");
+		return null;
+	}
 	
 	public void ingresarJuegoFav() {
 		System.out.println("\n--- AGREGAR JUEGO A FAVORITOS ---");
-		System.out.print("Ingrese su login de usuario: ");
-		String loginBusqueda = lector.nextLine();
 
 		// 1. Buscamos al usuario usando la función auxiliar
-		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+		Usuario usuarioEncontrado = autenticarUsuario();
 
 		if (usuarioEncontrado != null) {
 			// 2. Validamos que el café tenga juegos para mostrar
@@ -72,22 +96,16 @@ public class ConsolaCliente extends consolaAbstract{
 				System.out.println("Opción de juego no válida.");
 			}
 		} else {
-			System.out.println(" Error: No se encontró ningún usuario con el login: " + loginBusqueda);
+			return;
 		}
 	}
 	
 	public void simularCompra() {
 		System.out.println("\n--- SIMULACIÓN DE COMPRA INTERACTIVA ---");
-		System.out.print("Ingrese su login: ");
-		String login = lector.nextLine();
-		Usuario u = buscarUsuario(login);
-
-		if (u == null) {
-			System.out.println("Usuario no encontrado. Por favor, regístrese:");
-			registrarUsuarioNuevo();
+		Cliente c = autenticarUsuario();
+		if(c== null){
 			return;
 		}
-
 		List<Producto> carrito = new ArrayList<>();
 		boolean comprando = true;
 
@@ -119,35 +137,22 @@ public class ConsolaCliente extends consolaAbstract{
 		}
 
 		// 2. Validación de Amistad (Solo para Clientes)
-		if (u instanceof Cliente) {
-			Cliente c = (Cliente) u;
-			System.out.print("¿Es amigo de algún empleado? (si/no): ");
-			if (lector.nextLine().equalsIgnoreCase("si")) {
-				if (verificarSiEsAmigo(c)) {
-					c.nuevoAmigo();
-					System.out.println("✨ Descuento de amigo ACTIVADO.");
-				} else {
-					System.out.println("❌ No estás en la lista de amigos oficial.");
-				}
-			}
-		}
+		boolean amigo = clienteEsAmigoDeAlgunEmpleado(c);
+		c.setAmigos(amigo);
 
 		// 3. Generación y Registro
 		int idT = aleatorio.nextInt(10000);
 		Transaccion t = null;
-		if (u instanceof Cliente)
-			t = ((Cliente) u).generarTransaccion(carrito, idT);
-		else if (u instanceof Empleado)
-			t = ((Empleado) u).generarTransaccion(carrito, idT);
+		t = c.generarTransaccion(carrito, idT);
 
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
-			imprimirFacturaDetallada(t, u);
+			imprimirFactura(t, c);
 		}
 	}
 	
 
-
+	// TODO: falta corregir de aqui en adelante
 	public void hacerReserva() {
 		System.out.println("\n---  PROCESO DE RESERVA ---");
 		System.out.print("¿Para cuántas personas es la reserva?: ");
@@ -401,72 +406,20 @@ public class ConsolaCliente extends consolaAbstract{
 	}
 	
 	public void solicitarJuego() {
-	    System.out.println("\n--- PRÉSTAMO DE JUEGOS ---");
-	    Empleado empleadoActivo = autenticarEmpleado();
-	    if (empleadoActivo == null) return;
-	    Calendar hoy = Calendar.getInstance();
+		System.out.println("\n--- PRÉSTAMO DE JUEGOS ---");
+		Empleado empleadoActivo = autenticarEmpleado();
+		if (empleadoActivo == null) return;
+		Calendar hoy = Calendar.getInstance();
 
-	    //  Mostrar juegos disponibles en el café
-	    List<Juego> juegosParaPrestamo = miCafe.getJuegosPrestamo();
-	    if (juegosParaPrestamo.isEmpty()) {
-	        System.out.println("❌ No hay juegos registrados para préstamo en el sistema.");
-	        return;
-	    }
-	
-	    public void terminarReserva() {
-		    Scanner sc = new Scanner(System.in);
-		    System.out.println("--- Finalizar Reserva y Generar Factura ---");
-		    System.out.print("Ingrese el número de la mesa: ");
-		    int numMesa = sc.nextInt();
-
-		    // 1. Buscar la reserva activa
-		    Reserva reservaActiva = null;
-		    for (Reserva r : miCafe.getReservasPrevias()) {
-		        if (r.getMesa() != null && r.getMesa().getId() == numMesa) {
-		            reservaActiva = r;
-		            break;
-		        }
-		    }
-
-		    if (reservaActiva != null) {
-		        // 2. Liberar juegos y mesa internamente
-		        reservaActiva.finalizarReserva();
-
-		        // 3. Preparar datos para la Transacción (Factura)
-		        int nuevoId = miCafe.getHistorialTransaccion().size() + 1;
-		        Calendar fechaActual = Calendar.getInstance();
-		        List<Producto> productosConsumidos = reservaActiva.getFactura();
-		        
-		        // El cliente principal es el primero de la lista de la reserva
-		        Usuario clientePrincipal = reservaActiva.getClientes().get(0);
-
-		        // 4. Preguntar por beneficio de amigo de empleado
-		        System.out.print("¿El cliente es amigo de un empleado? (1. Sí / 2. No): ");
-		        boolean esAmigo = (sc.nextInt() == 1);
-
-		        // 5. Crear e instanciar la Transacción usando tu constructor
-		        Transaccion nuevaFactura = new Transaccion(
-		            nuevoId, 
-		            fechaActual, 
-		            productosConsumidos, 
-		            clientePrincipal, 
-		            esAmigo
-		        );
-
-		        // 6. Guardar en el historial del Café y limpiar el sistema
-		        miCafe.getHistorialTransaccion().add(nuevaFactura);
-		        miCafe.getReservasPrevias().remove(reservaActiva);
-
-		        System.out.println("\nFactura #" + nuevoId + " generada con éxito.");
-		        System.out.println("Total procesado: $" + reservaActiva.getTotalFactura());
-		        System.out.println("La mesa " + numMesa + " ahora está disponible.");
-
-		    } else {
-		        System.out.println("Error: No se encontró una reserva para la mesa " + numMesa);
-		    }
+		//  Mostrar juegos disponibles en el café
+		List<Juego> juegosParaPrestamo = miCafe.getJuegosPrestamo();
+		if (juegosParaPrestamo.isEmpty()) {
+			System.out.println("❌ No hay juegos registrados para préstamo en el sistema.");
+			return;
 		}
-	    
-	    private void imprimirFacturaDetallada(Transaccion t, Usuario u) {
+	}
+
+		private void imprimirFacturaDetallada (Transaccion t, Usuario u){
 			String verde = "\u001B[32m";
 			String cursiva = "\u001B[3m";
 			String reset = "\u001B[0m";
@@ -511,4 +464,4 @@ public class ConsolaCliente extends consolaAbstract{
 			System.out.println(verde + "TOTAL A PAGAR:       $" + totalPagar + reset);
 			System.out.println("========================================\n");
 		}
-}
+	}
