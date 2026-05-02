@@ -43,7 +43,7 @@ public class Mesero extends Empleado{
 		return reservasAsignadas;
 	}
 	public void nuevaReserva(Reserva reserva, Calendar fecha) {
-		if (libreParaReserva(fecha)) {
+		if (!reservasAsignadas.contains(reserva) && libreParaReserva(fecha)) {
 		reservasAsignadas.add(reserva);
 		}
 	}
@@ -55,7 +55,7 @@ public class Mesero extends Empleado{
 	
 	
 	//PRESTAR JUEGOS
-	public boolean autorizarPrestamo(Reserva r, Juego juego) throws JuegoNoAptoException {
+	public void autorizarPrestamo(Reserva r, Juego juego) throws JuegoNoAptoException {
 	    if (r.getNumPersonas() > juego.getNumJugadores()) {
 	        throw new JuegoNoAptoException("El juego requiere " + juego.getNumJugadores() + " jugadores o menos.");
 	    }
@@ -78,9 +78,6 @@ public class Mesero extends Empleado{
 	            r.pedirCambioMesero(r.getFecha(), juego);
 	        }
 	    }
-	    
-	    r.agregarAlPrestamo(juego);
-	    return true;
 	}
 	
 	

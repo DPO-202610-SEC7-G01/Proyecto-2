@@ -174,4 +174,8 @@ public class Reserva {
             this.mesa.setDisponible(true); 
         }
     }
+
+	public void setMesero(Mesero meseroAsignado) {
+		this.meseroAsignado = meseroAsignado;
+	}
 }

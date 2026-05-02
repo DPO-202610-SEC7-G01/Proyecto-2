@@ -213,7 +213,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 		}
 
-		private void pedirYServirPlatillo (Reserva r, Mesero mes){
+		protected void pedirYServirPlatillo (Reserva r, Mesero mes){
 			List<Platillo> menu = miCafe.getMenuPlatillos();
 			for (int i = 0; i < menu.size(); i++)
 				System.out.println(i + ". " + menu.get(i).getNombre());
@@ -225,7 +225,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			}
 		}
 
-		private void pedirYServirBebida (Reserva r, Mesero mes){
+		protected void pedirYServirBebida (Reserva r, Mesero mes){
 			List<Bebida> menuB = miCafe.getMenuBebidas();
 			for (int i = 0; i < menuB.size(); i++)
 				System.out.println(i + ". " + menuB.get(i).getNombre());
@@ -236,28 +236,6 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				System.out.println(" Validando restricciones de edad/seguridad y sirviendo...");
 			}
 		}
-
-		private void mostrarYAgregar (List < ? extends Producto > lista, List < Producto > carrito){
-			if (lista.isEmpty()) {
-				System.out.println("No hay productos en esta categoría.");
-				return;
-			}
-
-			for (int i = 0; i < lista.size(); i++) {
-				Producto p = lista.get(i);
-				System.out.println(i + ". " + p.getNombre() + " ($" + p.getPrecio() + ")");
-			}
-
-			System.out.print("Seleccione el número del producto para agregar (o -1 para volver): ");
-			int sel = lector.nextInt();
-			lector.nextLine();
-
-			if (sel >= 0 && sel < lista.size()) {
-				carrito.add(lista.get(sel));
-				System.out.println("✅ " + lista.get(sel).getNombre() + " añadido al carrito.");
-			}
-		}
-
 
 	public void consultarTurno() {
 		System.out.println("\n--- Consultar Turnos de Empleado ---");
@@ -371,12 +349,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			lector.nextLine();
 
 			if (cat == 1) {
-				mostrarYAgregar(miCafe.getJuegosVenta(), carrito);
+				agregarProductoACarrito(miCafe.getJuegosVenta(), carrito);
 			} else if (cat == 2) {
 				List<Producto> menuCompleto = new ArrayList<>();
 				menuCompleto.addAll(miCafe.getMenuPlatillos());
 				menuCompleto.addAll(miCafe.getMenuBebidas());
-				mostrarYAgregar(menuCompleto, carrito);
+				agregarProductoACarrito(menuCompleto, carrito);
 			} else if (cat == 3) {
 				if (carrito.isEmpty()) {
 					System.out.println("El carrito está vacío. Compra cancelada.");

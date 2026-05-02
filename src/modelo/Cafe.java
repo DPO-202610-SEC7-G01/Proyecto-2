@@ -218,10 +218,7 @@ public class Cafe {
 	
 	//RESERVA
 	public boolean verificarDisponibilidad(Calendar fecha, int numPersonas) {
-		if ((numPersonas <= capacidad || numPersonas > 0)) {
-			return true;
-		}
-		return false;
+		return numPersonas > 0 && numPersonas <= capacidad;
 	}
 	
 
@@ -231,16 +228,13 @@ public class Cafe {
 	    	throw new JuegoNoAptoException("El juego no está disponible en la lista de préstamo");
 	    }
 
-	    if (r.getMeseroAsignado().autorizarPrestamo(r, juego)) {
-	    	juego.setPrestado(true);
-	        historialUsoJuegos.putIfAbsent(r.getFecha(), new HashMap<>());
+	    r.getMeseroAsignado().autorizarPrestamo(r, juego);
+    	juego.setPrestado(true);
+        historialUsoJuegos.putIfAbsent(r.getFecha(), new HashMap<>());
 
-	        registrarJuegoEnHistorial(r.getFecha(),cliente,juego);
-	        
-	        return true;
-	    }
-	    
-	    return false;
+        registrarJuegoEnHistorial(r.getFecha(),cliente,juego);
+        
+        return true;
 	}
 		
 	// COSAS DE EMPLEADOS
@@ -261,14 +255,16 @@ public class Cafe {
 	
 	
 	//RESERVAS
-	public void registrarNuevaReserva(Reserva r) {
+	public boolean registrarNuevaReserva(Reserva r) {
 	    if (verificarDisponibilidad(r.getFecha(), r.getNumPersonas()) && asignarMesa(r)) {
 	    	reservasPrevias.add(r);
 	        int puntosPorReserva = 10; 
 	        for (Cliente c : r.getClientes()) {
 	            c.sumarPuntosFidelidad(puntosPorReserva);
 	        }
-	    } 
+			return true;
+	    }
+		return false;
 	}
 
 	public boolean asignarMesa(Reserva r) {
