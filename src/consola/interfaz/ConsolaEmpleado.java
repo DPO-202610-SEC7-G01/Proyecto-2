@@ -254,12 +254,10 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 	public void ingresarJuegoFav () {
 		System.out.println("\n--- AGREGAR JUEGO A FAVORITOS ---");
-		System.out.print("Ingrese su login de usuario: ");
-		String loginBusqueda = lector.nextLine();
-		// 1. Buscamos al usuario usando la función auxiliar
-		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+		// 1. Buscamos al Empleado usando la función auxiliar
+		Empleado e = autenticarUsuario();
 
-		if (usuarioEncontrado != null) {
+		if (e != null) {
 			// 2. Validamos que el café tenga juegos para mostrar
 			if (miCafe.getJuegosVenta().isEmpty()) {
 				System.out.println("❌No hay juegos registrados en el catálogo del café.");
@@ -274,22 +272,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			lector.nextLine(); // Limpiar el salto de línea del buffer
 			if (indice >= 0 && indice < miCafe.getJuegosVenta().size()) {
 				Juego juegoElegido = miCafe.getJuegosVenta().get(indice);
-
-				if (usuarioEncontrado instanceof Cliente) {
-					Cliente c = (Cliente) usuarioEncontrado;
-					c.agregarJuegoFavorito(juegoElegido);
-				} else if (usuarioEncontrado instanceof Empleado) {
-					Empleado e = (Empleado) usuarioEncontrado;
-					e.agregarJuegoFavorito(juegoElegido);
-				}
-
+				e.agregarJuegoFavorito(juegoElegido);
 				System.out.println(juegoElegido.getNombre() + " ha sido añadido a los favoritos de "
-						+ usuarioEncontrado.getNombre());
+						+ e.getNombre());
 			} else {
 				System.out.println("Opción de juego no válida.");
 			}
-		} else {
-			System.out.println(" Error: No se encontró ningún usuario con el login: " + loginBusqueda);
 		}
 	}
 
