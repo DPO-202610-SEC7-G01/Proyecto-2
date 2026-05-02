@@ -16,6 +16,14 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 
 	public void registrarUsuarioNuevo() {
+		Empleado empleadoActivo = autenticarUsuario();
+		if (empleadoActivo == null) {
+			return;
+		}
+		registrarUsuarioNuevoSinAutenticacion();
+	}
+
+	private void registrarUsuarioNuevoSinAutenticacion() {
 		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
 		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
 		System.out.print("Seleccione: ");
@@ -52,11 +60,11 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				break;
 
 			case 2:
-				registrarMesero(id, nombre, login, password, miCafe);
+				registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
 				break;
 
 			case 3:
-				miCafe.getEmpleados().add(new Cocinero(id, login, password, nombre));
+				registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
 				break;
 
 			default:
@@ -84,11 +92,27 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 	}
 
 	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Empleado empleadoActivo = autenticarUsuario();
+		if (empleadoActivo == null) {
+			return;
+		}
+		registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
+	}
+
+	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) {
 		Mesero nuevoM = new Mesero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoM);
 	}
 
 	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
+		Empleado empleadoActivo = autenticarUsuario();
+		if (empleadoActivo == null) {
+			return;
+		}
+		registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
+	}
+
+	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
 	}
@@ -303,7 +327,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				clienteAAfiliar = (Cliente) buscado;
 			} else {
 				System.out.println("El cliente no existe. Iniciando registro...");
-				registrarUsuarioNuevo();
+				registrarUsuarioNuevoSinAutenticacion();
 				// Después de registrar, intentamos recuperarlo (sería el último de la lista)
 				List<Cliente> clientes = miCafe.getClientes();
 				if (!clientes.isEmpty()) {
