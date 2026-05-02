@@ -407,8 +407,8 @@ public class ConsolaCliente extends ConsolaAbstract{
 	
 	public void solicitarJuego() {
 		System.out.println("\n--- PRÉSTAMO DE JUEGOS ---");
-		Empleado empleadoActivo = autenticarEmpleado();
-		if (empleadoActivo == null) return;
+		Cliente c = autenticarUsuario();
+		if (c == null) return;
 		Calendar hoy = Calendar.getInstance();
 
 		//  Mostrar juegos disponibles en el café
@@ -416,6 +416,42 @@ public class ConsolaCliente extends ConsolaAbstract{
 		if (juegosParaPrestamo.isEmpty()) {
 			System.out.println("❌ No hay juegos registrados para préstamo en el sistema.");
 			return;
+		}
+		System.out.println("Seleccione el juego a prestar:");
+		for (int i = 0; i < juegosParaPrestamo.size(); i++) {
+			Juego j = juegosParaPrestamo.get(i);
+			String estado = j.getEstado();
+			System.out.println(i + ". " + j.getNombre() + " " + estado);
+		}
+
+		System.out.print("Ingrese el número del juego: ");
+		try {
+			int indice = Integer.parseInt(lector.nextLine());
+
+			if (indice >= 0 && indice < juegosParaPrestamo.size()) {
+				Juego juegoElegido = juegosParaPrestamo.get(indice);
+
+				// Verificar si el juego ya está prestado físicamente
+				if (juegoElegido.estaDisponible() != true) {
+					System.out.println(" Error: Este juego ya se encuentra en uso.");
+					return;
+				}
+				//TODO agregar metodo a cliente para verificar si se puede prestar el juego
+				boolean exito = c.aptoPrestamo(juegoElegido, hoy);
+
+				if (exito) {
+					System.out.println("\n¡Préstamo autorizado!");
+					System.out.println("El juego '" + juegoElegido.getNombre() + "' ha sido entregado.");
+					System.out.println("Registro creado en el historial del café por " + c.getNombre());
+				} else {
+					System.out.println("\n El préstamo fue denegado.");
+				}
+
+			} else {
+				System.out.println(" Selección inválida.");
+			}
+		} catch (NumberFormatException e) {
+			System.out.println(" Error: Ingrese un número válido.");
 		}
 	}
 
