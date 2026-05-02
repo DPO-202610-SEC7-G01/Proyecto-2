@@ -58,8 +58,15 @@ public class Empleado extends Usuario {
     public void agregarTurno(Turno e) {
     	turnos.add(e);
     }
-    
-    // Métodos    
+    // Métodos
+    public boolean verificarSiEsAmigo(Cliente supuesto){
+        for(Cliente amigo: amigos){
+            if(amigo.getId() == supuesto.getId()){
+                return true;
+            }
+        }
+        return false;
+    }
     //PRESTAMO DE JUEGOS
     public boolean aptoPrestamo(Juego juego, Calendar fechaConsulta) {
         boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);
@@ -175,5 +182,4 @@ public class Empleado extends Usuario {
 	    }
 	    return false;
 	}
-    
 }

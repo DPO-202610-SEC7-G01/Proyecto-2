@@ -1,6 +1,7 @@
 package consola.interfaz;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -17,16 +18,117 @@ public class ConsolaEmpleado {
 
 	public ConsolaEmpleado(Cafe cafe) {
 		ConsolaEmpleado.miCafe = cafe;
+		this.lector = new Scanner(System.in);
+		this.aleatorio = new Random();
 	}
-
+	private Usuario buscarUsuario(String login) {
+		for (Cliente c : miCafe.getClientes()) {
+			if (c.getLogin().equals(login))
+				return c;
+		}
+		for (Empleado e : miCafe.getEmpleados()) {
+			if (e.getLogin().equals(login))
+				return e;
+		}
+		return null;
+	}
 	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
 		Mesero nuevoM = new Mesero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoM);
+	}
+	public void registrarUsuarioNuevo() {
+		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
+		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
+		System.out.print("Seleccione: ");
+		int tipo = lector.nextInt();
+		lector.nextLine();
+
+		System.out.print("Nombre completo: ");
+		String nombre = lector.nextLine();
+
+		// 1. Generar Login y Verificar Unicidad
+		int id = aleatorio.nextInt(1001);
+		String loginBase = nombre.split(" ")[0].toLowerCase() + id;
+
+		// Si el login ya existe (por pura mala suerte del azar), generamos otro
+		while (buscarUsuario(loginBase) != null) {
+			id = aleatorio.nextInt(1001);
+			loginBase = nombre.split(" ")[0].toLowerCase() + id;
+		}
+
+		final String login = loginBase; // Lo hacemos final para usarlo con seguridad
+		System.out.print("Ingrese Password: ");
+		String password = lector.nextLine();
+
+		// 2. Creación según el tipo
+		switch (tipo) {
+			case 1:
+				System.out.print("Edad: ");
+				int edad = lector.nextInt();
+				lector.nextLine();
+				System.out.print("Alérgenos: ");
+				String alergenos = lector.nextLine();
+				ArrayList<String> alergenosLista;
+				if(alergenos.isBlank()) {
+					alergenosLista = new ArrayList<>();
+				}
+				else {
+					String[] alergenoslista = alergenos.split("\\s*,\\s*");
+					alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
+				}
+				Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
+				miCafe.agregarUsuario(nuevoC);
+				break;
+
+			case 2:
+				miCafe.getEmpleados().add(new Mesero(id, login, password, nombre));
+				break;
+
+			case 3:
+				miCafe.getEmpleados().add(new Cocinero(id, login, password, nombre));
+				break;
+
+			default:
+				System.out.println("❌ Opción inválida.");
+				return;
+		}
+
+		System.out.println("Registro exitoso con el login: " + login);
 	}
 
 	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
+	}
+	public Empleado autenticarEmpleado() {
+		// 1. Autenticación del Empleado
+		System.out.print("Login del Empleado: ");
+		String loginEmp = lector.nextLine();
+		System.out.print("Contraseña del Empleado: ");
+		String passEmp = lector.nextLine();
+
+		Usuario auth = buscarUsuario(loginEmp);
+
+		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
+		if (auth instanceof Empleado && auth.getPassword().equals(passEmp)) {
+            return (Empleado) auth;
+		}
+		System.out.println("El inicio de sesion ha fallado, intente de nuevo.");
+		return null;
+	}
+
+	public boolean mismoDia(Calendar c1, Calendar c2) {
+		return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
+				&& c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH);
+	}
+
+	public boolean tieneTurno(List<Calendar> turnos, Calendar buscado) {
+		for (Calendar c : turnos) {
+			if (mismoDia(c, buscado)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void solicitarJuego() {
@@ -57,12 +159,12 @@ public class ConsolaEmpleado {
 				Juego juegoElegido = juegosParaPrestamo.get(indice);
 
 				// Verificar si el juego ya está prestado físicamente
-				if (juegoElegido.isPrestado()) {
+				if (juegoElegido.estaDisponible() != true) {
 					System.out.println(" Error: Este juego ya se encuentra en uso.");
 					return;
 				}
 
-				boolean exito = empleadoActivo.aptoPrestamo(miCafe.getAdmin(), juegoElegido, hoy);
+				boolean exito = empleadoActivo.aptoPrestamo(juegoElegido, hoy);
 
 				if (exito) {
 					System.out.println("\n¡Préstamo autorizado!");
@@ -81,21 +183,32 @@ public class ConsolaEmpleado {
 		}
 	}
 		public void sugerirPlatillo (Scanner lectorMenu){
-			autenticarEmpleado();
+			Empleado empleadoActivo = autenticarEmpleado();
+			if (empleadoActivo == null) {
+				return;
+			}
 			System.out.println("Ingrese el nombre del producto: ");
 			String nombre = lectorMenu.nextLine();
 			System.out.println("Ingrese el precio del producto: ");
 			try {
 				int precio = lectorMenu.nextInt();
 				lectorMenu.nextLine();
-				System.out.println("Ingrese los alergenos del producto, si no hay : ");
+				System.out.println("Ingrese los alergenos del producto separados por comas, si no hay pulse enter: ");
 				String alergenos = lectorMenu.nextLine();
+				ArrayList<String> alergenosLista;
+				if(alergenos.isBlank()) {
+					alergenosLista = new ArrayList<>();
+				}
+				else {
+					String[] alergenoslista = alergenos.split("\\s*,\\s*");
+					alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
+				}
 				System.out.println("Ingrese el id del producto: ");
 				try {
 					int id = lectorMenu.nextInt();
 					lectorMenu.nextLine();
-					Platillo sugerencia = new Platillo(id, precio, nombre, alergenos);
-					miCafe.agregarSugerencias(sugerencia);
+					Platillo sugerencia = new Platillo(id, precio, nombre, alergenosLista);
+					miCafe.agregarSugerencia(sugerencia);
 					System.out.println("Sugerencia agregada exitosamente.");
 					return;
 				} catch (Exception a) {
@@ -135,7 +248,7 @@ public class ConsolaEmpleado {
 				System.out.println(" Validando restricciones de edad/seguridad y sirviendo...");
 			}
 		}
-	}
+
 		private void mostrarYAgregar (List < ? extends Producto > lista, List < Producto > carrito){
 			if (lista.isEmpty()) {
 				System.out.println("No hay productos en esta categoría.");
@@ -159,7 +272,7 @@ public class ConsolaEmpleado {
 
 
 	public void consultarTurno() {
-		System.out.println("\n--- AGREGAR TURNO A EMPLEADO ---");
+		System.out.println("\n--- Consultar Turnos de Empleado ---");
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 
@@ -168,58 +281,53 @@ public class ConsolaEmpleado {
 			return;
 		}
 
-		List<Calendar> turno = empleadoActivo.getTurno();
-		for (Calendar jornada : turno) {
-			System.out.println(jornada.getTime());
+		List<Turno> turnos = empleadoActivo.getTurnos();
+		for (Turno jornada : turnos) {
+			System.out.println(jornada.getFecha());
 			return;
 		}
 	}
 
+	public void ingresarJuegoFav () {
+		System.out.println("\n--- AGREGAR JUEGO A FAVORITOS ---");
+		System.out.print("Ingrese su login de usuario: ");
+		String loginBusqueda = lector.nextLine();
+		// 1. Buscamos al usuario usando la función auxiliar
+		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
 
-		public void ingresarJuegoFav () {
-			System.out.println("\n--- AGREGAR JUEGO A FAVORITOS ---");
-			System.out.print("Ingrese su login de usuario: ");
-			String loginBusqueda = lector.nextLine();
-
-			// 1. Buscamos al usuario usando la función auxiliar
-			Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-
-			if (usuarioEncontrado != null) {
-				// 2. Validamos que el café tenga juegos para mostrar
-				if (miCafe.getJuegosVenta().isEmpty()) {
-					System.out.println("❌No hay juegos registrados en el catálogo del café.");
-					return;
-				}
-
-				System.out.println("Seleccione el juego que desea agregar:");
-				for (int i = 0; i < miCafe.getJuegosVenta().size(); i++) {
-					System.out.println(i + ". " + miCafe.getJuegosVenta().get(i).getNombre());
-				}
-
-				System.out.print("Ingrese el número del juego: ");
-				int indice = lector.nextInt();
-				lector.nextLine(); // Limpiar el salto de línea del buffer
-
-				if (indice >= 0 && indice < miCafe.getJuegosVenta().size()) {
-					Juego juegoElegido = miCafe.getJuegosVenta().get(indice);
-
-					if (usuarioEncontrado instanceof Cliente) {
-						Cliente c = (Cliente) usuarioEncontrado;
-						c.agregarJuegoFavorito(juegoElegido);
-					} else if (usuarioEncontrado instanceof Empleado) {
-						Empleado e = (Empleado) usuarioEncontrado;
-						e.agregarJuegoFavorito(juegoElegido);
-					}
-
-					System.out.println(juegoElegido.getNombre() + " ha sido añadido a los favoritos de "
-							+ usuarioEncontrado.getNombre());
-				} else {
-					System.out.println("Opción de juego no válida.");
-				}
-			} else {
-				System.out.println(" Error: No se encontró ningún usuario con el login: " + loginBusqueda);
+		if (usuarioEncontrado != null) {
+			// 2. Validamos que el café tenga juegos para mostrar
+			if (miCafe.getJuegosVenta().isEmpty()) {
+				System.out.println("❌No hay juegos registrados en el catálogo del café.");
+				return;
 			}
+			System.out.println("Seleccione el juego que desea agregar:");
+			for (int i = 0; i < miCafe.getJuegosVenta().size(); i++) {
+				System.out.println(i + ". " + miCafe.getJuegosVenta().get(i).getNombre());
+			}
+			System.out.print("Ingrese el número del juego: ");
+			int indice = lector.nextInt();
+			lector.nextLine(); // Limpiar el salto de línea del buffer
+			if (indice >= 0 && indice < miCafe.getJuegosVenta().size()) {
+				Juego juegoElegido = miCafe.getJuegosVenta().get(indice);
+
+				if (usuarioEncontrado instanceof Cliente) {
+					Cliente c = (Cliente) usuarioEncontrado;
+					c.agregarJuegoFavorito(juegoElegido);
+				} else if (usuarioEncontrado instanceof Empleado) {
+					Empleado e = (Empleado) usuarioEncontrado;
+					e.agregarJuegoFavorito(juegoElegido);
+				}
+
+				System.out.println(juegoElegido.getNombre() + " ha sido añadido a los favoritos de "
+						+ usuarioEncontrado.getNombre());
+			} else {
+				System.out.println("Opción de juego no válida.");
+			}
+		} else {
+			System.out.println(" Error: No se encontró ningún usuario con el login: " + loginBusqueda);
 		}
+	}
 
 	private void afiliarAmigo() {
 		{
@@ -254,7 +362,7 @@ public class ConsolaEmpleado {
 			// 3. Registro de la amistad
 			if (clienteAAfiliar != null) {
 				// Agregamos el cliente a la lista del empleado
-				empleadoActivo.agregarAmigos(clienteAAfiliar);
+				empleadoActivo.agregarAmigo(clienteAAfiliar);
 
 				// Cambiamos el atributo booleano del cliente a true
 				clienteAAfiliar.nuevoAmigo();
@@ -313,11 +421,14 @@ public class ConsolaEmpleado {
 			Cliente c = (Cliente) u;
 			System.out.print("¿Es amigo de algún empleado? (si/no): ");
 			if (lector.nextLine().equalsIgnoreCase("si")) {
-				if (verificarSiEsAmigo(c)) {
-					c.nuevoAmigo();
-					System.out.println("✨ Descuento de amigo ACTIVADO.");
-				} else {
-					System.out.println("❌ No estás en la lista de amigos oficial.");
+				for(Empleado empleado: miCafe.getEmpleados()) {
+					if (empleado.verificarSiEsAmigo(c)) {
+						c.nuevoAmigo();
+						System.out.println("✨ Descuento de amigo ACTIVADO.");
+						break;
+					} else {
+						System.out.println("❌ No estás en la lista de amigos oficial.");
+					}
 				}
 			}
 		}
@@ -335,7 +446,7 @@ public class ConsolaEmpleado {
 			imprimirFacturaDetallada(t, u);
 		}
 	}
-	
+
 	private void imprimirFacturaDetallada(Transaccion t, Usuario u) {
 		String verde = "\u001B[32m";
 		String cursiva = "\u001B[3m";
