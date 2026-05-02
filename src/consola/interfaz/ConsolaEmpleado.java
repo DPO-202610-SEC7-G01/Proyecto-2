@@ -1,37 +1,19 @@
 package consola.interfaz;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
 
-public class ConsolaEmpleado {
-	static private Cafe miCafe;
-	private Scanner lector;
-	private Random aleatorio;
-
+public class ConsolaEmpleado extends ConsolaAbstract{
 	public ConsolaEmpleado(Cafe cafe) {
-		ConsolaEmpleado.miCafe = cafe;
-		this.lector = new Scanner(System.in);
-		this.aleatorio = new Random();
+        super(cafe);
 	}
-	private Usuario buscarUsuario(String login) {
-		for (Cliente c : miCafe.getClientes()) {
-			if (c.getLogin().equals(login))
-				return c;
-		}
-		for (Empleado e : miCafe.getEmpleados()) {
-			if (e.getLogin().equals(login))
-				return e;
-		}
-		return null;
-	}
+
 	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
 		Mesero nuevoM = new Mesero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoM);
@@ -42,7 +24,6 @@ public class ConsolaEmpleado {
 		System.out.print("Seleccione: ");
 		int tipo = lector.nextInt();
 		lector.nextLine();
-
 		System.out.print("Nombre completo: ");
 		String nombre = lector.nextLine();
 
@@ -68,20 +49,13 @@ public class ConsolaEmpleado {
 				lector.nextLine();
 				System.out.print("Alérgenos: ");
 				String alergenos = lector.nextLine();
-				ArrayList<String> alergenosLista;
-				if(alergenos.isBlank()) {
-					alergenosLista = new ArrayList<>();
-				}
-				else {
-					String[] alergenoslista = alergenos.split("\\s*,\\s*");
-					alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
-				}
+				ArrayList<String> alergenosLista = leerAlergenos(alergenos);
 				Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
 				miCafe.agregarUsuario(nuevoC);
 				break;
 
 			case 2:
-				miCafe.getEmpleados().add(new Mesero(id, login, password, nombre));
+				registrarMesero(id, nombre, login, password, miCafe);
 				break;
 
 			case 3:
@@ -100,7 +74,7 @@ public class ConsolaEmpleado {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
 	}
-	public Empleado autenticarEmpleado() {
+	public Empleado autenticarUsuario() {
 		// 1. Autenticación del Empleado
 		System.out.print("Login del Empleado: ");
 		String loginEmp = lector.nextLine();
@@ -117,11 +91,6 @@ public class ConsolaEmpleado {
 		return null;
 	}
 
-	public boolean mismoDia(Calendar c1, Calendar c2) {
-		return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
-				&& c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH);
-	}
-
 	public boolean tieneTurno(List<Calendar> turnos, Calendar buscado) {
 		for (Calendar c : turnos) {
 			if (mismoDia(c, buscado)) {
@@ -133,7 +102,7 @@ public class ConsolaEmpleado {
 
 	public void solicitarJuego() {
 		System.out.println("\n--- PRÉSTAMO DE JUEGOS ---");
-		Empleado empleadoActivo = autenticarEmpleado();
+		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) return;
 		Calendar hoy = Calendar.getInstance();
 
@@ -183,7 +152,7 @@ public class ConsolaEmpleado {
 		}
 	}
 		public void sugerirPlatillo (Scanner lectorMenu){
-			Empleado empleadoActivo = autenticarEmpleado();
+			Empleado empleadoActivo = autenticarUsuario();
 			if (empleadoActivo == null) {
 				return;
 			}
@@ -195,14 +164,7 @@ public class ConsolaEmpleado {
 				lectorMenu.nextLine();
 				System.out.println("Ingrese los alergenos del producto separados por comas, si no hay pulse enter: ");
 				String alergenos = lectorMenu.nextLine();
-				ArrayList<String> alergenosLista;
-				if(alergenos.isBlank()) {
-					alergenosLista = new ArrayList<>();
-				}
-				else {
-					String[] alergenoslista = alergenos.split("\\s*,\\s*");
-					alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
-				}
+				ArrayList<String> alergenosLista = leerAlergenos(alergenos);
 				System.out.println("Ingrese el id del producto: ");
 				try {
 					int id = lectorMenu.nextInt();
@@ -276,7 +238,7 @@ public class ConsolaEmpleado {
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 
-		Empleado empleadoActivo = autenticarEmpleado();
+		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) {
 			return;
 		}
@@ -335,7 +297,7 @@ public class ConsolaEmpleado {
 
 			// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 
-			Empleado empleadoActivo = autenticarEmpleado();
+			Empleado empleadoActivo = autenticarUsuario();
 			if (empleadoActivo == null) {
 				return;
 			}
@@ -401,12 +363,12 @@ public class ConsolaEmpleado {
 			lector.nextLine();
 
 			if (cat == 1) {
-				mostrarYAgregar(miCafe.getJuegosVenta(), carrito);
+				agregarProductoACarrito(miCafe.getJuegosVenta(), carrito);
 			} else if (cat == 2) {
 				List<Producto> menuCompleto = new ArrayList<>();
 				menuCompleto.addAll(miCafe.getMenuPlatillos());
 				menuCompleto.addAll(miCafe.getMenuBebidas());
-				mostrarYAgregar(menuCompleto, carrito);
+				agregarProductoACarrito(menuCompleto, carrito);
 			} else if (cat == 3) {
 				if (carrito.isEmpty()) {
 					System.out.println("El carrito está vacío. Compra cancelada.");
@@ -443,53 +405,7 @@ public class ConsolaEmpleado {
 
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
-			imprimirFacturaDetallada(t, u);
+			imprimirFactura(t, u);
 		}
-	}
-
-	private void imprimirFacturaDetallada(Transaccion t, Usuario u) {
-		String verde = "\u001B[32m";
-		String cursiva = "\u001B[3m";
-		String reset = "\u001B[0m";
-
-		System.out.println("\n========================================");
-		System.out.println("           FACTURA DE VENTA           ");
-		System.out.println("          ID: " + t.getId());
-		System.out.println("========================================");
-		System.out.println("Fecha: " + t.getFecha().getTime());
-		System.out.println("Cliente: " + u.getNombre());
-		System.out.println("----------------------------------------");
-
-		double subtotalNeto = 0;
-		double totalImpuestos = 0;
-
-		// Listar productos comprados
-		for (Producto p : t.getProductos()) {
-			double precioBase = p.getPrecio();
-			double tasa = p.getTasaImpuesto(); // IVA o Impoconsumo
-			double impuestoProducto = precioBase * tasa;
-
-			System.out.printf("- %-18s | $%d (Imp: %.0f%%)\n", p.getNombre(), (int) precioBase, tasa * 100);
-
-			subtotalNeto += precioBase;
-			totalImpuestos += impuestoProducto;
-		}
-
-		// Cálculos de totales
-		double totalConImpuestos = subtotalNeto + totalImpuestos;
-		int totalPagar = t.calcularTotal(); // Este ya trae los descuentos aplicados
-		double ahorro = totalConImpuestos - totalPagar;
-
-		System.out.println("----------------------------------------");
-		System.out.println("Subtotal (Base):     $" + (int) subtotalNeto);
-		System.out.println("Total Impuestos:     $" + (int) totalImpuestos);
-
-		if (ahorro > 0) {
-			System.out.println(cursiva + "Ahorro aplicado:    -$" + (int) ahorro + reset);
-		}
-
-		System.out.println("----------------------------------------");
-		System.out.println(verde + "TOTAL A PAGAR:       $" + totalPagar + reset);
-		System.out.println("========================================\n");
 	}
 }

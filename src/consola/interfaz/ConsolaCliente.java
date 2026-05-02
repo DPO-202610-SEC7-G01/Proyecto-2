@@ -1,33 +1,32 @@
 package consola.interfaz;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Random;
+import java.util.*;
 
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
 
-public class ConsolaCliente {
+public class ConsolaCliente extends consolaAbstract{
 	
-	static private Cafe miCafe;
-	private Scanner lector;
-	private Random aleatorio;
-	
-	public ConsolaCliente(Cafe cafe) {
-        ConsolaCliente.miCafe = cafe;
-    }
-	
-	public void registrarCliente(int id, String nombre, String login, String password, Cafe miCafe) {
+	public ConsolaCliente(Cafe cafe){
+		super(cafe);
+	}
+
+	public void registrarUsuarioNuevo(int id, String nombre, String login, String password, Cafe miCafe) {
 		System.out.print("Edad: ");
 		int edad = lector.nextInt();
 		lector.nextLine();
 		System.out.print("Alérgenos: ");
 		String alergenos = lector.nextLine();
-
-		Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenos);
+		ArrayList<String> alergenosLista;
+		if(alergenos.isBlank()) {
+			alergenosLista = new ArrayList<>();
+		}
+		else {
+			String[] alergenoslista = alergenos.split("\\s*,\\s*");
+			alergenosLista = new ArrayList<>(Arrays.asList(alergenoslista));
+		}
+		Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
 		miCafe.getClientes().add(nuevoC);
 	}
 	
