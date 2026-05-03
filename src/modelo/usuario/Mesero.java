@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import exceptions.InvalidCredentialsException;
 import exceptions.JuegoNoAptoException;
 import modelo.producto.*;
 import modelo.*;
@@ -16,7 +17,7 @@ public class Mesero extends Empleado{
 	
 	
 	//Constructor
-	public Mesero(int id, String login, String password, String nombre) {
+	public Mesero(int id, String login, String password, String nombre) throws InvalidCredentialsException {
 		super(id, login, password, nombre);
 		this.juegosConocidos= new ArrayList<>();
 		this.reservasAsignadas = new ArrayList<>();

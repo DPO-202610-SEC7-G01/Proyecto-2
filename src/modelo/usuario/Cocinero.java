@@ -3,6 +3,7 @@ package modelo.usuario;
 import java.util.ArrayList;
 import java.util.List;
 
+import exceptions.InvalidCredentialsException;
 import modelo.producto.Bebida;
 import modelo.producto.Platillo;
 
@@ -11,7 +12,7 @@ public class Cocinero extends Empleado{
 	private List<Bebida> bebidasConocidas;
 	
 	//Constructor
-	public Cocinero(int id, String login, String password, String nombre) {
+	public Cocinero(int id, String login, String password, String nombre) throws InvalidCredentialsException {
 		super(id, login, password, nombre);
 		this.bebidasConocidas = new ArrayList<Bebida>();
 		this.platillosConocidos = new ArrayList<Platillo>();

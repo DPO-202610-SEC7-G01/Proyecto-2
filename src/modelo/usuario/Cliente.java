@@ -18,7 +18,7 @@ public class Cliente extends Usuario {
 	private ArrayList<Torneo> torneosInscritos;
 	
 	//Constructor
-	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) {
+	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) throws InvalidCredentialsException {
 		super(id, login, password, nombre);
 		this.edad = edad;
 		this.puntosFidelidad = 0;

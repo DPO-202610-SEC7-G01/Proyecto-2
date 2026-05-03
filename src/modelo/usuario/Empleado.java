@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import exceptions.InvalidCredentialsException;
 import exceptions.TorneoException;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Empleado extends Usuario {
     private ArrayList<Torneo> torneosInscritos;
     
     // Constructor
-    public Empleado(int id, String login, String password, String nombre) {
+    public Empleado(int id, String login, String password, String nombre) throws InvalidCredentialsException {
         super(id, login, password, nombre);
         this.puntosFidelidad = 0;
         this.turnos = new ArrayList<>();
