@@ -181,4 +181,11 @@ public class Empleado extends Usuario {
 	    }
 	    return false;
 	}
+    public ArrayList<Calendar> getListaFechas(){
+        ArrayList<Calendar> fechas = new ArrayList<>();
+        for(Turno turno: turnos){
+            fechas.add(turno.getFecha());
+        }
+        return fechas;
+    }
 }

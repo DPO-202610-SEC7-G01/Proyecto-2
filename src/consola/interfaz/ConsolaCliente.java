@@ -42,7 +42,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 	}
 	@Override
 	public Cliente autenticarUsuario(){
-		// 1. Autenticación del Empleado
+		// 1. Autenticación del Cliente
 		System.out.print("Login del Cliente: ");
 		String loginEmp = lector.nextLine();
 		System.out.print("Contraseña del Cliente: ");

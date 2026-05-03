@@ -33,6 +33,9 @@ abstract class ConsolaAbstract {
             if (e.getLogin().equals(login))
                 return e;
         }
+        if(login.equals(miCafe.getAdmin().getLogin())) {
+            return miCafe.getAdmin();
+        }
         return null;
     }
     public ArrayList<String> leerAlergenos(String alergenos) {

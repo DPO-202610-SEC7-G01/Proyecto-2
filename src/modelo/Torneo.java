@@ -189,10 +189,11 @@ public class Torneo {
     public void ganador(Usuario usuario) {
         if (usuario instanceof Cliente) {
             Cliente cliente = (Cliente) usuario;
-             cliente.agregarPremio(premio);
+            cliente.agregarPremio(premio);
         } 
         
         else if (usuario instanceof Empleado) {
+            //TODO manejo para empleados
         }
        
         String registroGanador = usuario.getNombre() + " - " + this.nombre;

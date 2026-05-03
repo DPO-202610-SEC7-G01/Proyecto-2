@@ -1,25 +1,27 @@
 package consola.interfaz;
 
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Scanner;
 
+import exceptions.CategoriaInvalidaException;
+import exceptions.NumeroJugadoresExcedidoException;
+import exceptions.RestriccionEdadInvalidaException;
 import modelo.*;
 import modelo.usuario.*;
 import modelo.producto.*;
 
-public class ConsolaAdministrador {
-	
-	//Objetos Constantes
-	static private Cafe miCafe;
-	private static Scanner lector = new Scanner(System.in);//Objeto scanner para leer entradas
-	
-	
-	 public ConsolaAdministrador(Cafe cafe) {
-	        ConsolaAdministrador.miCafe = cafe;
-	    }
+public class ConsolaAdministrador extends ConsolaAbstract{
+
+	public ConsolaAdministrador(Cafe cafe){
+		super(cafe);
+	}
 	  
-	public  void registrarAdmin() {
+	public  void registrarUsuarioNuevo() {
 		System.out.println("Bienvenido Nuevo Administrador\n");
 		System.out.print("Ingrese su Nombre completo: ");
 		String nombre = lector.nextLine();
@@ -31,9 +33,24 @@ public class ConsolaAdministrador {
 		miCafe.cambiarAdmin(new Administrador(00, login, password, nombre, miCafe)); 
 		System.out.println("Registro exitoso para " + nombre + "con el login: " + login +"\n");
 	}
+	public Usuario autenticarUsuario(){
+		// 1. Autenticación del Administrador
+		System.out.print("Login del Administrador: ");
+		String loginEmp = lector.nextLine();
+		System.out.print("Contraseña del Administrador: ");
+		String passEmp = lector.nextLine();
+
+		Usuario auth = buscarUsuario(loginEmp);
+
+		// Validamos que el usuario exista, sea un administrador y la contraseña coincida
+		if (auth instanceof Administrador && auth.getPassword().equals(passEmp)) {
+			return (Administrador) auth;
+		}
+		System.out.println("El inicio de sesion ha fallado, intente de nuevo.");
+		return null;
+	}
 	
-	
-	public void registrarNuevoJuego() { //Acá hace falta mirar la persistencia para cargarlo 
+	public void registrarNuevoJuego() throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException { //Acá hace falta mirar la persistencia para cargarlo
 	    Scanner sc = new Scanner(System.in);
 	    System.out.println("\n--- Registro de Nuevo Juego ---");
 
@@ -49,84 +66,18 @@ public class ConsolaAdministrador {
 	    System.out.print("Restricción Edad: "); String edad = sc.nextLine();
 	    System.out.print("Categoría: "); String cat = sc.nextLine();
 
-	    System.out.print("¿Es un juego difícil? (si/no): ");
+	    System.out.print("¿Es un juego difícil? (y/n): ");
 	    String esDificil = sc.nextLine().toLowerCase();
 
 	    Juego nuevoJuego;
-	    if (esDificil.equals("si")) {
+	    if (esDificil.equals("y")) {
 	        System.out.print("Ingrese Instrucciones Especiales: ");
 	        String instrucciones = sc.nextLine();
 	        nuevoJuego = new JuegoDificil(id, precio, nombre, anio, empresa, numJug, edad, cat, instrucciones);
 	    } else {
 	        nuevoJuego = new Juego(id, precio, nombre, anio, empresa, numJug, edad, cat);
 	    }
-
-	    System.out.print("¿Destino? (1. Préstamo / 2. Venta): ");
-	    int tipo = sc.nextInt();
-
-	    if (tipo == 1) {
-	        miCafe.getJuegosPrestamo().add(nuevoJuego);
-	        System.out.println("Juego añadido a PRÉSTAMO.");
-	    } else if (tipo == 2) {
-	        miCafe.getJuegosVenta().add(nuevoJuego);
-	        System.out.println("Juego añadido a VENTA.");
-	    }
-	}
-	
-
-	public boolean validarAdmin() {
-	    Scanner sc = new Scanner(System.in);
-	    
-	    System.out.println("--- Autenticación de Administrador ---");
-	    System.out.print("Login: ");
-	    String loginIngresado = sc.nextLine();
-	    
-	    System.out.print("Contraseña: ");
-	    String passwordIngresada = sc.nextLine();
-
-	    // Comparamos con el administrador guardado en el Café
-	    if (miCafe.getAdmin().getLogin().equals(loginIngresado) && 
-	        miCafe.getAdmin().getPassword().equals(passwordIngresada)) {
-	        return true;
-	    } else {
-	        System.out.println("Error: Credenciales incorrectas.");
-	        return false;
-	    }
-	}
-	
-	public void registrarNuevoJuego() {
-
-	    // Si llegamos aquí, es porque el admin es válido
-	    Scanner sc = new Scanner(System.in);
-	    System.out.println("\n--- Registro de Nuevo Juego ---");
-
-	    System.out.print("ID: "); int id = sc.nextInt();
-	    System.out.print("Precio: "); int precio = sc.nextInt();
-	    sc.nextLine(); // Limpiar buffer
-	    System.out.print("Nombre: "); String nombre = sc.nextLine();
-	    System.out.print("Año: "); int anio = sc.nextInt();
-	    sc.nextLine(); 
-	    System.out.print("Empresa Matriz: "); String empresa = sc.nextLine();
-	    System.out.print("Num. Jugadores: "); int numJug = sc.nextInt();
-	    sc.nextLine();
-	    System.out.print("Restricción Edad: "); String edad = sc.nextLine();
-	    System.out.print("Categoría: "); String cat = sc.nextLine();
-
-	    System.out.print("¿Es un juego difícil? (si/no): ");
-	    String esDificil = sc.nextLine().toLowerCase();
-
-	    Juego nuevoJuego;
-	    if (esDificil.equals("si")) {
-	        System.out.print("Ingrese Instrucciones Especiales: ");
-	        String instrucciones = sc.nextLine();
-	        nuevoJuego = new JuegoDificil(id, precio, nombre, anio, empresa, numJug, edad, cat, instrucciones);
-	    } else {
-	        nuevoJuego = new Juego(id, precio, nombre, anio, empresa, numJug, edad, cat);
-	    }
-
-	    System.out.print("¿Destino? (1. Préstamo / 2. Venta): ");
-	    int tipo = sc.nextInt();
-
+		int tipo = leerEntero("¿Destino? (1. Préstamo / 2. Venta): ");
 	    if (tipo == 1) {
 	        miCafe.getJuegosPrestamo().add(nuevoJuego);
 	        System.out.println("Juego añadido a PRÉSTAMO.");
@@ -140,8 +91,10 @@ public class ConsolaAdministrador {
 		System.out.println("\n--- AGREGAR TURNO A EMPLEADO ---");
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
-
-		Empleado empleadoActivo = autenticarEmpleado();
+		System.out.println("Ingrese el login del empleado del cual desea agregar el turno: ");
+		String login = lector.nextLine();
+		lector.nextLine();
+		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
 		if (empleadoActivo == null) {
 			return;
 		}
@@ -154,11 +107,12 @@ public class ConsolaAdministrador {
 		Calendar cal = Calendar.getInstance();
 		cal.set(fecha.getYear(), fecha.getMonthValue() - 1, fecha.getDayOfMonth());
 		// Evita duplicar el turno
-		if (tieneTurno(empleadoActivo.getTurno(), cal)) {
+		if (tieneTurno(empleadoActivo.getListaFechas(), cal)) {
 			System.out.println("El empleado ya tiene este turno asignado.");
 			return;
 		} else {
-			empleadoActivo.agregarTurno(cal);
+			Turno turno = new Turno(cal);
+			empleadoActivo.agregarTurno(turno);
 			System.out.println("Turno asignado con exito.");
 		}
 	}
@@ -167,10 +121,9 @@ public class ConsolaAdministrador {
 		System.out.println("0. Consultar turno de empleado.");
 		System.out.println("1. Agregar turno de empleado.");
 		System.out.println("2. Solicitar cambio de turno de empleado.");
-		System.out.println("Ingrese la opcion deseada: ");
+
 		try {
-			opcion = lectorMenu.nextInt();
-			lectorMenu.nextLine();
+			int opcion = leerEntero("Ingrese la opcion deseada: ");
 			switch (opcion) {
 			case 0:
 				consultarTurno();
@@ -406,49 +359,7 @@ public class ConsolaAdministrador {
 		                break;
 		        }
 		    } 
-		
-		
-		public void registrarNuevoJuego() {
 
-		    // Si llegamos aquí, es porque el admin es válido
-		    Scanner sc = new Scanner(System.in);
-		    System.out.println("\n--- Registro de Nuevo Juego ---");
-
-		    System.out.print("ID: "); int id = sc.nextInt();
-		    System.out.print("Precio: "); int precio = sc.nextInt();
-		    sc.nextLine(); // Limpiar buffer
-		    System.out.print("Nombre: "); String nombre = sc.nextLine();
-		    System.out.print("Año: "); int anio = sc.nextInt();
-		    sc.nextLine(); 
-		    System.out.print("Empresa Matriz: "); String empresa = sc.nextLine();
-		    System.out.print("Num. Jugadores: "); int numJug = sc.nextInt();
-		    sc.nextLine();
-		    System.out.print("Restricción Edad: "); String edad = sc.nextLine();
-		    System.out.print("Categoría: "); String cat = sc.nextLine();
-
-		    System.out.print("¿Es un juego difícil? (si/no): ");
-		    String esDificil = sc.nextLine().toLowerCase();
-
-		    Juego nuevoJuego;
-		    if (esDificil.equals("si")) {
-		        System.out.print("Ingrese Instrucciones Especiales: ");
-		        String instrucciones = sc.nextLine();
-		        nuevoJuego = new JuegoDificil(id, precio, nombre, anio, empresa, numJug, edad, cat, instrucciones);
-		    } else {
-		        nuevoJuego = new Juego(id, precio, nombre, anio, empresa, numJug, edad, cat);
-		    }
-
-		    System.out.print("¿Destino? (1. Préstamo / 2. Venta): ");
-		    int tipo = sc.nextInt();
-
-		    if (tipo == 1) {
-		        miCafe.getJuegosPrestamo().add(nuevoJuego);
-		        System.out.println("Juego añadido a PRÉSTAMO.");
-		    } else if (tipo == 2) {
-		        miCafe.getJuegosVenta().add(nuevoJuego);
-		        System.out.println("Juego añadido a VENTA.");
-		    }
-		}
 		
 		public void aceptarPlatillo() {
 		    // 1. Reutilizamos la función de validación que separamos antes
@@ -548,7 +459,7 @@ public class ConsolaAdministrador {
 					&& c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH);
 		}
 
-		public boolean tieneTurno(List<Calendar> turnos, Calendar buscado) {
+		public boolean tieneTurno(ArrayList<Calendar> turnos, Calendar buscado) {
 			for (Calendar c : turnos) {
 				if (mismoDia(c, buscado)) {
 					return true;

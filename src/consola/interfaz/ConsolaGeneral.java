@@ -89,7 +89,7 @@ public class ConsolaGeneral {
 		
 		switch (tipo) {
 		case 1:
-			consolaCliente.registrarCliente(id,nombre,login,password,miCafe);
+			consolaCliente.registrarUsuarioNuevo();
 			break;
 		case 2:
 			consolaEmpleado.registrarMesero(id,nombre,login,password,miCafe);
