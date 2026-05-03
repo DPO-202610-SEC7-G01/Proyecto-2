@@ -2,6 +2,7 @@ package modelo.usuario;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import exceptions.*;
 import modelo.*;
