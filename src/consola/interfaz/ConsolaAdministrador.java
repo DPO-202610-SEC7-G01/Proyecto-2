@@ -33,8 +33,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		miCafe.cambiarAdmin(new Administrador(00, login, password, nombre, miCafe)); 
 		System.out.println("Registro exitoso para " + nombre + "con el login: " + login +"\n");
 	}
+	
 	public Usuario autenticarUsuario(){
-		// 1. Autenticación del Administrador
 		System.out.print("Login del Administrador: ");
 		String loginEmp = lector.nextLine();
 		System.out.print("Contraseña del Administrador: ");

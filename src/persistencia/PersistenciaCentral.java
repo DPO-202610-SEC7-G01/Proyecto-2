@@ -1,6 +1,7 @@
 package persistencia;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,7 +11,6 @@ import java.util.Calendar;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import exceptions.FileNotFoundException;
 
 public class PersistenciaCentral {
 	

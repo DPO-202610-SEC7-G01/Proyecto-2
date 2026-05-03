@@ -374,4 +374,44 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			imprimirFactura(t, e);
 		}
 	}
+	
+	public static void main(Cafe miCafe) {
+		Scanner lectorMenu = new Scanner(System.in);
+		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);
+
+		int opcion = 0;
+		
+		do {
+			System.out.println("\n--- Bienvenido Administrador ---");
+			System.out.println("0.  Registrarse Primera Vez ");
+			System.out.println("1. Cambiar Contraseña");
+			System.out.println("2. Opciones de Administrador");
+			System.out.println("3. Opciones de Empleado");
+			System.out.println("4. Opciones de Cliente");
+			System.out.println("5. Salir");
+			System.out.print("Seleccione una opción: ");
+
+			try {
+				opcion = lectorMenu.nextInt();
+				lectorMenu.nextLine();
+
+				switch (opcion) {
+				case 0:
+					consola.registrarNuevoJuego();
+					break;
+				case 1:
+					System.out.println("Saliendo del sistema... ¡Hasta luego!");
+					return;
+				}
+			} catch (Exception e) {
+				System.out.println(" Ingrese un número válido.");
+				lectorMenu.nextLine();
+				opcion = 0;
+			}
+
+		} while (opcion != 1);
+
+		lectorMenu.close();
+	}
+	
 }

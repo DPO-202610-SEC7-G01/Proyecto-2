@@ -114,7 +114,7 @@ public class Administrador extends Usuario {
 	}
 	
 	//COMIDA
-	public void crearPlatillo(int id, int precio, String nombre, String alergenos) {
+	public void crearPlatillo(int id, int precio, String nombre, ArrayList<String> alergenos) {
 	    Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
 	    miCafe.getMenuPlatillos().add(nuevoPlatillo);
 	}

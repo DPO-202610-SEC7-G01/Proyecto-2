@@ -1,15 +1,21 @@
-package persistencia; // Ajusta el package según tu estructura
+package persistencia; 
 
+
+//utils
 import java.io.IOException;
 import java.util.ArrayList;
-
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+//exception
+import org.json.JSONException;
+import java.io.FileNotFoundException;
+import exceptions.*;
+
+//modelo 
 import modelo.*;
 import modelo.producto.*;
-import exceptions.*;
+
 
 public class PersistenciaProductos extends PersistenciaCentral{
     

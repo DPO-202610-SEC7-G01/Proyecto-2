@@ -1,16 +1,17 @@
 package persistencia;
 
-import java.io.IOException;
+//utils
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import exceptions.CategoriaInvalidaException;
-import exceptions.FileNotFoundException;
-import exceptions.NumeroJugadoresExcedidoException;
-import exceptions.RestriccionEdadInvalidaException;
+//exceptions
+import exceptions.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+//modelo
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;

@@ -1,19 +1,23 @@
 package persistencia;
 
+//util
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+//exceptions
 import exceptions.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import org.json.JSONException;
+
+//modelo
 import modelo.*;
 import modelo.usuario.*;
 import modelo.producto.*;

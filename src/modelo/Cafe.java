@@ -1,14 +1,18 @@
 package modelo;
 
-import java.io.IOException;
+//utils
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+//exceptions
 import org.json.JSONException;
-
 import exceptions.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+//modelo
 import modelo.usuario.*;
 import modelo.producto.*;
 import persistencia.*;

@@ -38,6 +38,7 @@ abstract class ConsolaAbstract {
         }
         return null;
     }
+    
     public ArrayList<String> leerAlergenos(String alergenos) {
         if (alergenos.isBlank()) {
             return new ArrayList<>();

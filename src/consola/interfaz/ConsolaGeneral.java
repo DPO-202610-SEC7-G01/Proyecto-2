@@ -1,15 +1,13 @@
 package consola.interfaz;
 
+//utils
 import java.util.Scanner;
-
 import org.json.JSONException;
 
-import exceptions.CategoriaInvalidaException;
+
 //Exceptiones
-import exceptions.FileNotFoundException;
-import exceptions.NumeroJugadoresExcedidoException;
-import exceptions.RestriccionEdadInvalidaException;
-import exceptions.UserNotFoundException;
+import exceptions.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -17,16 +15,13 @@ import java.io.IOException;
 import modelo.*;
 import modelo.usuario.*;
 
-
 //Perdón amigos si hay muchos comentarios sino que me parece
 // importante  tener como muy claro u.u 
 //Luego si algo lo borraré 
 
 public class ConsolaGeneral {
 	//Otros
-	private static Scanner lector; //Objeto scanner para leer entradas
-
-	//Persistencia
+	private static Scanner lector; 
 
 	//Consolas 
 	private ConsolaAdministrador consolaAdmin;
@@ -65,7 +60,7 @@ public class ConsolaGeneral {
 				
 	}
 	
-	public void registrarUsuarioNuevo() throws UserNotFoundException {
+	public void registrarUsuarioNuevo() throws InvalidCredentialsException {
 		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
 		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero | 4. Admin ");
 		System.out.print("Seleccione: ");
@@ -98,7 +93,7 @@ public class ConsolaGeneral {
 			consolaEmpleado.registrarCocinero(id,nombre,login,password,miCafe);
 			break;
 		case 4:
-			consolaAdmin.registrarAdmin();
+			consolaAdmin.registrarUsuarioNuevo();
 			break;
 
 		default:
@@ -110,10 +105,10 @@ public class ConsolaGeneral {
 	}
 	
 	
-	private Usuario buscarUsuario(String login) throws UserNotFoundException {
-		if (miCafe.getAdmin().getLogin().contains(login)) {
-			return miCafe.getAdmin();
-		}
+	private Usuario buscarUsuario(String login) throws InvalidCredentialsException {
+	    if (miCafe.getAdmin().getLogin().contains(login)) {
+	        return miCafe.getAdmin();
+	    }
 	    for (Cliente c : miCafe.getClientes()) {
 	        if (c.getLogin().equals(login))
 	            return c;
@@ -122,34 +117,37 @@ public class ConsolaGeneral {
 	        if (e.getLogin().equals(login))
 	            return e;
 	    }
-	    throw new UserNotFoundException("Usuario con login '" + login + "' no encontrado");
+	     throw new InvalidCredentialsException(login, true); 
 	}
 
 	
-	public void cambioContraseña() throws UserNotFoundException {
-		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
-		System.out.print("Ingrese su login de usuario: ");
-		String loginBusqueda = lector.nextLine();
+	public void cambioContraseña() throws InvalidCredentialsException {
+	    System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
+	    System.out.print("Ingrese su login de usuario: ");
+	    String loginBusqueda = lector.nextLine();
 
-		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-		System.out.print("Ingrese la nueva contraseña: ");
-		String nuevaPass = lector.nextLine();
+	    Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+	    System.out.print("Ingrese la nueva contraseña: ");
+	    String nuevaPass = lector.nextLine();
 
-		usuarioEncontrado.setPassword(nuevaPass);
+	    usuarioEncontrado.setPassword(nuevaPass);
+	    System.out.println("Contraseña actualizada correctamente");
 	}
+	
 
-	public Usuario verificarUsuario() throws UserNotFoundException {
-		System.out.print("Ingrese su login de usuario: ");
-		String loginBusqueda = lector.nextLine();
+	public Usuario verificarUsuario() throws InvalidCredentialsException {
+	    System.out.print("Ingrese su login de usuario: ");
+	    String loginBusqueda = lector.nextLine();
 
-		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-		System.out.print("Ingrese contraseña: ");
-		String contraseña = lector.nextLine();
-		if (contraseña.equals(usuarioEncontrado.getPassword())) {
-			return usuarioEncontrado;
-		}
-		
-		throw new UserNotFoundException("Usuario con login '" + loginBusqueda + "' no encontrado");
+	    Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+	    System.out.print("Ingrese contraseña: ");
+	    String contraseña = lector.nextLine();
+	    
+	    if (contraseña.equals(usuarioEncontrado.getPassword())) {
+	        return usuarioEncontrado;
+	    }
+	    
+	    throw new InvalidCredentialsException(loginBusqueda, false);
 	}
 
 	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException,
@@ -165,7 +163,7 @@ public class ConsolaGeneral {
 		System.out.println("BIENVENIDO A DULCES N DADOS ");
 		
 		if (miCafe.getAdmin()== null ) { //Registrar un nuevo admin si no hay uno en el café 
-			consolaAdmin.registrarAdmin();
+			consolaAdmin.registrarUsuarioNuevo();
 		}
 		
 		do {
@@ -198,13 +196,13 @@ public class ConsolaGeneral {
 				case 3:
 					Usuario empleado=consola.verificarUsuario();
 					if(empleado instanceof Empleado) {
-						//
+						ConsolaEmpleado.main(miCafe);
 					}
 					return;
 				case 4:
 					Usuario cliente=consola.verificarUsuario();
 					if(cliente instanceof Administrador) {
-						//
+						ConsolaCliente.main(miCafe);
 					}
 					return;
 				case 5:
