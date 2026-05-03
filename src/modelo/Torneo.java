@@ -26,15 +26,15 @@ public class Torneo {
 	//Constructor
     public Torneo(String tipo, String nombre, Juego juego, int numParticipantes, int precio)
     		throws NumeroJugadoresExcedidoException {
-        this.tipo = tipo;
-        this.nombre = nombre;
-        this.juego = juego;
-        this.precio = precio;
-        this.activo = true;
+        this.tipo = tipo; // solo puede ser amistoso o competitivo
+        this.nombre = nombre; // cualqquiera 
+        this.juego = juego; 
+        this.precio = precio; // si es amistoso debe ser gratis
+        this.activo = true; // obvio
         
         this.fanaticos = new ArrayList<Usuario>();
         this.participantes = new ArrayList<Usuario>();
-        this.fecha = Calendar.getInstance();
+        this.fecha = Calendar.getInstance(); // debe ser el día de hoy 
         this.premio = "";
         validarYAsignarParticipantes(juego, numParticipantes, miCafe);
         agregarFanaticosDelJuego();
@@ -79,7 +79,7 @@ public class Torneo {
             throw new TorneoException("El participante ya está inscrito en este torneo", "YA_INSCRITO");
         }
         
-        if (!hayCupoDisponible(participante)) { //Miramos si no hay cupo para este usuario
+        if (!hayCupoDisponible(participante)) { 
             boolean fanatico = esFanatico(participante);
             String tipoCupo = fanatico ? "fanáticos" : "normales";
             throw new TorneoException("No hay cupos " + tipoCupo + " disponibles", "SIN_CUPOS");

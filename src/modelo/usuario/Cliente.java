@@ -20,12 +20,12 @@ public class Cliente extends Usuario {
 	//Constructor
 	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) throws InvalidCredentialsException {
 		super(id, login, password, nombre); //Esto ya se probó
+		this.alergenos= alergenos ; // que no hayan numeros en los alergenos
 		
-		
-		this.edad = edad; // hay que mirar que sea positivo
-		this.alergenos= alergenos ; //que no tengan numeros los alergenos
-		
-		
+	    if (edad <= 0) {
+	        throw new InvalidCredentialsException("edad", "La edad debe ser un número positivo mayor a cero.");
+	    }
+	
 		this.puntosFidelidad = 0;
 		
 		this.juegosFavoritos = new ArrayList<Juego>();

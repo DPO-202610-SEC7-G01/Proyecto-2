@@ -170,7 +170,7 @@ public class Empleado extends Usuario {
 	    	throw new TorneoException("El empleado " + getNombre() + " está en turno el día " + fechaStr, "EMPLEADO_EN_TURNO");
 	    }
 	    
-	    torneo.agregarParticipantes(this); // Hay que verificar que si hayan cupos 
+	    torneo.agregarParticipantes(this);
 	    torneosInscritos.add(torneo);
 	}
     
