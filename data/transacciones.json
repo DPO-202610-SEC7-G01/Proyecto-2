@@ -1,36 +1,36 @@
-[[
+[
   {
     "id": 1001,
     "fecha": "2026-04-20",
     "productos": [
-		{
-		    "id": 101,
-		    "precio": 25000,
-		    "nombre": "Sandwich de Pavo",
-		    "alergenos": "Gluten, Lácteos"
-		  },
+      {
+        "id": 101,
+        "precio": 25000,
+        "nombre": "Sandwich de Pavo",
+        "alergenos": ["Gluten", "Lácteos"]
+      },
       {
         "id": 504,
         "precio": 95000,
         "nombre": "Dixit",
-        "anioLanzamiento": 2008,
-        "editorial": "Libellud",
-        "numeroJugadores": 6,
-        "clasificacion": "Adultos",
-        "tipo": "Cartas"
+        "anioPublicacion": 2008,
+        "empresMatriz": "Libellud",
+        "numJugadores": 6,
+        "restriccionEdad": "Adultos",
+        "categoria": "Cartas"
       }
     ],
-    "cliente_final": 	{
-	    "id": 1,
-	    "login": "juanito_99",
-	    "password": "hashed_password_1",
-	    "nombre": "Juan Pérez",
-	    "edad": 24,
-	    "alergenos": "Gluten",
-	    "puntosFidelidad": 0,
-	    "juegosFavoritos": [],
-	    "amigos": false
-	  },
+    "cliente_final": {
+      "id": 1,
+      "login": "juanito99",
+      "password": "hashed_password_1",
+      "nombre": "Juan Pérez",
+      "edad": 24,
+      "alergenos": ["Gluten"],
+      "puntosFidelidad": 0,
+      "juegosFavoritos": [],
+      "amigos": false
+    },
     "amigoEmpleado": false,
     "total_final": 120000
   }

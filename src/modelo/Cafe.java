@@ -20,7 +20,7 @@ import persistencia.*;
 public class Cafe {
 
 	private int capacidad; //
-	private Administrador admin; //Persistencia Implementada
+	private Administrador admin; //
 	private ArrayList<Mesa> mesas; // 
 	private ArrayList<Cliente> clientes; //
 	private ArrayList<Empleado> empleados; //

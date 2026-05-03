@@ -3,26 +3,26 @@
     {
       "fecha": "2026-04-24T10:00:00Z",
       "registro": {
-        "usuario": 		{
-		    "id": 1,
-		    "login": "juanito_99",
-		    "password": "hashed_password_1",
-		    "nombre": "Juan Pérez",
-		    "edad": 24,
-		    "alergenos": "Gluten",
-		    "puntosFidelidad": 0,
-		    "juegosFavoritos": [],
-		    "amigos": false
-		  },
+        "usuario": {
+          "id": 1,
+          "login": "juanito99",
+          "password": "hashed_password_1",
+          "nombre": "Juan Pérez",
+          "edad": 24,
+          "alergenos": ["Gluten"],
+          "puntosFidelidad": 0,
+          "juegosFavoritos": [],
+          "amigos": false
+        },
         "juego": {
           "id": 501,
           "nombre": "Catan",
           "precio": 150000,
-          "anioLanzamiento": 1995,
-          "editorial": "Devir",
-          "numeroJugadores": 4,
-          "clasificacion": "-5 años",
-          "tipo": "Tablero"
+          "anioPublicacion": 1995,
+          "empresMatriz": "Devir",
+          "numJugadores": 4,
+          "restriccionEdad": "-5 años",
+          "categoria": "Tablero"
         }
       }
     }

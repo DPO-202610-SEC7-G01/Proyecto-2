@@ -8,7 +8,9 @@
     "numJugadores": 4,
     "restriccionEdad": "Adultos",
     "categoria": "Tablero",
-    "instrucciones": "Preparar el escenario colocando las losetas según el libro de escenarios. Cada jugador elige un mazo de habilidades y gestiona su agotamiento por fatiga o daño."
+    "instrucciones": "Preparar el escenario colocando las losetas según el libro de escenarios. Cada jugador elige un mazo de habilidades y gestiona su agotamiento por fatiga o daño.",
+	
+	"estado": "libre"
   },
   {
     "id": 502,
@@ -19,6 +21,6 @@
     "numJugadores": 4,
     "restriccionEdad": "Adultos",
     "categoria": "Tablero",
-    "instrucciones": "Los jugadores actúan como espíritus de la naturaleza. Deben jugar cartas de poder para defender la isla de los invasores."
-  }
+    "instrucciones": "Los jugadores actúan como espíritus de la naturaleza. Deben jugar cartas de poder para defender la isla de los invasores.",
+	"estado": "libre"  }
 ]

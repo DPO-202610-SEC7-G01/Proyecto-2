@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "login": "juanito_99",
+    "login": "juanito99",
     "password": "hashed_password_1",
     "nombre": "Juan Pérez",
     "edad": 24,
@@ -12,7 +12,7 @@
   },
   {
     "id": 2,
-    "login": "marta_gamer",
+    "login": "martagamer",
     "password": "hashed_password_2",
     "nombre": "Marta Gómez",
     "edad": 30,
@@ -23,18 +23,18 @@
   },
   {
     "id": 3,
-    "login": "lucas_sky",
+    "login": "lucassky",
     "password": "hashed_password_3",
     "nombre": "Lucas Silva",
     "edad": 19,
-    "alergenos": ["Lactosa"," Frutos Secos"],
+    "alergenos": ["Lactosa", "Frutos Secos"],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": false
   },
   {
     "id": 4,
-    "login": "sofia_dev",
+    "login": "sofiadev",
     "password": "hashed_password_4",
     "nombre": "Sofía Castro",
     "edad": 27,
@@ -45,7 +45,7 @@
   },
   {
     "id": 5,
-    "login": "diego_board",
+    "login": "diegoboard",
     "password": "hashed_password_5",
     "nombre": "Diego Ruiz",
     "edad": 22,

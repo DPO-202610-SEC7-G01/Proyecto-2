@@ -3,20 +3,23 @@
     "id": 501,
     "precio": 150000,
     "nombre": "Catan",
-    "anioLanzamiento": 1995,
-    "editorial": "Devir",
-    "numeroJugadores": 4,
-    "clasificacion": "-5 años",
-    "tipo": "Tablero"
+    "anioPublicacion": 1995,
+    "empresMatriz": "Devir",
+    "numJugadores": 4,
+    "restriccionEdad": "-5",
+    "categoria": "Tablero"	,
+	"estado": "libre"
+	
   },
   {
     "id": 504,
     "precio": 95000,
     "nombre": "Dixit",
-    "anioLanzamiento": 2008,
-    "editorial": "Libellud",
-    "numeroJugadores": 6,
-    "clasificacion": "Adultos",
-    "tipo": "Cartas"
+    "anioPublicacion": 2008,
+    "empresMatriz": "Libellud",
+    "numJugadores": 6,
+    "restriccionEdad": "Adultos",
+    "categoria": "Cartas",
+	"estado": "libre"
   }
 ]

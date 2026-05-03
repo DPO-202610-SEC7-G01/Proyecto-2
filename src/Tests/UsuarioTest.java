@@ -58,7 +58,7 @@ class UsuarioTest {
     
     @Test
     void testGetPassword() {
-        assertEquals(PASSWORD_CORRECTO, usuarioCorrecto.getPassword());
+        assertEquals(PASSWORD_CORRECTO, usuarioCorrecto.getPassword()); 
         assertNotNull(usuarioCorrecto.getPassword());
         assertFalse(usuarioCorrecto.getPassword().isBlank());
     }
@@ -76,6 +76,14 @@ class UsuarioTest {
         assertDoesNotThrow(() -> {
             new UsuarioImpl(1, "juan123", "pass123", "Juan Pérez");
         });
+    }
+    
+    @Test
+    void testIdNegativoLanzaExcepcion() {
+        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+            new UsuarioImpl(-5, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
+        });
+        assertTrue(exception.getMessage().contains("ID no puede ser negativo"));
     }
     
     //login
@@ -117,7 +125,7 @@ class UsuarioTest {
         InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, "", NOMBRE_CORRECTO);
         });
-        assertTrue(exception.getMessage().contains("La constraseña no puede estar vacía"));
+        assertTrue(exception.getMessage().contains("La contraseña no puede estar vacía"));
     }
     
     @Test
@@ -125,14 +133,14 @@ class UsuarioTest {
         InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, null, NOMBRE_CORRECTO);
         });
-        assertTrue(exception.getMessage().contains("La constraseña no puede estar vacía"));
+        assertTrue(exception.getMessage().contains("La contraseña no puede estar vacía"));
     }
     
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "\t", "\n", "  \t  ", " \n\t ", "\t\n "})
     void testPasswordsInvalidosLanzanExcepcion(String passwordInvalido) {
-        assertThrows(InvalidCredentialsException.class, () -> {
+        assertThrows(InvalidCredentialsException.class, () -> { //este da error
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, passwordInvalido, NOMBRE_CORRECTO);
         });
     }

@@ -11,8 +11,12 @@ public abstract class Usuario {
 	
 	//Constructor con Validaciones
     public Usuario(int id, String login, String password, String nombre) throws InvalidCredentialsException {
-        this.id = id; 
-        
+    	if (id < 0) {
+    		throw new InvalidCredentialsException("id", "El ID no puede ser negativo."); 
+    	}
+  
+    	this.id = (id);
+    	
         if (login == null || login.trim().isEmpty()) {  //Exceptions de login
             throw new InvalidCredentialsException("login", "El login no puede estar vacío.");
         }
@@ -21,6 +25,11 @@ public abstract class Usuario {
         }
         this.login = login;
         
+        if (password == null || password.trim().isEmpty()) { ///
+            throw new InvalidCredentialsException("password", "La contraseña no puede estar vacía.");
+        }
+        
+        this.password = password;	
  
         if (nombre == null || nombre.trim().isEmpty()) { //Exceptions de nombre
             throw new InvalidCredentialsException("nombre", "El nombre no puede estar vacío.");
@@ -51,8 +60,5 @@ public abstract class Usuario {
 	public String getNombre() {
 		return nombre;
 	}
-
-	
-	
 	
 }

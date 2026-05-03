@@ -8,29 +8,37 @@ import modelo.producto.Juego;
 import modelo.usuario.*;
 
 public class Torneo {
+	private int numParticipantes;
     private String tipo;
     private Juego juego;
-    private int numParticipantes;
     private int precio;
     private boolean activo;
 	private Cafe miCafe;
-	private ArrayList<Usuario> participantes;
-	private ArrayList<Usuario> fanaticos;
 	private Calendar fecha;
 	private String nombre;
 	private String premio;
+	private ArrayList<Usuario> participantes;
+	private ArrayList<Usuario> fanaticos;
 	
-    public Torneo(String tipo, String nombre, Juego juego, int numParticipantes, int precio) throws NumeroJugadoresExcedidoException {
+	
+	
+	
+	//Constructor
+    public Torneo(String tipo, String nombre, Juego juego, int numParticipantes, int precio)
+    		throws NumeroJugadoresExcedidoException {
         this.tipo = tipo;
         this.nombre = nombre;
         this.juego = juego;
         this.precio = precio;
         this.activo = true;
-        validarYAsignarParticipantes(juego, numParticipantes, miCafe);
-        this.participantes = new ArrayList<Usuario>();
+        
         this.fanaticos = new ArrayList<Usuario>();
+        this.participantes = new ArrayList<Usuario>();
         this.fecha = Calendar.getInstance();
         this.premio = "";
+        validarYAsignarParticipantes(juego, numParticipantes, miCafe);
+        agregarFanaticosDelJuego();
+        
     
     }
     
@@ -80,25 +88,56 @@ public class Torneo {
         participantes.add(participante);
     }
     
-	public void eliminarParticipante(Usuario participante) { // hay que buscarlo en la lista de usuarios
+	public void eliminarParticipante(Usuario participante) { 
 		participantes.remove(participante);
 	}
 	
 	
 	//Métodos   
-	//Agregar los fanáticos del juego 	
-	private boolean esFanatico(Usuario usuario) {
-		 if (usuario instanceof Cliente) {
-			 if(((Cliente) usuario).esFanatico(juego)) {
-				 fanaticos.add(usuario);
-			 }
-			 return((Cliente) usuario).esFanatico(juego) ;
-		 } if(((Mesero) usuario).esFanatico(juego)) {
-			 fanaticos.add(usuario);
-		 }
-		 return ((Empleado) usuario).esFanatico(juego);	    
+
+	private void agregarFanaticosDelJuego() { 	//Agregar los fanáticos del juego 	
+        if (miCafe.getClientes() != null) {
+            for (Cliente cliente : miCafe.getClientes()) {
+                if (cliente.getJuegosFavoritos() != null && cliente.getJuegosFavoritos().contains(juego)) {
+                    if (!fanaticos.contains(cliente)) {
+                        fanaticos.add(cliente);
+                    }
+                }
+            }
+        }
+        if (miCafe.getEmpleados() != null) {
+            for (Empleado empleado : miCafe.getEmpleados()) {
+                if (empleado.getJuegosFavoritos() != null && empleado.getJuegosFavoritos().contains(juego)) {
+                    if (!fanaticos.contains(empleado)) {
+                        fanaticos.add(empleado);
+                    }
+                }
+            }
+        }
 	}
 	
+	
+	
+	 private boolean esFanatico(Usuario usuario) {
+	   ArrayList<Juego> juegosFavoritos = null;
+	        
+	   if (usuario instanceof Cliente) {
+	            juegosFavoritos = ((Cliente) usuario).getJuegosFavoritos();
+	   } else if (usuario instanceof Empleado) {
+	            juegosFavoritos = ((Empleado) usuario).getJuegosFavoritos();
+	   }
+	   if (juegosFavoritos != null) {
+	      for (Juego juegoFav : juegosFavoritos) {
+	           if (juegoFav.getId() == this.juego.getId()) {
+	                return true;
+	            }
+	        }
+	    }
+	        return false;
+	    }
+	
+	 
+	 
 	//Verificar Cupos Disponibles
 	private boolean hayCupoDisponible(Usuario participante) {
 	    int cuposFanaticos = (int) Math.ceil(numParticipantes * 0.2);
@@ -131,7 +170,7 @@ public class Torneo {
             throws NumeroJugadoresExcedidoException {
         int maxPorCopia = juego.getNumJugadores();
         
-        if (numParticipantes < 2) {   // Validar número mínimo
+        if (numParticipantes < 2) {   
             throw new NumeroJugadoresExcedidoException(
                 "Número de participantes inválido: " + numParticipantes + ". Mínimo 2 participantes."
             );
@@ -193,7 +232,6 @@ public class Torneo {
         } 
         
         else if (usuario instanceof Empleado) {
-            //TODO manejo para empleados
         }
        
         String registroGanador = usuario.getNombre() + " - " + this.nombre;

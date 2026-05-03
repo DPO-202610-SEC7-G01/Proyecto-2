@@ -22,9 +22,9 @@ public class Empleado extends Usuario {
     
     // Constructor
     public Empleado(int id, String login, String password, String nombre) throws InvalidCredentialsException {
-        super(id, login, password, nombre);
-        this.puntosFidelidad = 0;
-        this.turnos = new ArrayList<>();
+        super(id, login, password, nombre); 
+        this.puntosFidelidad = 0; 
+        this.turnos = new ArrayList<>(); 
         this.amigos = new ArrayList<>();
         this.juegosFavoritos = new ArrayList<>();
         this.torneosInscritos = new ArrayList<>();
@@ -174,14 +174,7 @@ public class Empleado extends Usuario {
 	    torneosInscritos.add(torneo);
 	}
     
-    public boolean esFanatico(Juego juego) {
-	    for (Juego juegoFav : juegosFavoritos) {
-	        if (juegoFav.getId() == juego.getId()) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
+
     public ArrayList<Calendar> getListaFechas(){
         ArrayList<Calendar> fechas = new ArrayList<>();
         for(Turno turno: turnos){

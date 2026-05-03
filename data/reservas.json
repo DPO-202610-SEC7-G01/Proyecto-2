@@ -1,51 +1,51 @@
 [
   {
     "clientes": [
-		{
-		   "id": 1,
-		   "login": "juanito_99",
-		   "password": "hashed_password_1",
-		   "nombre": "Juan Pérez",
-		   "edad": 24,
-		   "alergenos": "Gluten",
-		   "puntosFidelidad": 0,
-		   "juegosFavoritos": [],
-		   "amigos": false
-		 },
-		 {
-		     "id": 2,
-		     "login": "marta_gamer",
-		     "password": "hashed_password_2",
-		     "nombre": "Marta Gómez",
-		     "edad": 30,
-		     "alergenos": "Ninguno",
-		     "puntosFidelidad": 0,
-		     "juegosFavoritos": [],
-		     "amigos": true
-		   }
+      {
+        "id": 1,
+        "login": "juanito99",
+        "password": "hashed_password_1",
+        "nombre": "Juan Pérez",
+        "edad": 24,
+        "alergenos": ["Gluten"],
+        "puntosFidelidad": 0,
+        "juegosFavoritos": [],
+        "amigos": false
+      },
+      {
+        "id": 2,
+        "login": "martagamer",
+        "password": "hashed_password_2",
+        "nombre": "Marta Gómez",
+        "edad": 30,
+        "alergenos": [],
+        "puntosFidelidad": 0,
+        "juegosFavoritos": [],
+        "amigos": true
+      }
     ],
     "numPersonas": 2,
     "fecha": "2026-05-10T15:30:00Z",
     "productos": [],
-    "totalFactura": 0.0
+    "totalFactura": 0
   },
   {
     "clientes": [
-		{
-		   "id": 4,
-		   "login": "sofia_dev",
-		   "password": "hashed_password_4",
-		   "nombre": "Sofía Castro",
-		   "edad": 27,
-		   "alergenos": "Marisco",
-		   "puntosFidelidad": 0,
-		   "juegosFavoritos": [],
-		   "amigos": false
-		 }
+      {
+        "id": 4,
+        "login": "sofiadev",
+        "password": "hashed_password_4",
+        "nombre": "Sofía Castro",
+        "edad": 27,
+        "alergenos": ["Marisco"],
+        "puntosFidelidad": 0,
+        "juegosFavoritos": [],
+        "amigos": false
+      }
     ],
     "numPersonas": 1,
     "fecha": "2026-05-12T19:00:00Z",
     "productos": [],
-    "totalFactura": 0.0
+    "totalFactura": 0
   }
 ]

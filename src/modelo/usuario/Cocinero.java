@@ -24,16 +24,20 @@ public class Cocinero extends Empleado{
 		return platillosConocidos;
 	}
 	public void aprenderPlatillo(Platillo platillo) {
-		this.platillosConocidos.add(platillo);
+	    if (platillo == null) {
+	        throw new IllegalArgumentException("El platillo no puede ser nulo");
+	    }
+	    this.platillosConocidos.add(platillo);
 	}
-	
 	
 	public List<Bebida> getBebidasConocidas() {
 		return bebidasConocidas;
 	}
 	public void aprenderBebida(Bebida bebida) {
-		this.bebidasConocidas.add(bebida);
+	    if (bebida == null) {
+	        throw new IllegalArgumentException("La bebida no puede ser nula");
+	    }
+	    this.bebidasConocidas.add(bebida);
 	}
-	
 
 }
