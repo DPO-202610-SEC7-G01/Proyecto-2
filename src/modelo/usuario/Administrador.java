@@ -13,7 +13,7 @@ public class Administrador extends Usuario {
 	private Cafe miCafe;
 	
 	//Constructor
-	public Administrador(int id, String login, String password, String nombre, Cafe cafe) {
+	public Administrador(int id, String login, String password, String nombre, Cafe cafe) throws InvalidCredentialsException {
 		super(id, login, password, nombre);
 		this.miCafe = cafe;
 	}
