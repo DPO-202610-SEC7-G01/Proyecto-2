@@ -1,6 +1,7 @@
 package consola.interfaz;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import exceptions.CategoriaInvalidaException;
+import exceptions.JuegoNoEncontradoException;
 import exceptions.NumeroJugadoresExcedidoException;
 import exceptions.RestriccionEdadInvalidaException;
 import modelo.*;
@@ -50,8 +52,11 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		return null;
 	}
 	
-	public void registrarNuevoJuego() throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException { //Acá hace falta mirar la persistencia para cargarlo
-	    Scanner sc = new Scanner(System.in);
+	public void registrarNuevoJuego() throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException { //TODO: Acá hace falta mirar la persistencia para cargarlo
+		if(autenticarUsuario()== null){
+			return;
+		}
+		Scanner sc = new Scanner(System.in);
 	    System.out.println("\n--- Registro de Nuevo Juego ---");
 
 	    System.out.print("ID: "); int id = sc.nextInt();
@@ -68,7 +73,15 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 
 	    System.out.print("¿Es un juego difícil? (y/n): ");
 	    String esDificil = sc.nextLine().toLowerCase();
-
+		if(numJug<0 || numJug>40) {
+			throw new NumeroJugadoresExcedidoException();
+		}
+		if(!cat.equals("Tablero") && !cat.equals("Cartas") && !cat.equals("Acción")){
+			throw new CategoriaInvalidaException(cat, new String[]{"Tablero", "Cartas", "Acción"});
+		}
+		if(!edad.equals("-5") && !edad.equals("Adultos")){
+			throw new RestriccionEdadInvalidaException();
+		}
 	    Juego nuevoJuego;
 	    if (esDificil.equals("y")) {
 	        System.out.print("Ingrese Instrucciones Especiales: ");
@@ -88,6 +101,10 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	}
 	
 	public void agregarTurno() {
+		Administrador admin = (Administrador) autenticarUsuario();
+		if(admin == null){
+			return;
+		}
 		System.out.println("\n--- AGREGAR TURNO A EMPLEADO ---");
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
@@ -111,13 +128,22 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			System.out.println("El empleado ya tiene este turno asignado.");
 			return;
 		} else {
-			Turno turno = new Turno(cal);
-			empleadoActivo.agregarTurno(turno);
+			admin.asignarTurno(empleadoActivo, cal, true);
 			System.out.println("Turno asignado con exito.");
 		}
 	}
-	
+	public boolean tieneTurno(ArrayList<Calendar> turnos, Calendar cal){
+		for(Calendar c: turnos){
+			if(c.equals(cal)){
+				return true;
+			}
+		}
+		return false;
+	}
 	public void gestionarTurno(Scanner lectorMenu) {
+		if(autenticarUsuario()== null){
+			return;
+		}
 		System.out.println("0. Consultar turno de empleado.");
 		System.out.println("1. Agregar turno de empleado.");
 		System.out.println("2. Solicitar cambio de turno de empleado.");
@@ -139,17 +165,38 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		} catch (Exception e) {
 			System.out.println(" Error: Por favor ingrese un número válido.");
 			lectorMenu.nextLine();
-			opcion = 0;
-			return;
+			int opcion = 0;
 		}
-		return;
 	}
-	public void cambiarTurno() {
-		System.out.println("\n--- CAMBIAR TURNO DE EMPLEADO ---");
+
+	private void consultarTurno() {
+		System.out.println("\n--- Consultar Turnos de Empleado ---");
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
+		System.out.println("Ingrese el login del empleado");
+		String login = lector.nextLine();
+		lector.nextLine();
+		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
+		if (empleadoActivo == null) {
+			return;
+		}
+		List<Turno> turnos = empleadoActivo.getTurnos();
+		for (Turno jornada : turnos) {
+			System.out.println(jornada.getFecha());
+			return;
+		}
+	}
 
-		Empleado empleadoActivo = autenticarEmpleado();
+	public void cambiarTurno() {
+		if(autenticarUsuario()== null){
+			return;
+		}
+		System.out.println("\n--- CAMBIAR TURNO DE EMPLEADO ---");
+		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
+		System.out.println("Ingrese el login del empleado");
+		String login = lector.nextLine();
+		lector.nextLine();
+		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
 		if (empleadoActivo == null) {
 			return;
 		}
@@ -169,9 +216,9 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		Calendar nuevoTurno = Calendar.getInstance();
 		nuevoTurno.set(fechaNuevo.getYear(), fechaNuevo.getMonthValue() - 1, fechaNuevo.getDayOfMonth());
 
-		if (tieneTurno(empleadoActivo.getTurno(), cal)) {
+		if (tieneTurno(empleadoActivo.getListaFechas(), cal)) {
 		    boolean cambio = empleadoActivo.pedirCambioTurno(
-		        miCafe.getAdmin(), cal, nuevoTurno, empleadoActivo
+					miCafe.getAdmin(), cal, nuevoTurno, empleadoActivo
 		    );
 
 		    if (cambio) {
@@ -187,15 +234,20 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	
 	public void aceptarPlatillo() {
 	    // 1. Reutilizamos la función de validación que separamos antes
-	    if (!validarAdmin()) {
+	    if (autenticarUsuario() == null){
 	        return; 
 	    }
 
 	    Scanner sc = new Scanner(System.in);
-	    List<Platillo> sugerencias = miCafe.getSugerenciasPendientes();
-
+	    ArrayList<Producto> sugerencias = miCafe.getSugerenciasPendientes();
+		ArrayList<Platillo> platillosSug= new ArrayList<>();
+		for(Producto pro: sugerencias){
+			if(pro instanceof Platillo){
+				platillosSug.add((Platillo) pro);
+			}
+		}
 	    // 2. Verificamos si hay platillos por revisar
-	    if (sugerencias == null || sugerencias.isEmpty()) {
+	    if (platillosSug == null || sugerencias.isEmpty()) {
 	        System.out.println("No hay sugerencias de platillos pendientes por revisar.");
 	        return;
 	    }
@@ -203,15 +255,14 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	    System.out.println("\n--- Revisión de Sugerencias de Platillos ---");
 	    
 	    // 3. Recorremos una copia de la lista para evitar errores al remover elementos
-	    ArrayList<Platillo> copiaSugerencias = new ArrayList<>(sugerencias);
+	    ArrayList<Platillo> copiaSugerencias = new ArrayList<>(platillosSug);
 
 	    for (Platillo p : copiaSugerencias) {
 	        System.out.println("\nPlatillo: " + p.getNombre());
 	        System.out.println("Precio sugerido: $" + p.getPrecio());
 	        System.out.println("Categoría: " + p.getAlergeneos());
-	        
-	        System.out.print("¿Qué desea hacer? (1. Aceptar / 2. Rechazar / 3. Omitir por ahora): ");
-	        int decision = sc.nextInt();
+
+			int decision = leerEntero("¿Qué desea hacer? (1. Aceptar / 2. Rechazar / 3. Omitir por ahora): ");
 
 	        if (decision == 1) {
 	            miCafe.getAdmin().incluirSugerencia(p);
@@ -232,10 +283,10 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	
 	public void verFinanzas() {
 	    // 1. Reutilizamos la validación de seguridad
-	    if (!validarAdmin()) {
-	        return; 
-	    }
-
+		Administrador admin = (Administrador) autenticarUsuario();
+		if(admin == null){
+			return;
+		}
 	    Scanner sc = new Scanner(System.in);
 	    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 	    
@@ -293,8 +344,13 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		        juegoAEditar.setPrecio(sc.nextInt());
 		        sc.nextLine();
 		        System.out.print("Nueva Categoría (actual: " + juegoAEditar.getCategoria() + "): ");
-		        juegoAEditar.setCategoria(sc.nextLine());
-		        System.out.println("Parámetros actualizados con éxito.");
+				try{
+					juegoAEditar.setCategoria(sc.nextLine());
+					System.out.println("Parámetros actualizados con éxito.");
+				}
+		        catch(CategoriaInvalidaException e){
+					System.out.println("Error: Categoria invalida, ingrese Tablero, Cartas o Acción (con tilde).");
+				}
 		    } else {
 		        System.out.println("Juego no encontrado.");
 		    }
@@ -314,7 +370,12 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		    }
 
 		    if (juegoAMover != null) {
-		        miCafe.getAdmin().moverJuego(juegoAMover); // Llamamos al método que implementamos antes
+				try {
+					miCafe.getAdmin().moverJuego(juegoAMover);
+				}
+				catch(JuegoNoEncontradoException e){
+					System.out.println("Juego no encontrado en la base de datos del cafe.");
+				}
 		    } else {
 		        System.out.println("El juego no está en la lista de ventas.");
 		    }
@@ -329,9 +390,10 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		
 		public void gestionarJuego() {
 		    Scanner sc = new Scanner(System.in);
-		    if (!validarAdmin()) {
-		        return; // Si no es admin, salimos de la función
-		    }
+			Administrador admin = (Administrador) autenticarUsuario();
+			if(admin == null){
+				return;
+			}
 		        
 		        System.out.println("\n¿Qué desea hacer?");
 		        System.out.println("1. Crear nuevo juego");
@@ -343,7 +405,18 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 
 		        switch (opcionPrincipal) {
 		            case 1:
-		                registrarNuevoJuego(); // Lógica de creación (la que ya tenías)
+						try {
+							registrarNuevoJuego();
+						}
+						catch(NumeroJugadoresExcedidoException e){
+							System.out.println("El numero de jugadores excede el maximo (40).");
+						}
+						catch(RestriccionEdadInvalidaException e){
+							System.out.println("Formato de retriccion de edad indebido, debe ser o -5 o Adultos.");
+						}
+						catch(CategoriaInvalidaException e){
+							System.out.println("Error: Categoria invalida, ingrese Tablero, Cartas o Acción (con tilde).");
+						}
 		                break;
 
 		            case 2:
@@ -358,117 +431,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		                System.out.println("Opción no válida.");
 		                break;
 		        }
-		    } 
-
-		
-		public void aceptarPlatillo() {
-		    // 1. Reutilizamos la función de validación que separamos antes
-		    if (!validarAdmin()) {
-		        return; 
 		    }
-
-		    Scanner sc = new Scanner(System.in);
-		    List<Platillo> sugerencias = miCafe.getSugerenciasPendientes();
-
-		    // 2. Verificamos si hay platillos por revisar
-		    if (sugerencias == null || sugerencias.isEmpty()) {
-		        System.out.println("No hay sugerencias de platillos pendientes por revisar.");
-		        return;
-		    }
-
-		    System.out.println("\n--- Revisión de Sugerencias de Platillos ---");
-		    
-		    // 3. Recorremos una copia de la lista para evitar errores al remover elementos
-		    ArrayList<Platillo> copiaSugerencias = new ArrayList<>(sugerencias);
-
-		    for (Platillo p : copiaSugerencias) {
-		        System.out.println("\nPlatillo: " + p.getNombre());
-		        System.out.println("Precio sugerido: $" + p.getPrecio());
-		        System.out.println("Categoría: " + p.getAlergeneos());
-		        
-		        System.out.print("¿Qué desea hacer? (1. Aceptar / 2. Rechazar / 3. Omitir por ahora): ");
-		        int decision = sc.nextInt();
-
-		        if (decision == 1) {
-		            miCafe.getAdmin().incluirSugerencia(p);
-		            System.out.println("El platillo '" + p.getNombre() + "' ha sido agregado al menú.");
-		        } 
-		        else if (decision == 2) {
-		            miCafe.getAdmin().excluirSugerencia(p);
-		            System.out.println("El platillo '" + p.getNombre() + "' ha sido rechazado y eliminado.");
-		        } 
-		        else {
-		            System.out.println("Se ha saltado la revisión de este platillo.");
-		        }
-		    }
-		    
-		    System.out.println("\n--- Fin de la revisión de sugerencias ---");
-		}
-		
-		
-		public void verFinanzas() {
-		    // 1. Reutilizamos la validación de seguridad
-		    if (!validarAdmin()) {
-		        return; 
-		    }
-
-		    Scanner sc = new Scanner(System.in);
-		    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		    
-		    System.out.println("\n--- Reporte Financiero de Transacciones ---");
-		    
-		    try {
-		        // 2. Pedir y parsear la Fecha Inicial
-		        System.out.print("Ingrese fecha inicial (dd/mm/aaaa): ");
-		        String inicioStr = sc.nextLine();
-		        Calendar fecha1 = Calendar.getInstance();
-		        fecha1.setTime(sdf.parse(inicioStr));
-		        // Ajustamos a inicio del día (00:00:00)
-		        fecha1.set(Calendar.HOUR_OF_DAY, 0);
-		        fecha1.set(Calendar.MINUTE, 0);
-
-		        // 3. Pedir y parsear la Fecha Final
-		        System.out.print("Ingrese fecha final (dd/mm/aaaa): ");
-		        String finStr = sc.nextLine();
-		        Calendar fecha2 = Calendar.getInstance();
-		        fecha2.setTime(sdf.parse(finStr));
-		        // Ajustamos a fin del día (23:59:59)
-		        fecha2.set(Calendar.HOUR_OF_DAY, 23);
-		        fecha2.set(Calendar.MINUTE, 59);
-
-		        // 4. Validar orden de fechas
-		        if (fecha1.after(fecha2)) {
-		            System.out.println("Error: La fecha inicial no puede ser posterior a la final.");
-		            return;
-		        }
-
-		        // 5. Llamar al método del administrador y mostrar el reporte
-		        System.out.println("\nGenerando reporte...");
-		        String reporte = miCafe.getAdmin().verFinanzas(fecha1, fecha2);
-		        
-		        System.out.println(reporte);
-
-		    } catch (ParseException e) {
-		        System.out.println("Error: Formato de fecha inválido. Use dd/mm/aaaa (ej: 07/04/2026).");
-		    }
-		}
-		
-		
-		public boolean mismoDia(Calendar c1, Calendar c2) {
-			return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.MONTH) == c2.get(Calendar.MONTH)
-					&& c1.get(Calendar.DAY_OF_MONTH) == c2.get(Calendar.DAY_OF_MONTH);
-		}
-
-		public boolean tieneTurno(ArrayList<Calendar> turnos, Calendar buscado) {
-			for (Calendar c : turnos) {
-				if (mismoDia(c, buscado)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		
 	public static void main(Cafe miCafe) {
 		Scanner lectorMenu = new Scanner(System.in);
 		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);

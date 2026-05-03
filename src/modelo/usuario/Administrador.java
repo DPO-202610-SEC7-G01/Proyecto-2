@@ -2,6 +2,7 @@ package modelo.usuario;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import exceptions.*;
 import modelo.*;
@@ -114,7 +115,7 @@ public class Administrador extends Usuario {
 	}
 	
 	//COMIDA
-	public void crearPlatillo(int id, int precio, String nombre, String alergenos) {
+	public void crearPlatillo(int id, int precio, String nombre, ArrayList<String> alergenos) {
 	    Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
 	    miCafe.getMenuPlatillos().add(nuevoPlatillo);
 	}
