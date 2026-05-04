@@ -26,7 +26,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 
 	public static void descargarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
 			String transaccionesArchivo, String mesasArchivo, String  turnosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, 
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException{
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException, ProductosException{
 		
 		//Aun que el café empieza con 0 de disponibilidad entonces voy a aumentarlo acorde a la mesa
 		descargarMesas(mesasArchivo,miCafe);
@@ -56,7 +56,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	}
 	
 	public static void descargarReservas(String reservasArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
 	    JSONArray jReservas = leerArchivoJSON(reservasArchivo);
 	    for (int i = 0; i < jReservas.length(); i++) {
 	        JSONObject jReserva = jReservas.getJSONObject(i);
@@ -88,7 +88,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	}
 
 	public static void descargarTransaccion(String transaccionesArchivo, Cafe miCafe) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException,
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException {
+	RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException, ProductosException {
 	    JSONArray jTransacciones = leerArchivoJSON(transaccionesArchivo);
 	    
 	    for (int i = 0; i < jTransacciones.length(); i++) {
@@ -132,7 +132,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	    }
 	}
 	
-	public static void descargarSugerenciasPendientes(String sugerenciasArchivo, Cafe miCafe) throws IOException, FileNotFoundException {
+	public static void descargarSugerenciasPendientes(String sugerenciasArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException, ProductosException {
 	    JSONObject jSugerenciasCompleto = new JSONObject(new String(Files.readAllBytes(new File(sugerenciasArchivo).toPath())));
 	    JSONArray jPlatillos = jSugerenciasCompleto.optJSONArray("platillos");
 	    

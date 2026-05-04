@@ -35,7 +35,8 @@ public class ConsolaGeneral {
 
 	
 	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException, 
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException { // Método de Carga
+	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException
+	{ // Método de Carga
 		miCafe = new Cafe(0); 
 		
 		
@@ -151,7 +152,7 @@ public class ConsolaGeneral {
 	}
 
 	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException,
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
 		ConsolaGeneral consola = new ConsolaGeneral();
 		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
 

@@ -22,7 +22,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
     public static  void descargarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
              String juegosDificilesArchivo, String bebidasArchivo,
              String platillosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
-            NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
+            NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, ProductosException {
         
     	
     	ArrayList<Juego> juegosVenta = descargarJuegos(juegosVentaArchivo);
@@ -141,7 +141,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return nuevoPlatillo;
     }
     
-    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo) throws IOException, FileNotFoundException {
+    public static ArrayList<Bebida> descargarBebidas(String bebidaArchivo) throws IOException, FileNotFoundException, JSONException, ProductosException {
     	JSONArray jBebidas = leerArchivoJSON(bebidaArchivo);
     	ArrayList<Bebida> bebidas = new ArrayList<>();
 	        
@@ -152,7 +152,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return bebidas; 
     }
     
-    public static Bebida descargarBebidas(JSONObject jBebida) throws IOException, FileNotFoundException {           
+    public static Bebida descargarBebidas(JSONObject jBebida) throws IOException, FileNotFoundException, JSONException, ProductosException {           
             Bebida nuevaBebida = new Bebida(
             		jBebida.getInt("id"),
             		jBebida.getInt("precio"),
@@ -165,7 +165,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
     }
     
     public static ArrayList<Producto> descargarProductos(JSONArray jProductos) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException,
-    RestriccionEdadInvalidaException, CategoriaInvalidaException {
+    RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, ProductosException {
         ArrayList<Producto> productos = new ArrayList<>();
         
         for (int i = 0; i < jProductos.length(); i++) {

@@ -1,10 +1,13 @@
 package modelo.usuario;
 
+//Utils
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
+//Exceptions
 import exceptions.*;
+
+//Modelo
 import modelo.*;
 import modelo.producto.*;
 
@@ -13,7 +16,7 @@ public class Administrador extends Usuario {
 	private Cafe miCafe;
 	
 	//Constructor
-	public Administrador(int id, String login, String password, String nombre, Cafe cafe) throws InvalidCredentialsException {
+	public Administrador(int id, String login, String password, String nombre, Cafe cafe) throws InvalidCredentialsException, UsuariosException {
 		super(id, login, password, nombre);
 		this.miCafe = cafe;
 	}
@@ -120,7 +123,7 @@ public class Administrador extends Usuario {
 	    miCafe.getMenuPlatillos().add(nuevoPlatillo);
 	}
 
-	public void crearBebida(int id, int precio, String nombre, String temperatura, boolean alcohol) {
+	public void crearBebida(int id, int precio, String nombre, String temperatura, boolean alcohol) throws ProductosException {
 	    Bebida nuevaBebida = new Bebida(id, precio, nombre, temperatura, alcohol);
 	    miCafe.getMenuBebidas().add(nuevaBebida);
 	}

@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 //esceptions
 import exceptions.InvalidCredentialsException;
-
+import exceptions.UsuariosException;
 //mundo
 import modelo.usuario.Usuario;
 
@@ -33,13 +33,13 @@ class UsuarioTest {
     
     //Toca poner esto pq es una clase abstracta
     class UsuarioImpl extends Usuario {
-        public UsuarioImpl(int id, String login, String password, String nombre) throws InvalidCredentialsException {
+        public UsuarioImpl(int id, String login, String password, String nombre) throws InvalidCredentialsException, UsuariosException {
             super(id, login, password, nombre);
         }
     }
     
     @BeforeEach
-    void setUp() throws InvalidCredentialsException {
+    void setUp() throws InvalidCredentialsException, UsuariosException {
         usuarioCorrecto = new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
     }
     
@@ -190,7 +190,7 @@ class UsuarioTest {
     }
     
     @Test
-    void testSetPasswordConEspacios() throws InvalidCredentialsException {
+    void testSetPasswordConEspacios() throws InvalidCredentialsException, UsuariosException {
         usuarioCorrecto.setPassword("  NuevaPass123  ");
         assertEquals("NuevaPass123", usuarioCorrecto.getPassword());
     }
@@ -221,7 +221,7 @@ class UsuarioTest {
     }
     
     @Test
-    void testActualizarPasswordMultiplesVeces() throws InvalidCredentialsException {
+    void testActualizarPasswordMultiplesVeces() throws InvalidCredentialsException, UsuariosException {
         usuarioCorrecto.setPassword("pass1");
         assertEquals("pass1", usuarioCorrecto.getPassword());
         

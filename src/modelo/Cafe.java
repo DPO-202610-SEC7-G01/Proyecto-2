@@ -189,7 +189,7 @@ public class Cafe {
 				String cocinerosArchivo, String meserosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, String sugerenciasPendientesArchivo,
 				String transaccionesArchivo,String mesasArchivo, String turnosArchivo) throws IOException, FileNotFoundException, JSONException,
-				NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException { 
+				NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException { 
 		
 		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 						bebidasArchivo,platillosArchivo, this);

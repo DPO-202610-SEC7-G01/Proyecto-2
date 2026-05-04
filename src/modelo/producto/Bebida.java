@@ -17,12 +17,12 @@ public class Bebida extends Producto{
 	                "La temperatura no puede estar vacía.");
 	        }
 	        
-	        if (!temperatura.equalsIgnoreCase("Frío") && !temperatura.equalsIgnoreCase("Caliente")) {
+	      if (!temperatura.replace("a", "o").equalsIgnoreCase("Frío") && !temperatura.equalsIgnoreCase("Caliente")) {
 	            throw new ProductosException(this, "temperatura", 
 	                "La temperatura debe ser 'Frío' o 'Caliente'. Valor recibido: " + temperatura );
 
 	        }
-		this.temperatura = temperatura ; // que sea "Frío o Caliente"  
+		this.temperatura = temperatura ; 
 		this.tieneAlcohol = alcohol;
 	}
 	

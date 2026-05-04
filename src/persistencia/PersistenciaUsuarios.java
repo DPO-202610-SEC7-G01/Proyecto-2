@@ -20,7 +20,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	public static void descargarUsuarios(String administradorArchivo, String cocinerosArchivo,
 			String meserosArchivo, String clientesArchivo, Cafe miCafe) 
-			throws FileNotFoundException, IOException, JSONException, NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException{
+			throws FileNotFoundException, IOException, JSONException, NumeroJugadoresExcedidoException, 
+			RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException{
 		
 		descargarAdministrador(administradorArchivo, miCafe);
 		
@@ -128,7 +129,7 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	
 	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
 	    ArrayList<Cocinero> chefsCargados = new ArrayList<>();
 	    JSONArray jEmpleados = leerArchivoJSON(cocinerosArchivo);
 	    

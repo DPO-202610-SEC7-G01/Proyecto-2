@@ -66,6 +66,9 @@ public class Torneo {
     }
     
     // Getters y Setters
+    public String getNombre() {
+    	return nombre;
+    }
     public String getTipo() { 
     	return tipo;
     }
@@ -124,6 +127,9 @@ public class Torneo {
 		participantes.remove(participante);
 	}
 	
+	public String gePremio() {
+    	return premio;
+    }
 	
 	//Métodos   
 

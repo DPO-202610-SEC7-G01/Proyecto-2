@@ -18,7 +18,7 @@ public class Cliente extends Usuario {
 	private ArrayList<Torneo> torneosInscritos;
 	
 	//Constructor
-	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) throws InvalidCredentialsException {
+	public Cliente(int id, String login, String password, String nombre, int edad,ArrayList <String> alergenos) throws InvalidCredentialsException, UsuariosException {
 		super(id, login, password, nombre); //Esto ya se probó
 		this.alergenos= alergenos ; // que no hayan numeros en los alergenos
 		
