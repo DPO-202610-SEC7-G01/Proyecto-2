@@ -364,8 +364,23 @@ public class ConsolaCliente extends ConsolaAbstract{
 	        System.out.println("Error: No se encontró una reserva para la mesa " + numMesa);
 	    }
 	}
-	
 
+	public void cambioContrasena() throws InvalidCredentialsException {
+		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
+		System.out.print("Ingrese su login de usuario: ");
+		String loginBusqueda = lector.nextLine();
+
+		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+		System.out.print("Ingrese la nueva contraseña: ");
+		String nuevaPass = lector.nextLine();
+		try {
+			usuarioEncontrado.setPassword(nuevaPass);
+			System.out.println("Contraseña actualizada correctamente");
+		}
+		catch(Exception e){
+			System.out.println("Error cambiando de contraseña.");
+		}
+	}
 
 	private void cambiarMeseroDeReserva(Reserva r, List<Mesero> lista) {
 		System.out.println("Meseros disponibles:");
@@ -394,7 +409,8 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println("2. Comprar productos.");
 			System.out.println("3. Solicitudes reserva.");
 			System.out.println("4. Terminar reserva.");
-			System.out.println("5. Salir");
+			System.out.println("5. Cambio de contraseña");
+			System.out.println("6. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -417,6 +433,9 @@ public class ConsolaCliente extends ConsolaAbstract{
 						consola.terminarReserva();
 						break;
 					case 5:
+						consola.cambioContrasena();
+						break;
+					case 6:
 						return;
 				}
 			} catch (Exception e) {

@@ -15,25 +15,11 @@ import java.io.IOException;
 import modelo.*;
 import modelo.usuario.*;
 
-//Perdón amigos si hay muchos comentarios sino que me parece
-// importante  tener como muy claro u.u 
-//Luego si algo lo borraré 
 
 public class ConsolaGeneral {
-	//Otros
-	private static Scanner lector; 
-
-	//Consolas 
-	private ConsolaAdministrador consolaAdmin;
-	private ConsolaCliente consolaCliente;
-	private ConsolaEmpleado consolaEmpleado;
-	
 	//Objetos Constantes
 	static private Cafe miCafe;
-	static int opcion = 0;
-	Scanner aleatorio;
 
-	
 	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException, 
 	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException
 	{ // Método de Carga
@@ -57,102 +43,6 @@ public class ConsolaGeneral {
 		            "data/mesas.json",
 		            "data/turnos.json"
 		        );
-		this.consolaAdmin = new ConsolaAdministrador(miCafe);
-				
-	}
-	
-	public void registrarUsuarioNuevo() throws InvalidCredentialsException {
-		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
-		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero | 4. Admin ");
-		System.out.print("Seleccione: ");
-		int tipo = lector.nextInt();
-		lector.nextLine();
-
-		System.out.print("Nombre completo: ");
-		String nombre = lector.nextLine();
-		int id = aleatorio.nextInt(1001);
-		String loginBase = nombre.split(" ")[0].toLowerCase() + id;
-		
-		
-		while (buscarUsuario(loginBase) != null) {
-			id = aleatorio.nextInt(1001);
-			loginBase = nombre.split(" ")[0].toLowerCase() + id;
-		}
-		
-		final String login = loginBase; 
-		System.out.print("Ingrese Password: ");
-		String password = lector.nextLine();
-		
-		switch (tipo) {
-		case 1:
-			consolaCliente.registrarUsuarioNuevo();
-			break;
-		case 2:
-			consolaEmpleado.registrarMesero(id,nombre,login,password,miCafe);
-			break;
-		case 3:
-			consolaEmpleado.registrarCocinero(id,nombre,login,password,miCafe);
-			break;
-		case 4:
-			consolaAdmin.registrarUsuarioNuevo();
-			break;
-
-		default:
-			System.out.println("Opción inválida.");
-			return;
-		}
-
-		System.out.println("Registro exitoso con el login: " + login);
-	}
-	
-	
-	private Usuario buscarUsuario(String login) throws InvalidCredentialsException {
-	    if (miCafe.getAdmin().getLogin().contains(login)) {
-	        return miCafe.getAdmin();
-	    }
-	    for (Cliente c : miCafe.getClientes()) {
-	        if (c.getLogin().equals(login))
-	            return c;
-	    }
-	    for (Empleado e : miCafe.getEmpleados()) {
-	        if (e.getLogin().equals(login))
-	            return e;
-	    }
-	     throw new InvalidCredentialsException(login, true); 
-	}
-
-	
-	public void cambioContrasena() throws InvalidCredentialsException {
-	    System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
-	    System.out.print("Ingrese su login de usuario: ");
-	    String loginBusqueda = lector.nextLine();
-
-	    Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-	    System.out.print("Ingrese la nueva contraseña: ");
-	    String nuevaPass = lector.nextLine();
-		try {
-			usuarioEncontrado.setPassword(nuevaPass);
-			System.out.println("Contraseña actualizada correctamente");
-		}
-		catch(Exception e){
-			System.out.println("Error cambiando de contraseña.");
-		}
-	}
-	
-
-	public Usuario verificarUsuario() throws InvalidCredentialsException {
-	    System.out.print("Ingrese su login de usuario: ");
-	    String loginBusqueda = lector.nextLine();
-
-	    Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
-	    System.out.print("Ingrese contraseña: ");
-	    String contraseña = lector.nextLine();
-	    
-	    if (contraseña.equals(usuarioEncontrado.getPassword())) {
-	        return usuarioEncontrado;
-	    }
-	    
-	    throw new InvalidCredentialsException(loginBusqueda, false);
 	}
 
 	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException,
@@ -173,44 +63,27 @@ public class ConsolaGeneral {
 		
 		do {
 			System.out.println("\n--- MENÚ PRINCIPAL ---");
-			System.out.println("0.  Registrarse Primera Vez ");
-			System.out.println("1. Cambiar Contraseña");
-			System.out.println("2. Opciones de Administrador");
-			System.out.println("3. Opciones de Empleado");
-			System.out.println("4. Opciones de Cliente");
-			System.out.println("5. Salir");
+
+			System.out.println("1. Opciones de Administrador");
+			System.out.println("2. Opciones de Empleado");
+			System.out.println("3. Opciones de Cliente");
+			System.out.println("4. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
 				opcion = lectorMenu.nextInt();
 				lectorMenu.nextLine();
-
 				switch (opcion) {
-				case 0:
-					consola.registrarUsuarioNuevo();
-					break;
 				case 1:
-					consola.cambioContrasena();
+					ConsolaAdministrador.main(miCafe);
 					return;
 				case 2:
-					Usuario admin =consola.verificarUsuario();
-					if(admin instanceof Administrador) {
-						 ConsolaAdministrador.main(miCafe);
-					}
+					ConsolaEmpleado.main(miCafe);
 					return;
 				case 3:
-					Usuario empleado=consola.verificarUsuario();
-					if(empleado instanceof Empleado) {
-						ConsolaEmpleado.main(miCafe);
-					}
+					ConsolaCliente.main(miCafe);
 					return;
 				case 4:
-					Usuario cliente=consola.verificarUsuario();
-					if(cliente instanceof Administrador) {
-						ConsolaCliente.main(miCafe);
-					}
-					return;
-				case 5:
 					System.out.println("Saliendo del sistema... ¡Hasta luego!");
 					return;
 				}
