@@ -177,7 +177,8 @@ public class Administrador extends Usuario {
 	
 	
 	//TORNEOS
-	public void crearTorneo(String tipo,  String nombre, Juego juego, int numParticipantes, int precio) throws IllegalArgumentException, NumeroJugadoresExcedidoException {
+	public void crearTorneo(String tipo,  String nombre, Juego juego, int numParticipantes, int precio) 
+			throws IllegalArgumentException, NumeroJugadoresExcedidoException, InvalidCredentialsException {
 	    validarTorneo(tipo, juego, numParticipantes);
 	    
 	    Torneo nuevoTorneo = new Torneo(tipo, nombre, juego, numParticipantes, precio);

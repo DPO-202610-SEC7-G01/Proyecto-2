@@ -19,6 +19,7 @@ public class Juego extends Producto{
 	    if(anioPublicacion >0) {
 		    this.anioPublicacion = anioPublicacion;
 	    }
+	    
 	    this.empresMatriz = empresMatriz;
 	    
 	    if (numJugadores >= 1 && numJugadores <= 40) {
