@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import exceptions.InvalidCredentialsException;
+import exceptions.ProductosException;
 import modelo.usuario.Cocinero;
 import modelo.producto.Platillo;
 import modelo.producto.Bebida;
@@ -38,7 +39,7 @@ class CocineroTest {
     
     
     @BeforeEach
-    void setUp() throws InvalidCredentialsException {
+    void setUp() throws InvalidCredentialsException, ProductosException {
         cocinero = new Cocinero(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         platilloValido = new Platillo(ID_PLATILLO,precio,NOMBRE_PLATILLO,alergenos);
         bebidaValida = new Bebida(ID_BEBIDA,precio_,NOMBRE_BEBIDA,TEMPERATURA,ALCOHOL);
@@ -93,7 +94,7 @@ class CocineroTest {
     }
     
     @Test
-    void testAprenderMultiplesBebidas() {
+    void testAprenderMultiplesBebidas() throws ProductosException {
         Bebida bebida2 = new Bebida(2, 2500, "Café", "Caliente", false);
         Bebida bebida3 = new Bebida(3, 3000, "Jugo", "Fría", false);
         

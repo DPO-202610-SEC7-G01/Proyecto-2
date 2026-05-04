@@ -1,5 +1,8 @@
 package modelo.producto;
 
+//Exceptions 
+import exceptions.*;
+
 public class Bebida extends Producto{
 	
 	
@@ -7,9 +10,19 @@ public class Bebida extends Producto{
 	private String temperatura;
 
 	//Constructor
-	public Bebida(int id, int precio, String nombre, String temperatura, boolean alcohol) {
+	public Bebida(int id, int precio, String nombre, String temperatura, boolean alcohol) throws ProductosException {
 		super(id, precio, nombre);
-		this.temperatura = temperatura ;
+		 if (temperatura == null || temperatura.trim().isEmpty()) {
+	            throw new ProductosException(this, "temperatura", 
+	                "La temperatura no puede estar vacía.");
+	        }
+	        
+	        if (!temperatura.equalsIgnoreCase("Frío") && !temperatura.equalsIgnoreCase("Caliente")) {
+	            throw new ProductosException(this, "temperatura", 
+	                "La temperatura debe ser 'Frío' o 'Caliente'. Valor recibido: " + temperatura );
+
+	        }
+		this.temperatura = temperatura ; // que sea "Frío o Caliente"  
 		this.tieneAlcohol = alcohol;
 	}
 	
