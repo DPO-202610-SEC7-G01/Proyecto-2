@@ -9,10 +9,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
-import exceptions.CategoriaInvalidaException;
-import exceptions.JuegoNoEncontradoException;
-import exceptions.NumeroJugadoresExcedidoException;
-import exceptions.RestriccionEdadInvalidaException;
+import exceptions.*;
 import modelo.*;
 import modelo.usuario.*;
 import modelo.producto.*;
@@ -38,7 +35,73 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			System.out.println("Error cambiando de administrador en el cafe.");
 		}
 	}
-	
+	private void registrarUsuarioNuevoNoAdmin() {
+		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
+		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
+		int tipo = leerEntero("Seleccione opcion: ");
+		System.out.print("Nombre completo: ");
+		String nombre = lector.nextLine();
+
+		// 1. Generar Login y Verificar Unicidad
+		int id = aleatorio.nextInt(1001);
+		String loginBase = nombre.split(" ")[0].toLowerCase() + id;
+
+		// Si el login ya existe (por pura mala suerte del azar), generamos otro
+		while (buscarUsuario(loginBase) != null) {
+			id = aleatorio.nextInt(1001);
+			loginBase = nombre.split(" ")[0].toLowerCase() + id;
+		}
+
+		final String login = loginBase; // Lo hacemos final para usarlo con seguridad
+		System.out.print("Ingrese Password: ");
+		String password = lector.nextLine();
+
+		// 2. Creación según el tipo
+		switch (tipo) {
+			case 1:
+				System.out.print("Edad: ");
+				int edad = lector.nextInt();
+				lector.nextLine();
+				System.out.print("Alérgenos: ");
+				String alergenos = lector.nextLine();
+				ArrayList<String> alergenosLista = leerAlergenos(alergenos);
+				try {
+					Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
+					miCafe.agregarUsuario(nuevoC);
+				} catch (Exception e) {
+					System.out.println("Error al registrar el cliente.");
+				}
+				break;
+
+			case 2:
+				try {
+					registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
+					break;
+				} catch (Exception e) {
+					System.out.println("Error al registrar el mesero.");
+				}
+
+			case 3:
+				try {
+					registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
+				} catch (InvalidCredentialsException e) {
+					System.out.println("Error al registrar el cocinero.");
+				}
+
+				break;
+
+			default:
+				System.out.println("❌ Opción inválida.");
+		}
+	}
+	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+			Mesero nuevoM = new Mesero(id, login, password, nombre);
+			miCafe.getEmpleados().add(nuevoM);
+		}
+	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
+		miCafe.getEmpleados().add(nuevoC);
+	}
 	public Usuario autenticarUsuario(){
 		System.out.print("Login del Administrador: ");
 		String loginEmp = lector.nextLine();
@@ -118,9 +181,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		if (empleadoActivo == null) {
 			return;
 		}
-		Scanner sc = new Scanner(System.in);
 		System.out.print("Ingrese la fecha (dd/MM/yyyy): ");
-		String input = sc.nextLine();
+		String input = lector.nextLine();
 		// Parsear a LocalDate
 		LocalDate fecha = LocalDate.parse(input, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		// Convertir a Calendar
@@ -143,7 +205,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		}
 		return false;
 	}
-	public void gestionarTurno(Scanner lectorMenu) {
+	public void gestionarTurno() {
 		if(autenticarUsuario()== null){
 			return;
 		}
@@ -238,8 +300,6 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	    if (autenticarUsuario() == null){
 	        return; 
 	    }
-
-	    Scanner sc = new Scanner(System.in);
 	    ArrayList<Producto> sugerencias = miCafe.getSugerenciasPendientes();
 		ArrayList<Platillo> platillosSug= new ArrayList<>();
 		for(Producto pro: sugerencias){
@@ -331,10 +391,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	
 	// --- MÉTODOS DE APOYO PARA MANTENER EL CÓDIGO LIMPIO ---
 
-		private void modificarJuego(Scanner sc) {
-		    System.out.print("Ingrese el ID del juego a modificar: ");
-		    int idBusqueda = sc.nextInt();
-		    sc.nextLine();
+		private void modificarJuego() {
+		    int idBusqueda = leerEntero("Ingrese el ID del juego a modificar: ");
 
 		    // Buscamos en ambas listas
 		    Juego juegoAEditar = buscarJuegoPorId(idBusqueda);
@@ -342,11 +400,11 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		    if (juegoAEditar != null) {
 		        System.out.println("Modificando: " + juegoAEditar.getNombre());
 		        System.out.print("Nuevo Precio (actual: " + juegoAEditar.getPrecio() + "): ");
-		        juegoAEditar.setPrecio(sc.nextInt());
-		        sc.nextLine();
+		        juegoAEditar.setPrecio(lector.nextInt());
+		        lector.nextLine();
 		        System.out.print("Nueva Categoría (actual: " + juegoAEditar.getCategoria() + "): ");
 				try{
-					juegoAEditar.setCategoria(sc.nextLine());
+					juegoAEditar.setCategoria(lector.nextLine());
 					System.out.println("Parámetros actualizados con éxito.");
 				}
 		        catch(CategoriaInvalidaException e){
@@ -357,11 +415,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		    }
 		}
 		
-		private void moverInventario(Scanner sc) {
-		    System.out.print("Ingrese el ID del juego para mover de VENTA a PRÉSTAMO: ");
-		    int idMover = sc.nextInt();
-		    sc.nextLine();
-
+		private void moverInventario() {
+			int idMover = leerEntero("Ingrese el ID del juego para mover de VENTA a PRÉSTAMO: ");
 		    Juego juegoAMover = null;
 		    for (Juego j : miCafe.getJuegosVenta()) {
 		        if (j.getId() == idMover) {
@@ -390,7 +445,6 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		
 		
 		public void gestionarJuego() {
-		    Scanner sc = new Scanner(System.in);
 			Administrador admin = (Administrador) autenticarUsuario();
 			if(admin == null){
 				return;
@@ -400,9 +454,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		        System.out.println("1. Crear nuevo juego");
 		        System.out.println("2. Modificar parámetros de un juego");
 		        System.out.println("3. Mover juego de Venta a Préstamo");
-		        System.out.print("Seleccione una opción: ");
-		        int opcionPrincipal = sc.nextInt();
-		        sc.nextLine(); // Limpiar buffer
+		        int opcionPrincipal = leerEntero("Seleccione una opción:");
 
 		        switch (opcionPrincipal) {
 		            case 1:
@@ -421,11 +473,11 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		                break;
 
 		            case 2:
-		                modificarJuego(sc);
+		                modificarJuego();
 		                break;
 
 		            case 3:
-		                moverInventario(sc);
+		                moverInventario();
 		                break;
 
 		            default:
@@ -441,25 +493,39 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		
 		do {
 			System.out.println("\n--- Bienvenido Administrador ---");
-			System.out.println("0.  Registrarse Primera Vez ");
-			System.out.println("1. Cambiar Contraseña");
-			System.out.println("2. Opciones de Administrador");
-			System.out.println("3. Opciones de Empleado");
-			System.out.println("4. Opciones de Cliente");
-			System.out.println("5. Salir");
+			System.out.println("0.  Registrar nuevo administrador. ");
+			System.out.println("1. Registrar usuarios en el sistema.");
+			System.out.println("2. Gestionar turnos.");
+			System.out.println("3. Gestionar juegos.");
+			System.out.println("4. Aceptar sugerencias de platillos");
+			System.out.println("4. Ver finanzas del cafe.");
+			System.out.println("6. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
 				opcion = lectorMenu.nextInt();
 				lectorMenu.nextLine();
-
 				switch (opcion) {
-				case 0:
-					consola.registrarNuevoJuego();
-					break;
-				case 1:
-					System.out.println("Saliendo del sistema... ¡Hasta luego!");
-					return;
+					case 0:
+						consola.registrarUsuarioNuevo();
+						break;
+					case 1:
+						consola.registrarUsuarioNuevoNoAdmin();
+						break;
+					case 2:
+						consola.gestionarTurno();
+						break;
+					case 3:
+						consola.gestionarJuego();
+						break;
+					case 4:
+						consola.aceptarPlatillo();
+						break;
+					case 5:
+						consola.verFinanzas();
+						break;
+					case 6:
+						return;
 				}
 			} catch (Exception e) {
 				System.out.println(" Ingrese un número válido.");

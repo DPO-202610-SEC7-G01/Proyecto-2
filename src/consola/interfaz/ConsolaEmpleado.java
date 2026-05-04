@@ -27,9 +27,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 	private void registrarUsuarioNuevoSinAutenticacion() {
 		System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
 		System.out.println("1. Cliente | 2. Mesero | 3. Cocinero ");
-		System.out.print("Seleccione: ");
-		int tipo = lector.nextInt();
-		lector.nextLine();
+		int tipo = leerEntero("Seleccione opcion: ");
 		System.out.print("Nombre completo: ");
 		String nombre = lector.nextLine();
 
