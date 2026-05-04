@@ -260,7 +260,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 				break;
 
 			case 2:
-				/TODO refactor ASAP de este metodo
+				//TODO refactor ASAP de este metodo
 				consolaEmpleado.pedirYServirBebida(reservaEncontrada, meseroActual);
 				break;
 
