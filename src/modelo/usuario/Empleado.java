@@ -47,6 +47,7 @@ public class Empleado extends Usuario {
         return amigos;
     }
     public void agregarAmigo(Cliente cliente) {
+    	cliente.nuevoAmigo(); // Esto debería tener una prueba de integración (IGNORAR POR EL MOMENTO)
         this.amigos.add(cliente); 
     }
     
@@ -69,7 +70,7 @@ public class Empleado extends Usuario {
         miCafe.agregarSugerencia(producto);
     }
     
-    public boolean verificarSiEsAmigo(Cliente supuesto){// Esto debería tener una prueba de integración (IGNORAR POR EL MOMENTO)
+    public boolean verificarSiEsAmigo(Cliente supuesto){
         for(Cliente amigo: amigos){
             if(amigo.getId() == supuesto.getId()){
                 return true;
@@ -77,14 +78,12 @@ public class Empleado extends Usuario {
         }
         return false;
     }
-    public ArrayList<Calendar> getListaFechas(){
-        ArrayList<Calendar> fechas = new ArrayList<>();
-        for(Turno turno: turnos){
-            fechas.add(turno.getFecha());
-        }
-        return fechas;
-    }
-    //PRESTAMO DE JUEGOS
+    
+    public ArrayList<Torneo>  getTorneosInscritos() {
+		return torneosInscritos;
+	}
+
+	//PRESTAMO DE JUEGOS
     public boolean aptoPrestamo(Juego juego, Calendar fechaConsulta) {
         boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);
         
@@ -104,7 +103,7 @@ public class Empleado extends Usuario {
     // FUNCIONES DE TURNO 
     public boolean pedirCambioTurno(Administrador admin, 
     		Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
-        return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
+        return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha); //Esta también es una prueba de integración porque cambia parámetros de esta clase a través de admin (IGNORAR POR EL MOMENTO)
     }
 
     public Turno getTurnoPorFecha(Calendar fecha) {
@@ -145,41 +144,6 @@ public class Empleado extends Usuario {
         return diasTrabajo;
     }
     
-    //TORNEO
-    public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException, CafeException {
-	    Torneo torneo = null;
-	    
-	    for (Torneo t : miCafe.getTorneosActivos()) {
-	        if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
-	            torneo = t;
-	            break;
-	        }
-	    }
-	    
-	    if (torneo == null) {
-	        throw TorneoException.torneoNoEncontrado(nombreTorneo);
-	    }
-	    
-	    if (torneosInscritos.size() >= 3) {
-	        throw TorneoException.excesoTorneos(3);
-	    }
-	    
-	    if (torneosInscritos.contains(torneo)) {
-	        throw TorneoException.yaInscrito(nombreTorneo);
-	    }
-	    
-	    if (!trabajaEnFecha(torneo.getFecha())) {
-	    	String fechaStr = torneo.getFecha().get(Calendar.DAY_OF_MONTH) + "/" + 
-                    (torneo.getFecha().get(Calendar.MONTH) + 1) + "/" + 
-                    torneo.getFecha().get(Calendar.YEAR);
-	    	throw new TorneoException("El empleado " + getNombre() + " está en turno el día " + fechaStr, "EMPLEADO_EN_TURNO");
-	    }
-	    
-	    torneo.agregarParticipantes(this);
-	    torneosInscritos.add(torneo);
-	}
-    
-    
     public ArrayList<Calendar> getListaFechas(){
         ArrayList<Calendar> fechas = new ArrayList<>();
         for(Turno turno: turnos){
@@ -187,4 +151,46 @@ public class Empleado extends Usuario {
         }
         return fechas;
     }
+    
+    //TORNEO
+    public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws UsuariosException, CafeException {
+	    Torneo torneo = null;
+	    
+	    if (miCafe.getTorneosActivos() != null) {
+	        for (Torneo t : miCafe.getTorneosActivos()) {
+	            if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
+	                torneo = t;
+	                break;
+	            }
+	        }
+	    }
+	    
+	    if (torneo == null) {
+	        throw new UsuariosException(this, "torneo", 
+	            "Torneo no encontrado para el juego: " + nombreTorneo);
+	    }
+	    
+	    if (torneosInscritos.size() >= 3) {
+	        throw new UsuariosException(this, "torneosInscritos", 
+	            "El usuario excede el límite máximo de 3 torneos");
+	    }
+	    
+	    if (torneosInscritos.contains(torneo)) {
+	        throw new UsuariosException(this, "torneosInscritos", 
+	            "El usuario ya está inscrito en el torneo: " + nombreTorneo);
+	    }
+	    
+	    torneo.agregarParticipantes(this); 
+	    torneosInscritos.add(torneo);
+	}
+	
+	public void desinscribirseDeTodosLosTorneos() {
+	    for (Torneo torneo : torneosInscritos) {
+	        torneo.eliminarParticipante(this);
+	    }
+	    torneosInscritos.clear();
+	}
+    
+    
+   
 }

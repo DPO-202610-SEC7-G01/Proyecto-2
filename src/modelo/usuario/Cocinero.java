@@ -1,7 +1,6 @@
 package modelo.usuario;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import exceptions.InvalidCredentialsException;
 import exceptions.UsuariosException;
@@ -9,8 +8,8 @@ import modelo.producto.Bebida;
 import modelo.producto.Platillo;
 
 public class Cocinero extends Empleado{
-	private List<Platillo> platillosConocidos;
-	private List<Bebida> bebidasConocidas;
+	private ArrayList<Platillo> platillosConocidos;
+	private ArrayList<Bebida> bebidasConocidas;
 	
 	//Constructor
 	public Cocinero(int id, String login, String password, String nombre) throws InvalidCredentialsException, UsuariosException {
@@ -21,7 +20,7 @@ public class Cocinero extends Empleado{
 	}
 	
 	//Getters y Setters
-	public List<Platillo> getPlatillosConocidos() {
+	public ArrayList<Platillo> getPlatillosConocidos() {
 		return platillosConocidos;
 	}
 	public void aprenderPlatillo(Platillo platillo) {
@@ -31,7 +30,7 @@ public class Cocinero extends Empleado{
 	    this.platillosConocidos.add(platillo);
 	}
 	
-	public List<Bebida> getBebidasConocidas() {
+	public ArrayList<Bebida> getBebidasConocidas() {
 		return bebidasConocidas;
 	}
 	public void aprenderBebida(Bebida bebida) {
