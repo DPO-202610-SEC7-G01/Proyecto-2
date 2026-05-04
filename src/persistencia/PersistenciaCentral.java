@@ -38,9 +38,30 @@ public class PersistenciaCentral {
 	}
 	
 	protected static Calendar fechaEnCalendar(String fechaString) {
-	    LocalDate fechaLocal = LocalDate.parse(fechaString);
 	    Calendar calendar = Calendar.getInstance();
-	    calendar.set(fechaLocal.getYear(), fechaLocal.getMonthValue() - 1, fechaLocal.getDayOfMonth());
+	    
+	    if (fechaString.contains("T")) {
+	        java.time.ZonedDateTime zdt = java.time.ZonedDateTime.parse(fechaString);
+	        calendar.set(
+	            zdt.getYear(), 
+	            zdt.getMonthValue() - 1, 
+	            zdt.getDayOfMonth(), 
+	            zdt.getHour(), 
+	            zdt.getMinute(), 
+	            zdt.getSecond()
+	        );
+	    } 
+	    else {
+	        java.time.LocalDate ld = java.time.LocalDate.parse(fechaString);
+	        calendar.set(
+	            ld.getYear(), 
+	            ld.getMonthValue() - 1, 
+	            ld.getDayOfMonth(), 
+	            0, 0, 0 
+	        );
+	    }
+	    
+	    calendar.set(Calendar.MILLISECOND, 0);
 	    return calendar;
 	}
 	

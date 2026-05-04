@@ -88,7 +88,6 @@ public class PersistenciaProductos extends PersistenciaCentral{
         int numJugadores = jJuego.getInt("numJugadores");
         String restriccionEdad = jJuego.getString("restriccionEdad");
         String categoria = jJuego.getString("categoria");
-		String estado = jJuego.getString("estado");
         
         Juego nuevoJuego;
         if (jJuego.has("instrucciones")) {
@@ -116,19 +115,28 @@ public class PersistenciaProductos extends PersistenciaCentral{
     }
 
     public static Platillo descargarPlatillos(JSONObject jPlatillo) throws IOException, FileNotFoundException {
-    	ArrayList<String> alergenos = new ArrayList<>();
-    	JSONArray jAlergenos = jPlatillo.optJSONArray("alergenos");
-		 for (int j = 0; j < jPlatillo.length(); j++) {
-			 String alergeno = jAlergenos.getJSONObject(j).toString();
-       	 alergenos.add(alergeno);
-       }
-		 
-            Platillo nuevoPlatillo = new Platillo(
-            		jPlatillo.getInt("id"),
-            		jPlatillo.getInt("precio"),
-            		jPlatillo.getString("nombre"),
-            		alergenos
-            		);
+        ArrayList<String> alergenos = new ArrayList<>();
+        
+        // optJSONArray evita que el programa se estrelle si un platillo no tiene la llave "alergenos"
+        JSONArray jAlergenos = jPlatillo.optJSONArray("alergenos");
+        
+        // Validación de seguridad: solo recorremos si la lista existe
+        if (jAlergenos != null) {
+            // CORRECCIÓN 1: Iterar sobre jAlergenos.length(), no sobre jPlatillo.length()
+            for (int j = 0; j < jAlergenos.length(); j++) { 
+                // CORRECCIÓN 2: Usar getString() porque el JSON tiene textos (ej. "Gluten"), no objetos anidados
+                String alergeno = jAlergenos.getString(j); 
+                alergenos.add(alergeno);
+            }
+        }
+        
+        // Instanciamos el platillo con la información extraída
+        Platillo nuevoPlatillo = new Platillo(
+                jPlatillo.getInt("id"),
+                jPlatillo.getInt("precio"),
+                jPlatillo.getString("nombre"),
+                alergenos
+        );
         
         return nuevoPlatillo;
     }

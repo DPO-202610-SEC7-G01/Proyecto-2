@@ -28,10 +28,10 @@ public class Juego extends Producto{
 	        throw new NumeroJugadoresExcedidoException(numJugadores, 1, 40);
 	    }
 
-	    if (restriccionEdad.contains("-5") || restriccionEdad.equalsIgnoreCase("Adultos")) {
+	    if (restriccionEdad.contains("-5") || restriccionEdad.equalsIgnoreCase("Adultos")|| restriccionEdad.equalsIgnoreCase("+14")) {
 	        this.restriccionEdad = restriccionEdad;
 	    } else {
-	        throw new RestriccionEdadInvalidaException(restriccionEdad, new String[]{"-5", "Adultos"});
+	        throw new RestriccionEdadInvalidaException(restriccionEdad, new String[]{"-5", "Adultos","+14"});
 	    }
 
 	    if (categoria.equals("Tablero") || categoria.equals("Cartas") || categoria.equals("Acción")) {

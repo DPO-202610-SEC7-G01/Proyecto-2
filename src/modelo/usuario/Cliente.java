@@ -116,5 +116,9 @@ public class Cliente extends Usuario {
 	    }
 	    torneosInscritos.clear();
 	}
+
+	public void setAmigos(boolean amigos) {
+	    this.amigos = amigos;
+	}
 	
 }

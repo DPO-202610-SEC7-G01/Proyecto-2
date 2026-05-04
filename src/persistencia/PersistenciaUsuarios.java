@@ -85,12 +85,15 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException, JSONException,
 	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
 		
-		ArrayList<String>  alergenos = new ArrayList<>();
+		ArrayList<String> alergenos = new ArrayList<>();
 		JSONArray jAlergenos = jCliente.optJSONArray("alergenos");
-		 for (int j = 0; j < jAlergenos.length(); j++) {
-			 String alergeno = jAlergenos.getJSONObject(j).toString();
-        	 alergenos.add(alergeno);
-        }	
+
+		if (jAlergenos != null) {
+		    for (int j = 0; j < jAlergenos.length(); j++) {
+		        String alergeno = jAlergenos.getString(j); 
+		        alergenos.add(alergeno);
+		    }
+		}
 		
 	    Cliente nuevoCliente = new Cliente(
 	        jCliente.getInt("id"),
@@ -145,18 +148,20 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	        
 	        JSONArray bebidasArray = jEmpleado.optJSONArray("bebidasConocidas");
 	        JSONArray platillosArray = jEmpleado.optJSONArray("platillosConocidos");
-
 	        if (platillosArray != null) {
 	            for (int j = 0; j < platillosArray.length(); j++) {
-	            	 Platillo platillo =PersistenciaProductos.descargarPlatillos(platillosArray.getJSONObject(i));  
-	            	 nuevoChef.aprenderPlatillo(platillo);
+	     
+	                Platillo platillo = PersistenciaProductos.descargarPlatillos(platillosArray.getJSONObject(j));  
+	                nuevoChef.aprenderPlatillo(platillo);
 	            }	
 	        }
+
 	        
 	        if (bebidasArray != null) {
-	        	for (int j = 0; j < bebidasArray.length(); j++) {
-	            	 Bebida bebida =PersistenciaProductos.descargarBebidas(bebidasArray.getJSONObject(i));  
-	            	 nuevoChef.aprenderBebida(bebida);
+	            for (int j = 0; j < bebidasArray.length(); j++) {
+	     
+	                Bebida bebida = PersistenciaProductos.descargarBebidas(bebidasArray.getJSONObject(j));  
+	                nuevoChef.aprenderBebida(bebida);
 	            }	   
 	        }
 	        
@@ -187,13 +192,13 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	        JSONArray juegosArray = jEmpleado.optJSONArray("juegosConocidos");
 	        if (juegosArray != null) {	            
 	            for (int j = 0; j < juegosArray.length(); j++) {
-	            	 Juego juego =PersistenciaProductos.descargarJuegos(juegosArray.getJSONObject(i)); 
-	            	 if (juego instanceof JuegoDificil) {
-	            	 nuevoEmpleado.aprenderJuegoDificil((JuegoDificil) juego);
-	            	 }
+	                // CORRECCIÓN: Cambiar (i) por (j) para recorrer la lista de juegos correctamente
+	                Juego juego = PersistenciaProductos.descargarJuegos(juegosArray.getJSONObject(j)); 
+	                
+	                if (juego instanceof JuegoDificil) {
+	                    nuevoEmpleado.aprenderJuegoDificil((JuegoDificil) juego);
+	                }
 	            }	
-	         
-	        
 	        }
 	            empleadosCargados.add(nuevoEmpleado);
 	    }
