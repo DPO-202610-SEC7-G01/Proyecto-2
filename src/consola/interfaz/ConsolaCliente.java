@@ -255,10 +255,12 @@ public class ConsolaCliente extends ConsolaAbstract{
 
 			switch (op) {
 			case 1:
+				//TODO refactor ASAP de este metodo
 				consolaEmpleado.pedirYServirPlatillo(reservaEncontrada, meseroActual);
 				break;
 
 			case 2:
+				/TODO refactor ASAP de este metodo
 				consolaEmpleado.pedirYServirBebida(reservaEncontrada, meseroActual);
 				break;
 
