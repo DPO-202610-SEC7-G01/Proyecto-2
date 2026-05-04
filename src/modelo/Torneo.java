@@ -25,38 +25,70 @@ public class Torneo {
 	
 	//Constructor
     public Torneo(String tipo, String nombre, Juego juego, int numParticipantes, int precio)
-    		throws NumeroJugadoresExcedidoException {
-        this.tipo = tipo; // solo puede ser amistoso o competitivo
-        this.nombre = nombre; // cualqquiera 
-        this.juego = juego; 
-        this.precio = precio; // si es amistoso debe ser gratis
-        this.activo = true; // obvio
+    		throws NumeroJugadoresExcedidoException, InvalidCredentialsException {
+    	 if (tipo == null || tipo.trim().isEmpty()) {
+             throw new InvalidCredentialsException("tipo", "El tipo del torneo no puede estar vacío.");
+         }
+         if (!tipo.equalsIgnoreCase("Amistoso") && !tipo.equalsIgnoreCase("Competitivo")) {
+             throw new InvalidCredentialsException("tipo", 
+                 "El tipo del torneo solo puede ser 'Amistoso' o 'Competitivo'.");
+         }
+         
+         if (nombre == null || nombre.trim().isEmpty()) {
+             throw new InvalidCredentialsException("nombre", "El nombre del torneo no puede estar vacío.");
+         }
+         this.nombre = nombre;
+         
+         if (juego == null) {
+             throw new InvalidCredentialsException("juego", "El juego del torneo no puede ser nulo.");
+         }
+         this.juego = juego;
+         if (tipo.equalsIgnoreCase("Amistoso") && precio != 0) {
+             throw new InvalidCredentialsException("precio", 
+                 "Los torneos amistosos deben ser gratuitos (precio = 0).");
+         }
+         if (precio < 0) {
+             throw new InvalidCredentialsException("precio", "El precio no puede ser negativo.");
+         }
+         this.precio = precio;
+         
+        this.activo = true; 
         
         this.fanaticos = new ArrayList<Usuario>();
         this.participantes = new ArrayList<Usuario>();
-        this.fecha = Calendar.getInstance(); // debe ser el día de hoy 
-        this.premio = "";
+        this.fecha = Calendar.getInstance(); 
+        this.premio = ""; 
         validarYAsignarParticipantes(juego, numParticipantes, miCafe);
         agregarFanaticosDelJuego();
+        definirPremio(); 
         
-    
+
     }
     
     // Getters y Setters
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
+    public String getTipo() { 
+    	return tipo;
+    }
+
+    public Juego getJuego() {
+    	return juego; 
+    }
     
-    public Juego getJuego() { return juego; }
-    public void setJuego(Juego juego) { this.juego = juego; }
+    public int getNumParticipantes() { 
+    	return numParticipantes; 
+    }
     
-    public int getNumParticipantes() { return numParticipantes; }
-    public void setNumParticipantes(int numParticipantes) { this.numParticipantes = numParticipantes; }
+    public int getPrecio() { 
+    	return precio;
+    }
     
-    public int getPrecio() { return precio; }
-    public void setPrecio(int precio) { this.precio = precio; }
+    public boolean isActivo() { 
+    	return activo; 
+    }
     
-    public boolean isActivo() { return activo; }
-    public void setActivo(boolean activo) { this.activo = activo; }
+    public void setActivo(boolean activo) { 
+    	this.activo = activo; 
+    }
     
     public boolean esAmistoso() {
         return tipo.equalsIgnoreCase("Amistoso");
@@ -116,8 +148,6 @@ public class Torneo {
         }
 	}
 	
-	
-	
 	 private boolean esFanatico(Usuario usuario) {
 	   ArrayList<Juego> juegosFavoritos = null;
 	        
@@ -136,8 +166,7 @@ public class Torneo {
 	        return false;
 	    }
 	
-	 
-	 
+	
 	//Verificar Cupos Disponibles
 	private boolean hayCupoDisponible(Usuario participante) {
 	    int cuposFanaticos = (int) Math.ceil(numParticipantes * 0.2);
@@ -202,7 +231,6 @@ public class Torneo {
         }
     }
     
-   // para definir el premio
     public void definirPremio() {
         int totalRecaudado = this.numParticipantes * this.precio;
         String premio = "";
@@ -224,12 +252,12 @@ public class Torneo {
         this.premio = premio;
     }
     
-    //Definir ganador y premdio
+
     public void ganador(Usuario usuario) {
         if (usuario instanceof Cliente) {
             Cliente cliente = (Cliente) usuario;
-            cliente.agregarPremio(premio);
-        } 
+            cliente.agregarPremio(premio); // solo obtiene el premio si tiene un bono de descuento
+        }  
         
         else if (usuario instanceof Empleado) {
         }
@@ -237,7 +265,5 @@ public class Torneo {
         String registroGanador = usuario.getNombre() + " - " + this.nombre;
         miCafe.nuevoGanadores(registroGanador);
     }
-    
-   
     
 }
