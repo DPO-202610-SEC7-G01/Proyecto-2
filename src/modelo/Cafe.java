@@ -80,6 +80,7 @@ public class Cafe {
 	public ArrayList<Cliente> getClientes() {
 		return clientes;
 	}
+	
 	public void agregarUsuario(Cliente cliente) {
 		this.clientes.add(cliente);
 	}
@@ -303,7 +304,8 @@ public class Cafe {
 		}
 		return total;
 	}
-	
+
+
 	
 
 

@@ -11,6 +11,7 @@ import modelo.usuario.*;
 public class Transaccion {
 	private int id;
 	private Calendar fecha;
+	private Cafe miCafe;
 	private final double DESCUENTO_EMPLEADO = 0.2;
 	private final double DESCUENTO_AMIGO_EMPLEADO = 0.1;
 	private final double PROPINA_SUGERIDA = 0.1;
@@ -23,20 +24,22 @@ public class Transaccion {
 		this.id = id;
 		this.fecha = fecha;
 		this.productos = productos;
-		if ( cliente_final instanceof Empleado || cliente_final instanceof Cliente ) { // Nos aseguramos que los admins no pueden comprar
+		if ( cliente_final instanceof Empleado || cliente_final instanceof Cliente ) { 
 			this.cliente_final = cliente_final;
 		}
 		
 		this.amigoEmpleado = amigoEmpleado;
 	}
+	
 	public Transaccion(){
 	}
+	
 	//Getters y Setters
 	public Usuario getCliente_final() {
 		return cliente_final;
 	}
 
-	public boolean isAmigoEmpleado() {
+	public boolean isAmigoEmpleado() {  // aunque parece prueba de integracion vemos que es solo cliente 
 		return amigoEmpleado;
 	}
 	public int getId() {
@@ -57,9 +60,14 @@ public class Transaccion {
 	public List<Producto> getProductos() {
 		return productos;
 	}
+	private void registrarTransaccion(Transaccion transaccion) {
+		miCafe.agregarTransaccion(transaccion);
+		
+	}
+	
 	
 	//Métodos
-	public void agregarProducto(Producto p) {
+	public void agregarProducto(Producto p) { 
 	    if (p != null) {
 	        this.productos.add(p);
 	    }
@@ -71,12 +79,10 @@ public class Transaccion {
 	    Calendar hoy = Calendar.getInstance();
 	    boolean tieneAmigos = false;
 	    
-	    // Si el usuario es cliente, verificar si tiene amigos
 	    if (usuario instanceof Cliente) {
 	        Cliente cliente = (Cliente) usuario;
 	        tieneAmigos = cliente.getAmigos();
 	    } else if (usuario instanceof Empleado) {
-	        // Si es empleado, se establece como false
 	        tieneAmigos = false;
 	    }
 	    
@@ -85,40 +91,57 @@ public class Transaccion {
 	}
 	
 	public int calcularTotal() throws UsuariosException {
-		double total = 0;
-		for (int i = 0; i < this.productos.size(); i++) {
-			Producto producto = this.productos.get(i);
-			total += producto.calcularPrecioFinal();
-		}
-		
-		int puntosFidelidad = (int) ((int) total*0.01);
-		if ( cliente_final instanceof Empleado ) { 
-			Empleado empleado = (Empleado) cliente_final;
-			empleado.sumarPuntosFidelidad(puntosFidelidad);
-		}else {
-			Cliente cliente = (Cliente) cliente_final;
-			cliente.sumarPuntosFidelidad(puntosFidelidad);
-		}
-		
-		if ( cliente_final instanceof Cliente &&  ((Cliente) cliente_final).getPremio().contains("50")) {
-			double descuento = total* 0.5;
-			total -=descuento;
-			((Cliente) cliente_final).agregarPremio("");
-			
-		} else {
-			if ( cliente_final instanceof Empleado) {
-				double descuento  = total * this.DESCUENTO_EMPLEADO;
-				total -= descuento;
-			} else if(this.amigoEmpleado) {
-				double descuento  = total * this.DESCUENTO_AMIGO_EMPLEADO;
-				total -= descuento;
-			}
-			
-		}
-		
-		return (int) total;
+	    if (productos == null || productos.isEmpty()) {
+	        return 0; // como tal no es un error sino que es un factura sin cosas entonces un ese return está bien
+	    }
+	    
+	    if (cliente_final == null) {
+	        throw new UsuariosException(cliente_final,"transaccion ","No se puede calcular el total sin un cliente asociado a la transacción.");
+	    }
+	    
+	    double total = 0;
+	    
+	    for (Producto producto : productos) {
+	            total += producto.calcularPrecioFinal();       
+	    }
+	    
+	    int puntosFidelidad = (int) (total * 0.01);
+	    
+	    if (cliente_final instanceof Empleado) {
+	        Empleado empleado = (Empleado) cliente_final;
+	        empleado.sumarPuntosFidelidad(puntosFidelidad);
+	    } else if (cliente_final instanceof Cliente) {
+	        Cliente cliente = (Cliente) cliente_final;
+	        cliente.sumarPuntosFidelidad(puntosFidelidad);
+	    }
+	    
+	    
+	    boolean tienePremio50 = false;
+	    if (cliente_final instanceof Cliente) {
+	        Cliente cliente = (Cliente) cliente_final;
+	        String premio = cliente.getPremio();
+	        tienePremio50 = (premio != null && premio.contains("50"));
+	        
+	        if (tienePremio50) {
+	            double descuento = total * 0.5;
+	            total -= descuento;
+	            cliente.agregarPremio("");
+	        }
+	    }
+	    
+	    if (!tienePremio50) {
+	        if (cliente_final instanceof Empleado) {
+	            double descuento = total * this.DESCUENTO_EMPLEADO;
+	            total -= descuento;
+	        } else if (this.amigoEmpleado) {
+	            double descuento = total * this.DESCUENTO_AMIGO_EMPLEADO;
+	            total -= descuento;
+	        }
+	    }
+	    
+	    registrarTransaccion(this);
+	    
+	    return (int) total;
 	}
-	
-	
 	
 }

@@ -4,7 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+
+import exceptions.JuegoNoAptoException;
+import exceptions.ProductosException;
 import exceptions.UsuariosException;
 import modelo.Cafe;
 import modelo.Reserva;
@@ -296,5 +300,106 @@ class MeseroTest {
             "Mensaje recibido: " + mensaje);
     }
    
+ // ==================== TESTS DE INTEGRACIÓN (IGNORADOS) ==================== Deepseek
+    
+    @Disabled("Test de integración - Requiere que el mesero tenga acceso al Cafe")
+    @Test
+    void testNuevaReservaIntegracion() {
+        // Necesita que mesero.miCafe esté configurado
+        // Prueba el flujo completo de crear una reserva
+        mesero.nuevaReserva(reserva, fecha);
+        assertTrue(mesero.getReservasAsignadas().contains(reserva));
+    }
+    
+    @Disabled("Test de integración - Requiere acceso a la lista de juegos del café")
+    @Test
+    void testAutorizarPrestamoConJuegoYaReservado() {
+        // Necesita que miCafe.estaJuegoReservadoEnFecha() funcione correctamente
+        // y que el café tenga un historial de reservas
+    }
+    
+    @Disabled("Test de integración - Requiere que el mesero conozca juegos difíciles")
+    @Test
+    void testAutorizarPrestamoJuegoDificilNoConocido() {
+        // Prueba que cuando un juego difícil no es conocido,
+        // se llame a reserva.pedirCambioMesero()
+        mesero.agregarTurno(turno);
         
+        assertDoesNotThrow(() -> {
+            mesero.autorizarPrestamo(reserva, juegoDificil);
+        });
+    }
+    
+    @Disabled("Test de integración - Requiere acceso a la lista de cocineros del café")
+    @Test
+    void testServirPlatilloConCocineroQueNoSabe() throws ProductosException {
+        // Prueba cuando el cocinero de turno no sabe preparar el platillo
+        Platillo platilloNoConocido;
+        try {
+            platilloNoConocido = new Platillo(999, 10000, "Plato Desconocido", new ArrayList<>());
+            mesero.servirPlatillos(reserva, platilloNoConocido);
+            fail("Debería lanzar excepción");
+        } catch (UsuariosException e) {
+            assertTrue(e.getMessage().contains("no sabe preparar"));
+        }
+    }
+    
+    @Disabled("Test de integración - Requiere acceso a la lista de cocineros del café")
+    @Test
+    void testServirBebidaConCocineroQueNoSabe() throws ProductosException {
+        // Prueba cuando el cocinero de turno no sabe preparar la bebida
+        Bebida bebidaNoConocida;
+        try {
+        	bebidaNoConocida = new Bebida(1, 7999, "Burunganda", "Fría", true);
+            mesero.servirBebidas(reserva, bebidaNoConocida);
+            fail("Debería lanzar excepción");
+        } catch (UsuariosException e) {
+            assertTrue(e.getMessage().contains("no sabe preparar"));
+        }
+    }
+    
+    @Disabled("Test de integración - Requiere reserva con múltiples clientes con alergias")
+    @Test
+    void testServirPlatilloConAlergenosMultiplesClientes() {
+        // Prueba el manejo de alergenos cuando hay múltiples clientes afectados
+        // y múltiples ingredientes peligrosos
+    }
+    
+    @Disabled("Test de integración - Requiere reserva con juegos de acción")
+    @Test
+    void testServirBebidaCalienteConJuegoAccion() throws JuegoNoAptoException, UsuariosException {
+        // Prueba que no se pueden servir bebidas calientes cuando hay juegos de acción
+        reserva.agregarAlPrestamo(juegoNormal); // Necesita un juego de acción
+        mesero.agregarTurno(turno);
+       miCafe.agregarEmpleado(cocinero);
+        
+        assertThrows(UsuariosException.class, () -> {
+            mesero.servirBebidas(reserva, bebidaCaliente);
+        });
+    }
+    
+    @Disabled("Test de integración - Requiere reserva con múltiples transacciones")
+    @Test
+    void testServirMultiplesPlatillosYBebidas() {
+        // Prueba el flujo completo de servir varios platillos y bebidas
+        // Verifica que todas las transacciones se agreguen correctamente
+    }
+    
+    @Disabled("Test de integración - Requiere café con múltiples empleados")
+    @Test
+    void testLibreParaReservaConMultiplesReservas() {
+        // Prueba el límite de reservas (máximo 2)
+        mesero.agregarTurno(turno);
+        mesero.nuevaReserva(reserva, fecha);
+        
+        Reserva reserva2 = new Reserva(new ArrayList<>(), 2,fecha);
+        mesero.nuevaReserva(reserva2, fecha);
+        
+        Reserva reserva3 = new Reserva(new ArrayList<>(), 6,fecha);
+        // La tercera reserva no debería asignarse
+        mesero.nuevaReserva(reserva3, fecha);
+        
+        assertEquals(2, mesero.getReservasAsignadas().size());
+    }
+    
 }

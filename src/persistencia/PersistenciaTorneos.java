@@ -15,9 +15,11 @@ import modelo.usuario.Empleado;
 import modelo.usuario.Usuario;
 
 public class PersistenciaTorneos extends PersistenciaCentral {
-
+	
+	
     public static void descargarTorneos(String torneosArchivo, Cafe miCafe)
-            throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException, InvalidCredentialsException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
+            throws IOException, FileNotFoundException, JSONException, 
+             InvalidCredentialsException, ProductosException, CafeException {
         
         JSONArray jTorneos = leerArchivoJSON(torneosArchivo);
 
@@ -33,7 +35,7 @@ public class PersistenciaTorneos extends PersistenciaCentral {
             JSONObject jJuego = jTorneo.getJSONObject("juego");
             Juego juego = PersistenciaProductos.descargarJuegos(jJuego);
 
-            Torneo nuevoTorneo = new Torneo(tipo, nombre, juego, numParticipantes, precio);
+            Torneo nuevoTorneo = new Torneo(tipo, nombre, juego, numParticipantes, precio,miCafe);
             nuevoTorneo.setActivo(activo);
             
             JSONArray jParticipantesIds = jTorneo.optJSONArray("participantesIds");
@@ -43,10 +45,7 @@ public class PersistenciaTorneos extends PersistenciaCentral {
                     Usuario participante = buscarUsuarioPorId(idUsuario, miCafe);
                     
                     if (participante != null) {
-                        try {
-                            nuevoTorneo.agregarParticipantes(participante);
-                        } catch (TorneoException e) {
-                        }
+                        nuevoTorneo.agregarParticipantes(participante);
                     }
                 }
             }
@@ -65,7 +64,7 @@ public class PersistenciaTorneos extends PersistenciaCentral {
             jTorneo.put("precio", torneo.getPrecio());
             jTorneo.put("numParticipantes", torneo.getNumParticipantes());
             jTorneo.put("activo", torneo.isActivo());
-            jTorneo.put("premio", torneo.gePremio());
+            jTorneo.put("premio", torneo.getPremio());
             
             jTorneo.put("fecha", calendarToString(torneo.getFecha()));
 
