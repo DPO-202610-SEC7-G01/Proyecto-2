@@ -84,7 +84,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			case 3:
 				try {
 					registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
-				} catch (InvalidCredentialsException e) {
+				} catch (InvalidCredentialsException | UsuariosException e) {
 					System.out.println("Error al registrar el cocinero.");
 				}
 
@@ -98,7 +98,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			Mesero nuevoM = new Mesero(id, login, password, nombre);
 			miCafe.getEmpleados().add(nuevoM);
 		}
-	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
 	}
@@ -118,7 +118,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		return null;
 	}
 	
-	public void registrarNuevoJuego() throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException { //TODO: Acá hace falta mirar la persistencia para cargarlo
+	public void registrarNuevoJuego() throws ProductosException { //TODO: Acá hace falta mirar la persistencia para cargarlo
 		if(autenticarUsuario()== null){
 			return;
 		}
@@ -140,13 +140,15 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	    System.out.print("¿Es un juego difícil? (y/n): ");
 	    String esDificil = sc.nextLine().toLowerCase();
 		if(numJug<0 || numJug>40) {
-			throw new NumeroJugadoresExcedidoException();
+			System.out.println("Numero de jugadores invalido intente de nuevo.");
+			return;
 		}
 		if(!cat.equals("Tablero") && !cat.equals("Cartas") && !cat.equals("Acción")){
-			throw new CategoriaInvalidaException(cat, new String[]{"Tablero", "Cartas", "Acción"});
+			System.out.println("Error: Categoria invalida, ingrese Tablero, Cartas o Acción (con tilde).");
+			return;
 		}
 		if(!edad.equals("-5") && !edad.equals("Adultos")){
-			throw new RestriccionEdadInvalidaException();
+			System.out.println("Edad invalida, ingrese o -5 o Adultos.");
 		}
 	    Juego nuevoJuego;
 	    if (esDificil.equals("y")) {
@@ -391,7 +393,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	
 	// --- MÉTODOS DE APOYO PARA MANTENER EL CÓDIGO LIMPIO ---
 
-		private void modificarJuego() {
+		private void modificarJuego() throws ProductosException {
 		    int idBusqueda = leerEntero("Ingrese el ID del juego a modificar: ");
 
 		    // Buscamos en ambas listas
@@ -407,7 +409,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 					juegoAEditar.setCategoria(lector.nextLine());
 					System.out.println("Parámetros actualizados con éxito.");
 				}
-		        catch(CategoriaInvalidaException e){
+		        catch(Exception e){
 					System.out.println("Error: Categoria invalida, ingrese Tablero, Cartas o Acción (con tilde).");
 				}
 		    } else {
@@ -460,20 +462,17 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		            case 1:
 						try {
 							registrarNuevoJuego();
-						}
-						catch(NumeroJugadoresExcedidoException e){
-							System.out.println("El numero de jugadores excede el maximo (40).");
-						}
-						catch(RestriccionEdadInvalidaException e){
-							System.out.println("Formato de retriccion de edad indebido, debe ser o -5 o Adultos.");
-						}
-						catch(CategoriaInvalidaException e){
-							System.out.println("Error: Categoria invalida, ingrese Tablero, Cartas o Acción (con tilde).");
+						} catch (Exception e) {
+							System.out.println("Error al crear el juego.");
 						}
 		                break;
 
 		            case 2:
-		                modificarJuego();
+						try {
+							modificarJuego();
+						} catch (ProductosException e) {
+							System.out.println("Error al modificar el juego.");
+						}
 		                break;
 
 		            case 3:

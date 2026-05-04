@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import exceptions.InvalidCredentialsException;
+import exceptions.UsuariosException;
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
@@ -75,7 +76,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			case 3:
 				try{
 					registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
-				} catch (InvalidCredentialsException e) {
+				} catch (InvalidCredentialsException | UsuariosException e) {
 					System.out.println("Error al registrar el cocinero.");
                 }
 
@@ -118,7 +119,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		miCafe.getEmpleados().add(nuevoM);
 	}
 
-	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
 		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) {
 			return;
@@ -126,7 +127,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
 	}
 
-	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
 	}
