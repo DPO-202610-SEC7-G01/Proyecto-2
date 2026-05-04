@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
+import exceptions.InvalidCredentialsException;
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
@@ -55,17 +56,32 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				System.out.print("Alérgenos: ");
 				String alergenos = lector.nextLine();
 				ArrayList<String> alergenosLista = leerAlergenos(alergenos);
-				Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
-				miCafe.agregarUsuario(nuevoC);
+				try {
+					Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
+					miCafe.agregarUsuario(nuevoC);
+				}
+				catch(Exception e){
+					System.out.println("Error al registrar el cliente.");
+				}
 				break;
 
 			case 2:
-				registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
-				break;
+				try {
+					registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
+					break;
+				}
+				catch(Exception e){
+					System.out.println("Error al registrar el mesero.");
+				}
 
 			case 3:
-				registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
-				break;
+				try{
+					registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
+				} catch (InvalidCredentialsException e) {
+					System.out.println("Error al registrar el cocinero.");
+                }
+
+                break;
 
 			default:
 				System.out.println("❌ Opción inválida.");
@@ -91,7 +107,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		return null;
 	}
 
-	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) {
+	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
 		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) {
 			return;
@@ -99,12 +115,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
 	}
 
-	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) {
+	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
 		Mesero nuevoM = new Mesero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoM);
 	}
 
-	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) {
+	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
 		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) {
 			return;
@@ -112,7 +128,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		registrarCocineroSinAutenticacion(id, nombre, login, password, miCafe);
 	}
 
-	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) {
+	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
 		miCafe.getEmpleados().add(nuevoC);
 	}
@@ -177,38 +193,34 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 			System.out.println(" Error: Ingrese un número válido.");
 		}
 	}
-		public void sugerirPlatillo (Scanner lectorMenu){
+		public void sugerirPlatillo (){
 			Empleado empleadoActivo = autenticarUsuario();
 			if (empleadoActivo == null) {
 				return;
 			}
 			System.out.println("Ingrese el nombre del producto: ");
-			String nombre = lectorMenu.nextLine();
-			System.out.println("Ingrese el precio del producto: ");
+			String nombre = this.lector.nextLine();
 			try {
-				int precio = lectorMenu.nextInt();
-				lectorMenu.nextLine();
+				int precio = leerEntero("Ingrese el precio del producto: ");
 				System.out.println("Ingrese los alergenos del producto separados por comas, si no hay pulse enter: ");
-				String alergenos = lectorMenu.nextLine();
+				String alergenos = lector.nextLine();
 				ArrayList<String> alergenosLista = leerAlergenos(alergenos);
 				System.out.println("Ingrese el id del producto: ");
 				try {
-					int id = lectorMenu.nextInt();
-					lectorMenu.nextLine();
+					int id = lector.nextInt();
+					lector.nextLine();
 					Platillo sugerencia = new Platillo(id, precio, nombre, alergenosLista);
 					miCafe.agregarSugerencia(sugerencia);
 					System.out.println("Sugerencia agregada exitosamente.");
 					return;
 				} catch (Exception a) {
 					System.out.println(" Error: Por favor ingrese un número válido.");
-					lectorMenu.nextLine();
-					return;
+					lector.nextLine();
 				}
 
 			} catch (Exception e) {
 				System.out.println(" Error: Por favor ingrese un número válido.");
-				lectorMenu.nextLine();
-				return;
+				lector.nextLine();
 			}
 
 		}
@@ -377,18 +389,19 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 	
 	public static void main(Cafe miCafe) {
 		Scanner lectorMenu = new Scanner(System.in);
-		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);
+		ConsolaEmpleado consola = new ConsolaEmpleado(miCafe);
 
 		int opcion = 0;
 		
 		do {
-			System.out.println("\n--- Bienvenido Administrador ---");
+			System.out.println("\n--- Bienvenido Empleado ---");
 			System.out.println("0.  Registrarse Primera Vez ");
-			System.out.println("1. Cambiar Contraseña");
-			System.out.println("2. Opciones de Administrador");
-			System.out.println("3. Opciones de Empleado");
-			System.out.println("4. Opciones de Cliente");
-			System.out.println("5. Salir");
+			System.out.println("1. Sugerir platillo.");
+			System.out.println("2. Consultar turno.");
+			System.out.println("3. Ingresar juego favorito.");
+			System.out.println("4. Afiliar amigo.");
+			System.out.println("5. Comprar productos.");
+			System.out.println("6. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -396,12 +409,27 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				lectorMenu.nextLine();
 
 				switch (opcion) {
-				case 0:
-					consola.registrarNuevoJuego();
-					break;
-				case 1:
-					System.out.println("Saliendo del sistema... ¡Hasta luego!");
-					return;
+					case 0:
+						System.out.println("Recuerde que necesita que otro empleado lo registre.");
+						consola.registrarUsuarioNuevo();
+						break;
+					case 1:
+						consola.sugerirPlatillo();
+						break;
+					case 2:
+						consola.consultarTurno();
+						break;
+					case 3:
+						consola.ingresarJuegoFav();
+						break;
+					case 4:
+						consola.afiliarAmigo();
+						break;
+					case 5:
+						consola.simularCompra();
+						break;
+					case 6:
+						return;
 				}
 			} catch (Exception e) {
 				System.out.println(" Ingrese un número válido.");

@@ -383,31 +383,41 @@ public class ConsolaCliente extends ConsolaAbstract{
 	
 	public static void main(Cafe miCafe) {
 		Scanner lectorMenu = new Scanner(System.in);
-		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);
-
+		ConsolaCliente consola = new ConsolaCliente(miCafe);
+		ConsolaEmpleado consolaemp = new ConsolaEmpleado(miCafe);
 		int opcion = 0;
 		
 		do {
-			System.out.println("\n--- Bienvenido Administrador ---");
+			System.out.println("\n--- Bienvenido Cliente ---");
 			System.out.println("0.  Registrarse Primera Vez ");
-			System.out.println("1. Cambiar Contraseña");
-			System.out.println("2. Opciones de Administrador");
-			System.out.println("3. Opciones de Empleado");
-			System.out.println("4. Opciones de Cliente");
+			System.out.println("1. Ingresar juego favorito.");
+			System.out.println("2. Comprar productos.");
+			System.out.println("3. Solicitudes reserva.");
+			System.out.println("4. Terminar reserva.");
 			System.out.println("5. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
 				opcion = lectorMenu.nextInt();
 				lectorMenu.nextLine();
-
 				switch (opcion) {
-				case 0:
-					consola.registrarNuevoJuego();
-					break;
-				case 1:
-					System.out.println("Saliendo del sistema... ¡Hasta luego!");
-					return;
+					case 0:
+						consola.registrarUsuarioNuevo();
+						break;
+					case 1:
+						consola.ingresarJuegoFav();
+						break;
+					case 2:
+						consola.simularCompra();
+						break;
+					case 3:
+						consola.solicitudesReserva(consolaemp);
+						break;
+					case 4:
+						consola.terminarReserva();
+						break;
+					case 5:
+						return;
 				}
 			} catch (Exception e) {
 				System.out.println(" Ingrese un número válido.");
