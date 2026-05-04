@@ -4,20 +4,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import exceptions.InvalidCredentialsException;
-import exceptions.JuegoNoAptoException;
+//exceptions
+import exceptions.*;
+
+//modelo
 import modelo.producto.*;
 import modelo.*;
 
 
 public class Mesero extends Empleado{
-	private ArrayList<JuegoDificil> juegosConocidos;
-	private ArrayList<Reserva> reservasAsignadas;
-	private Cafe miCafe;
 	
+	private Cafe miCafe;
+	private ArrayList<Reserva> reservasAsignadas;
+	private ArrayList<JuegoDificil> juegosConocidos;
 	
 	//Constructor
-	public Mesero(int id, String login, String password, String nombre) throws InvalidCredentialsException {
+	public Mesero(int id, String login, String password, String nombre) throws UsuariosException {
 		super(id, login, password, nombre);
 		this.juegosConocidos= new ArrayList<>();
 		this.reservasAsignadas = new ArrayList<>();
@@ -53,8 +55,7 @@ public class Mesero extends Empleado{
 	public boolean libreParaReserva(Calendar fecha) {
 		return reservasAsignadas.size() < 2 && trabajaEnFecha(fecha) ;
 	}
-	
-	
+
 	//PRESTAR JUEGOS
 	public void autorizarPrestamo(Reserva r, Juego juego) throws JuegoNoAptoException {
 	    if (r.getNumPersonas() > juego.getNumJugadores()) {
