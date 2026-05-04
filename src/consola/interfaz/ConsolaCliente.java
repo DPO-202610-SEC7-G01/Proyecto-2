@@ -2,7 +2,9 @@ package consola.interfaz;
 
 import java.util.*;
 
+import exceptions.InvalidCredentialsException;
 import exceptions.JuegoNoAptoException;
+import exceptions.UsuariosException;
 import modelo.*;
 import modelo.producto.*;
 import modelo.usuario.*;
@@ -37,8 +39,13 @@ public class ConsolaCliente extends ConsolaAbstract{
 		System.out.print("Alérgenos: ");
 		String alergenos = lector.nextLine();
 		ArrayList<String> alergenosLista = leerAlergenos(alergenos);
-		Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
-		miCafe.getClientes().add(nuevoC);
+		try {
+			Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
+			miCafe.getClientes().add(nuevoC);
+		}
+		catch (Exception e){
+			System.out.println("Error al crear usuario nuevo, intente de nuevo.");
+		}
 	}
 	@Override
 	public Cliente autenticarUsuario(){
