@@ -20,8 +20,7 @@ public class ConsolaGeneral {
 	//Objetos Constantes
 	static private Cafe miCafe;
 
-	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException, 
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException
+	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException,  InvalidCredentialsException, ProductosException
 	{ // Método de Carga
 		miCafe = new Cafe(0); 
 		
@@ -45,8 +44,7 @@ public class ConsolaGeneral {
 		        );
 	}
 
-	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, NumeroJugadoresExcedidoException,
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
+	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, InvalidCredentialsException, ProductosException {
 		ConsolaGeneral consola = new ConsolaGeneral();
 		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
 
