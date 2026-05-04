@@ -106,7 +106,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 		if(c== null){
 			return;
 		}
-		List<Producto> carrito = new ArrayList<>();
+		ArrayList<Producto> carrito = new ArrayList<>();
 		boolean comprando = true;
 
 		// 1. Bucle de selección de productos
@@ -142,8 +142,8 @@ public class ConsolaCliente extends ConsolaAbstract{
 
 		// 3. Generación y Registro
 		int idT = aleatorio.nextInt(10000);
-		Transaccion t = null;
-		t = c.generarTransaccion(carrito, idT);
+		Transaccion t = new Transaccion();
+		t.generarTransaccion(carrito,idT, c);
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
 			imprimirFactura(t, c);

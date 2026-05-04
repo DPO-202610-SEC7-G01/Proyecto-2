@@ -28,7 +28,8 @@ public class Transaccion {
 		
 		this.amigoEmpleado = amigoEmpleado;
 	}
-	
+	public Transaccion(){
+	}
 	//Getters y Setters
 	public Usuario getCliente_final() {
 		return cliente_final;
