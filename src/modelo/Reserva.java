@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import exceptions.JuegoNoAptoException;
+import exceptions.UsuariosException;
 import modelo.producto.*;
 import modelo.usuario.*;
 
@@ -44,6 +45,9 @@ public class Reserva {
 
 	public Calendar getFecha() {
 		return fecha;
+	}
+	public void setCafe(Cafe nuevoCafe) {
+		miCafe = nuevoCafe;
 	}
 	
 	public List<Cliente> getClientes() {
@@ -124,7 +128,7 @@ public class Reserva {
 		
 	}
 	
-	public void agregarAlPrestamo(Juego juego) throws JuegoNoAptoException {
+	public void agregarAlPrestamo(Juego juego) throws JuegoNoAptoException, UsuariosException  {
 	    Cliente usuario = clientes.get(0);
 	    
 	    if(miCafe.reservarJuego( juego, usuario, this)) {
@@ -133,13 +137,13 @@ public class Reserva {
 	}
 	
 	//PEDIR COMIDA
-	public void pedirPlatillo(Platillo platillo) {
+	public void pedirPlatillo(Platillo platillo) throws UsuariosException {
 	    if (this.meseroAsignado != null) {
 	        this.meseroAsignado.servirPlatillos(this, platillo);
 	    } 
 	}
 
-	public void pedirBebida(Bebida bebida) {
+	public void pedirBebida(Bebida bebida) throws UsuariosException {
 	    if (this.meseroAsignado != null) {
 	        this.meseroAsignado.servirBebidas(this, bebida);
 	    } 

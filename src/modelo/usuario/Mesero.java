@@ -26,6 +26,10 @@ public class Mesero extends Empleado{
 	}
 	
 	//Getters y Setters	
+	public void setCafe(Cafe cafe) {
+	    this.miCafe = cafe;
+	}
+	
 	public List<JuegoDificil> getJuegosConocidos() {
 		return juegosConocidos;
 	}
