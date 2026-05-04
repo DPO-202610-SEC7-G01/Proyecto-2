@@ -10,8 +10,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 
 //esceptions
-import exceptions.InvalidCredentialsException;
-import exceptions.UsuariosException;
+import exceptions.*;
+
 //mundo
 import modelo.usuario.Usuario;
 
@@ -33,13 +33,13 @@ class UsuarioTest {
     
     //Toca poner esto pq es una clase abstracta
     class UsuarioImpl extends Usuario {
-        public UsuarioImpl(int id, String login, String password, String nombre) throws InvalidCredentialsException, UsuariosException {
+        public UsuarioImpl(int id, String login, String password, String nombre) throws UsuariosException {
             super(id, login, password, nombre);
         }
     }
     
     @BeforeEach
-    void setUp() throws InvalidCredentialsException, UsuariosException {
+    void setUp() throws UsuariosException {
         usuarioCorrecto = new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
     }
     
@@ -80,7 +80,7 @@ class UsuarioTest {
     
     @Test
     void testIdNegativoLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(-5, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("ID no puede ser negativo"));
@@ -89,7 +89,7 @@ class UsuarioTest {
     //login
     @Test
     void testLoginVacioLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, "", PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("El login no puede estar vacío"));
@@ -97,7 +97,7 @@ class UsuarioTest {
     
     @Test
     void testLoginNullLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, null, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("El login no puede estar vacío"));
@@ -105,7 +105,7 @@ class UsuarioTest {
     
     @Test
     void testLoginConEspaciosLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_INCORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("solo puede contener letras y números"));
@@ -113,7 +113,7 @@ class UsuarioTest {
     
     @Test
     void testLoginConCaracteresEspecialesLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, "alvaro@845", PASSWORD_CORRECTO, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("solo puede contener letras y números"));
@@ -122,7 +122,7 @@ class UsuarioTest {
     //password
     @Test
     void testPasswordVacioLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, "", NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("La contraseña no puede estar vacía"));
@@ -130,7 +130,7 @@ class UsuarioTest {
     
     @Test
     void testPasswordNullLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, null, NOMBRE_CORRECTO);
         });
         assertTrue(exception.getMessage().contains("La contraseña no puede estar vacía"));
@@ -140,7 +140,7 @@ class UsuarioTest {
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "\t", "\n", "  \t  ", " \n\t ", "\t\n "})
     void testPasswordsInvalidosLanzanExcepcion(String passwordInvalido) {
-        assertThrows(InvalidCredentialsException.class, () -> { //este da error
+        assertThrows(UsuariosException.class, () -> { //este da error
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, passwordInvalido, NOMBRE_CORRECTO);
         });
     }
@@ -148,7 +148,7 @@ class UsuarioTest {
     //nombre
     @Test
     void testNombreVacioLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, "");
         });
         assertTrue(exception.getMessage().contains("El nombre no puede estar vacío"));
@@ -156,7 +156,7 @@ class UsuarioTest {
     
     @Test
     void testNombreNullLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, null);
         });
         assertTrue(exception.getMessage().contains("El nombre no puede estar vacío"));
@@ -164,7 +164,7 @@ class UsuarioTest {
     
     @Test
     void testNombreConNumerosLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, "Álvaro845");
         });
         assertTrue(exception.getMessage().contains("El nombre no puede contener números"));
@@ -174,7 +174,7 @@ class UsuarioTest {
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "\t", "\n", "  \t  ", " \n\t ", "\t\n "})
     void testNombresInvalidosLanzanExcepcion(String nombreInvalido) {
-        assertThrows(InvalidCredentialsException.class, () -> {
+        assertThrows(UsuariosException.class, () -> {
             new UsuarioImpl(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, nombreInvalido);
         });
     }
@@ -190,14 +190,14 @@ class UsuarioTest {
     }
     
     @Test
-    void testSetPasswordConEspacios() throws InvalidCredentialsException, UsuariosException {
+    void testSetPasswordConEspacios() throws UsuariosException {
         usuarioCorrecto.setPassword("  NuevaPass123  ");
         assertEquals("NuevaPass123", usuarioCorrecto.getPassword());
     }
     
     @Test
     void testSetPasswordVacioLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             usuarioCorrecto.setPassword("");
         });
         assertTrue(exception.getMessage().contains("La nueva contraseña no puede estar vacía"));
@@ -205,7 +205,7 @@ class UsuarioTest {
     
     @Test
     void testSetPasswordNullLanzaExcepcion() {
-        InvalidCredentialsException exception = assertThrows(InvalidCredentialsException.class, () -> {
+    	UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             usuarioCorrecto.setPassword(null);
         });
         assertTrue(exception.getMessage().contains("La nueva contraseña no puede estar vacía"));
@@ -215,13 +215,13 @@ class UsuarioTest {
     @NullAndEmptySource
     @ValueSource(strings = {"   ", "\t", "\n", "  \t  "})
     void testSetPasswordInvalidosLanzanExcepcion(String passwordInvalido) {
-        assertThrows(InvalidCredentialsException.class, () -> {
+        assertThrows(UsuariosException.class, () -> {
             usuarioCorrecto.setPassword(passwordInvalido);
         });
     }
     
     @Test
-    void testActualizarPasswordMultiplesVeces() throws InvalidCredentialsException, UsuariosException {
+    void testActualizarPasswordMultiplesVeces() throws UsuariosException {
         usuarioCorrecto.setPassword("pass1");
         assertEquals("pass1", usuarioCorrecto.getPassword());
         

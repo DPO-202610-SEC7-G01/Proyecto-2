@@ -26,7 +26,7 @@ public class Bebida extends Producto{
 		this.tieneAlcohol = alcohol;
 	}
 	
-	public Bebida(int id, int precio, String nombre) {
+	public Bebida(int id, int precio, String nombre) throws ProductosException {
 		super(id, precio, nombre);
 		this.temperatura = "Frío" ;
 		this.tieneAlcohol = false;
