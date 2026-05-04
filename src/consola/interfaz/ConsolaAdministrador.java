@@ -505,7 +505,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		Torneo torneo = new Torneo(cat,nombre,juego,numParticipantes,precio);
 		miCafe.agregarTorneo(torneo);
 	}
-	public void verTorneos(){
+	private void verTorneos(){
 		System.out.println("\n--- VER LOS TORNEOS ---");
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		for(Torneo torneo: miCafe.getTorneosActivos()){
@@ -527,13 +527,13 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	}
 	public Juego buscarJuego(String nombre){
 		for(Juego juego: miCafe.getJuegosPrestamo()){
-			if(juego.getNombre().equals(nombre)){
+			if(juego.getNombre().equalsIgnoreCase(nombre)){
 				return juego;
 			}
 		}
 		return null;
 	}
-	public void eliminarJuego(){
+	private void eliminarJuego(){
 		System.out.println("\n--- ELIMINAR TORNEO ---");
 		System.out.println("Ingrese el nombre de juego: ");
 		String nombre = lector.nextLine();
@@ -546,7 +546,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			System.out.println("Juego no encontrado.");
 		}
 	}
-	public void consultarInscritosTorneos(){
+	private void consultarInscritosTorneos(){
 		System.out.println("\n--- Inscritos por torneo ---");
 		ArrayList<Torneo> torneos = miCafe.getTorneosActivos();
 

@@ -1,7 +1,9 @@
 package consola.interfaz;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import exceptions.CafeException;
 import exceptions.InvalidCredentialsException;
 import exceptions.JuegoNoAptoException;
 import exceptions.UsuariosException;
@@ -394,7 +396,60 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println(" Mesero cambiado. Ahora atiende: " + r.getMeseroAsignado().getNombre());
 		}
 	}
-	
+	public void verTorneos(){
+		System.out.println("\n--- VER LOS TORNEOS ---");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		for(Torneo torneo: miCafe.getTorneosActivos()){
+			System.out.println("----- TORNEO -----");
+			System.out.println("Nombre: " + torneo.getNombre());
+			System.out.println("Juego: " + (torneo.getJuego() != null ? torneo.getJuego().getNombre() : "N/A"));
+			System.out.println("Tipo: " + torneo.getTipo());
+			System.out.println("Fecha: " + (torneo.getFecha() != null ? sdf.format(torneo.getFecha().getTime()) : "No definida"));
+			System.out.println("Estado: " + (torneo.isActivo() ? "Activo" : "Inactivo"));
+
+			System.out.println("Participantes: " +
+					(torneo.getParticipantes() != null ? torneo.getParticipantes().size() : 0) +
+					" / " + torneo.getNumParticipantes());
+
+			System.out.println("Precio: " + torneo.getPrecio());
+			System.out.println("Premio: " + (torneo.getPremio() != null ? torneo.getPremio() : "N/A"));
+			System.out.println("------------------");
+		}
+	}
+	public void inscribirseTorneo() throws CafeException {
+		System.out.println("\n--- Inscribirse a torneo ---");
+		Cliente c = autenticarUsuario();
+		System.out.println("Ingrese el nombre del torneo: ");
+		String nombre = lector.nextLine().toLowerCase();
+		Torneo torneo = buscarTorneo(nombre);
+		if(torneo == null){
+			System.out.println("Torneo no encontrado, verifique que el nombre sea correcto.");
+		}
+		else {
+			torneo.agregarParticipantes(c);
+		}
+	}
+	public void desinscribirseTorneo() throws CafeException {
+		System.out.println("\n--- Desinscribirse a torneo ---");
+		Cliente c = autenticarUsuario();
+		System.out.println("Ingrese el nombre del torneo: ");
+		String nombre = lector.nextLine().toLowerCase();
+		Torneo torneo = buscarTorneo(nombre);
+		if(torneo == null){
+			System.out.println("Torneo no encontrado, verifique que el nombre sea correcto.");
+		}
+		else {
+			torneo.eliminarParticipante(c);
+		}
+	}
+	public Torneo buscarTorneo(String nombre){
+		for(Torneo torneo: miCafe.getTorneosActivos()){
+			if(torneo.getNombre().equals(nombre)){
+				return torneo;
+			}
+		}
+		return null;
+	}
 	public static void main(Cafe miCafe) {
 		Scanner lectorMenu = new Scanner(System.in);
 		ConsolaCliente consola = new ConsolaCliente(miCafe);
@@ -409,7 +464,10 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println("3. Solicitudes reserva.");
 			System.out.println("4. Terminar reserva.");
 			System.out.println("5. Cambio de contraseña");
-			System.out.println("6. Salir");
+			System.out.println("6. Ver torneos disponibles.");
+			System.out.println("7. Inscribirse a torneo.");
+			System.out.println("8. Desinscribirse a torneo.");
+			System.out.println("9. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -435,6 +493,15 @@ public class ConsolaCliente extends ConsolaAbstract{
 						consola.cambioContrasena();
 						break;
 					case 6:
+						consola.verTorneos();
+						break;
+					case 7:
+						consola.inscribirseTorneo();
+						break;
+					case 8:
+						consola.desinscribirseTorneo();
+						break;
+					case 9:
 						return;
 				}
 			} catch (Exception e) {
