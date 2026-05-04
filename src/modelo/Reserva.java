@@ -9,17 +9,18 @@ import modelo.producto.*;
 import modelo.usuario.*;
 
 public class Reserva {
+	
 	private Mesa mesa;
 	private Cafe miCafe;
 	private Mesero meseroAsignado;
 
-	
-	private int numPersonas;
 	private Calendar fecha;
+	private int numPersonas;
+	private double totalFactura;
 	private List<Cliente> clientes;
 	private List<Producto> transaccion;
 	private List<Juego> juegosPrestados; 
-	private double totalFactura;
+	
 
 	//Constructor
 	public Reserva(List<Cliente> clientes, int numPersonas, Calendar fecha) {
@@ -27,8 +28,9 @@ public class Reserva {
 		if (clientes != null) {
 			this.clientes = clientes;
 		}
-		this.numPersonas = numPersonas;
+		this.numPersonas = numPersonas; // tiene que ser positivo
 		this.fecha = fecha;
+		
 		this.transaccion = new ArrayList<Producto>();
 		this.juegosPrestados = new ArrayList<>();
 		this.totalFactura =0.0;
@@ -103,6 +105,10 @@ public class Reserva {
 	    }
 	}
 	
+	public void setMesero(Mesero meseroAsignado) {
+		this.meseroAsignado = meseroAsignado;
+	}
+	
 	//Métodos
 	
 	//// PEDIR COSAS A LA MESA /////
@@ -121,7 +127,7 @@ public class Reserva {
 	public void agregarAlPrestamo(Juego juego) throws JuegoNoAptoException {
 	    Cliente usuario = clientes.get(0);
 	    
-	    if(miCafe.reservarJuego( juego, usuario, this)) {//Mandamos la solicitud al sistema del café  y  un mesero de forma "manual " lo verificará
+	    if(miCafe.reservarJuego( juego, usuario, this)) {
 	    	juegosPrestados.add(juego);
 	    }
 	}
@@ -160,10 +166,6 @@ public class Reserva {
 	    return false;
 	}
 	
-	
-	
-	
-	
 	public void finalizarReserva() {
 		for (Juego j : juegosPrestados) {
             j.setPrestado(false);
@@ -175,7 +177,5 @@ public class Reserva {
         }
     }
 
-	public void setMesero(Mesero meseroAsignado) {
-		this.meseroAsignado = meseroAsignado;
-	}
+	
 }

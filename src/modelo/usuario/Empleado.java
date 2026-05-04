@@ -14,15 +14,15 @@ import modelo.*;
 import modelo.producto.*;
 
 public class Empleado extends Usuario {
+	private Cafe miCafe;
     private int puntosFidelidad;
     private ArrayList<Turno> turnos; 
     private ArrayList<Cliente> amigos;
     private ArrayList<Juego> juegosFavoritos;
-    private Cafe miCafe;
     private ArrayList<Torneo> torneosInscritos;
     
     // Constructor
-    public Empleado(int id, String login, String password, String nombre) throws InvalidCredentialsException, UsuariosException {
+    public Empleado(int id, String login, String password, String nombre) throws UsuariosException {
         super(id, login, password, nombre); 
         this.puntosFidelidad = 0; 
         this.turnos = new ArrayList<>(); 
@@ -36,7 +36,7 @@ public class Empleado extends Usuario {
         return puntosFidelidad;
     }
     public void sumarPuntosFidelidad(int puntosFidelidad) {
-        this.puntosFidelidad += puntosFidelidad;
+        this.puntosFidelidad += puntosFidelidad; // que no sean negativos
     }
     
     public ArrayList<Cliente> getAmigos() {
@@ -61,6 +61,10 @@ public class Empleado extends Usuario {
     	turnos.add(e);
     }
     // Métodos
+    public void sugerencias(Producto producto) { 
+        miCafe.agregarSugerencia(producto);
+    }
+    
     public boolean verificarSiEsAmigo(Cliente supuesto){
         for(Cliente amigo: amigos){
             if(amigo.getId() == supuesto.getId()){
@@ -69,16 +73,16 @@ public class Empleado extends Usuario {
         }
         return false;
     }
+    
     //PRESTAMO DE JUEGOS
     public boolean aptoPrestamo(Juego juego, Calendar fechaConsulta) {
         boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);
         
         HashMap<Calendar, HashMap<Usuario, Juego>> historial = miCafe.getHistorialUsoJuegos();
-        if (historial.containsKey(fechaConsulta) && historial.get(fechaConsulta).containsValue(juego)) { //Acá vemos que si  está en el historial para ese día NO estará disponible
+        if (historial.containsKey(fechaConsulta) && historial.get(fechaConsulta).containsValue(juego)) {
             return false;
         }
-        
-        if (trabajaEnFecha) {
+        if (trabajaEnFecha) { 
             return false;
         }
         juego.setPrestado(true);
@@ -87,12 +91,7 @@ public class Empleado extends Usuario {
         return true;
     }
     
-    
-    
-	public void sugerencias(Producto producto) { 
-        miCafe.agregarSugerencia(producto);
-    }
-    
+ 
     public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
         Calendar hoy = Calendar.getInstance();
         Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, false);    
@@ -100,6 +99,11 @@ public class Empleado extends Usuario {
     }
     
     // FUNCIONES DE TURNO en EMPLEADO
+    public boolean pedirCambioTurno(Administrador admin, 
+    		Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
+        return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
+    }
+
     public Turno getTurnoPorFecha(Calendar fecha) {
         for (Turno turno : turnos) {
             if (turno.esMismaFecha(fecha)) {
@@ -108,8 +112,7 @@ public class Empleado extends Usuario {
         }
         return null;
     }
-    
-    
+       
     public void cambiarFechaTurno(Calendar fechaAntigua, Calendar fechaNueva) {
         for (Turno turno : turnos) {
             if (turno.esMismaFecha(fechaAntigua) && turno.isActivo()) {
@@ -119,7 +122,7 @@ public class Empleado extends Usuario {
         }
     }
     
-    public boolean trabajaEnFecha(Calendar fechaConsulta) {
+    public boolean trabajaEnFecha(Calendar fechaConsulta) { // esto es de integración
         for (Turno turno : this.turnos) {
             if (turno.esMismaFecha(fechaConsulta) && turno.isActivo()) {
                 return true;
@@ -128,10 +131,7 @@ public class Empleado extends Usuario {
         return false;
     }
     
-    public boolean pedirCambioTurno(Administrador admin, Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
-        return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
-    }
-
+    
     public ArrayList<Calendar> getDiasTrabajo() {
         ArrayList<Calendar> diasTrabajo = new ArrayList<>();
         for (Turno turno : turnos) {
@@ -141,6 +141,7 @@ public class Empleado extends Usuario {
         }
         return diasTrabajo;
     }
+    
     //TORNEO
     public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException {
 	    Torneo torneo = null;
@@ -175,12 +176,5 @@ public class Empleado extends Usuario {
 	    torneosInscritos.add(torneo);
 	}
     
-
-    public ArrayList<Calendar> getListaFechas(){
-        ArrayList<Calendar> fechas = new ArrayList<>();
-        for(Turno turno: turnos){
-            fechas.add(turno.getFecha());
-        }
-        return fechas;
-    }
+   
 }

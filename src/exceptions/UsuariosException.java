@@ -1,34 +1,14 @@
 package exceptions;
 
-import modelo.usuario.Usuario;
+import modelo.usuario.*;
 
 public class UsuariosException extends Exception {
     
     private static final long serialVersionUID = 1L;
-    private String campo;
-    private String codigoError;
-    private Object objetoRelacionado;
-    
-    // Base
-    
-    public UsuariosException() {
-        super();
-    }
-    
-    public UsuariosException(String message) {
-        super(message);
-    }
-    
-    public UsuariosException(String campo, String message) {
-        super(message);
-        this.campo = campo;
-    }
     
     // Usuario 
     public UsuariosException(Usuario usuario, String campo, String causa) {
         super(construirMensajeCompleto(usuario, campo, causa));
-        this.campo = campo;
-        this.objetoRelacionado = usuario;
     }
     
     
@@ -49,4 +29,26 @@ public class UsuariosException extends Exception {
         return mensaje.toString();
     }
     
+    //Cliente
+    public UsuariosException(Cliente cliente, String campo, String causa) {
+        super(construirMensajeCompleto(cliente, campo, causa));
+    }
+    
+    private static String construirMensajeCompleto(Cliente cliente, String campo, String causa) {
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("Error en el campo '").append(campo).append("' del cliente: ");
+        
+        if (cliente != null) {
+            mensaje.append("ID=").append(cliente.getId());
+            mensaje.append(", Login='").append(cliente.getLogin()).append("'");
+            mensaje.append(", Nombre='").append(cliente.getNombre()).append("'");
+            mensaje.append(", Edad=").append(cliente.getEdad());
+        } else {
+            mensaje.append("Cliente nulo");
+        }
+        
+        mensaje.append(" | ").append(causa);
+        
+        return mensaje.toString();
+    }
 }

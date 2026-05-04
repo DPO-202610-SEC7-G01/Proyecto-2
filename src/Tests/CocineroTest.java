@@ -17,10 +17,10 @@ import modelo.producto.Bebida;
 class CocineroTest {
     
 	// Constantes para pruebas correctas
-    private static final int ID_CORRECTO = 845;
-    private static final String LOGIN_CORRECTO = "alvaro845";
-    private static final String PASSWORD_CORRECTO = "Kat08";
-    private static final String NOMBRE_CORRECTO = "Álvaro";
+    private static final int ID_VALIDO = 845;
+    private static final String LOGIN_VALIDO = "alvaro845";
+    private static final String PASSWORD_VALIDO = "Kat08";
+    private static final String NOMBRE_VALIDO = "Álvaro";
 	
     private static final int ID_PLATILLO_VALIDO = 001;
     private static final String NOMBRE_PLATILLO_VALIDO = "Sarandonga Enviablá";
@@ -43,7 +43,7 @@ class CocineroTest {
     
     @BeforeEach
     void setUp() throws InvalidCredentialsException, ProductosException, UsuariosException {
-        cocinero = new Cocinero(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
+        cocinero = new Cocinero(ID_VALIDO, LOGIN_VALIDO, PASSWORD_VALIDO, NOMBRE_VALIDO);
         platilloValido = new Platillo(ID_PLATILLO_VALIDO,PRECIO_PLATILLO_VALIDO,NOMBRE_PLATILLO_VALIDO,ALERGENOS_VALIDOS);
         bebidaValida = new Bebida(ID_BEBIDA_VALIDO,PRECIO_BEBIDA_VALIDO,NOMBRE_BEBIDA_VALIDO,TEMPERATURA_FRIA,ALCOHOL);
     }
