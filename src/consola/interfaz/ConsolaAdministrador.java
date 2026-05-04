@@ -31,9 +31,12 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 
 		System.out.print("Ingrese una Contraseña: ");
 		String password = lector.nextLine();
-			
-		miCafe.cambiarAdmin(new Administrador(00, login, password, nombre, miCafe)); 
-		System.out.println("Registro exitoso para " + nombre + "con el login: " + login +"\n");
+		try {
+			miCafe.cambiarAdmin(new Administrador(00, login, password, nombre, miCafe));
+			System.out.println("Registro exitoso para " + nombre + "con el login: " + login + "\n");
+		} catch(Exception e){
+			System.out.println("Error cambiando de administrador en el cafe.");
+		}
 	}
 	
 	public Usuario autenticarUsuario(){
@@ -164,8 +167,6 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			}
 		} catch (Exception e) {
 			System.out.println(" Error: Por favor ingrese un número válido.");
-			lectorMenu.nextLine();
-			int opcion = 0;
 		}
 	}
 

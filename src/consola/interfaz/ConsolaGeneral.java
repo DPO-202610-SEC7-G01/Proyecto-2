@@ -122,7 +122,7 @@ public class ConsolaGeneral {
 	}
 
 	
-	public void cambioContraseña() throws InvalidCredentialsException {
+	public void cambioContrasena() throws InvalidCredentialsException {
 	    System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
 	    System.out.print("Ingrese su login de usuario: ");
 	    String loginBusqueda = lector.nextLine();
@@ -130,9 +130,13 @@ public class ConsolaGeneral {
 	    Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
 	    System.out.print("Ingrese la nueva contraseña: ");
 	    String nuevaPass = lector.nextLine();
-
-	    usuarioEncontrado.setPassword(nuevaPass);
-	    System.out.println("Contraseña actualizada correctamente");
+		try {
+			usuarioEncontrado.setPassword(nuevaPass);
+			System.out.println("Contraseña actualizada correctamente");
+		}
+		catch(Exception e){
+			System.out.println("Error cambiando de contraseña.");
+		}
 	}
 	
 
@@ -186,7 +190,7 @@ public class ConsolaGeneral {
 					consola.registrarUsuarioNuevo();
 					break;
 				case 1:
-					consola.cambioContraseña();
+					consola.cambioContrasena();
 					return;
 				case 2:
 					Usuario admin =consola.verificarUsuario();
