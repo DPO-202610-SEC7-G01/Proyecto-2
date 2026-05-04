@@ -1,6 +1,7 @@
 package exceptions;
 
 import modelo.usuario.*;
+import modelo.*;
 
 public class UsuariosException extends Exception {
     
@@ -51,4 +52,26 @@ public class UsuariosException extends Exception {
         
         return mensaje.toString();
     }
+    
+    public UsuariosException(Torneo torneo, String campo, String causa) {
+        super(construirMensajeTorneo(torneo, campo, causa));
+    }
+    
+    private static String construirMensajeTorneo(Torneo torneo, String campo, String causa) {
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append("Error en el campo '").append(campo).append("' del torneo: ");
+        
+        if (torneo != null) {
+            mensaje.append("Nombre='").append(torneo.getNombre()).append("'");
+            mensaje.append(", Tipo='").append(torneo.getTipo()).append("'");
+            mensaje.append(", Juego='").append(torneo.getJuego().getNombre()).append("'");
+        } else {
+            mensaje.append("Torneo nulo");
+        }
+        
+        mensaje.append(" | ").append(causa);
+        
+        return mensaje.toString();
+    }
+    
 }

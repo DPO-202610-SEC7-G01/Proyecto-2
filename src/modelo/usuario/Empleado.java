@@ -1,15 +1,15 @@
 package modelo.usuario;
 
+//utils
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-
-import exceptions.InvalidCredentialsException;
-import exceptions.TorneoException;
-import exceptions.UsuariosException;
-
 import java.util.ArrayList;
 
+
+//exceptions
+import exceptions.*;
+
+//modelo
 import modelo.*;
 import modelo.producto.*;
 
@@ -35,15 +35,19 @@ public class Empleado extends Usuario {
     public int getPuntosFidelidad() {
         return puntosFidelidad;
     }
-    public void sumarPuntosFidelidad(int puntosFidelidad) {
-        this.puntosFidelidad += puntosFidelidad; // que no sean negativos
-    }
+    public void sumarPuntosFidelidad(int puntosFidelidad) throws UsuariosException {
+	    if (puntosFidelidad <= 0) {
+	        throw new UsuariosException(this, "puntosFidelidad", 
+	            "Los puntos a sumar deben ser positivos. Valor recibido: " + puntosFidelidad);
+	    }
+	    this.puntosFidelidad += puntosFidelidad;
+	}
     
     public ArrayList<Cliente> getAmigos() {
         return amigos;
     }
     public void agregarAmigo(Cliente cliente) {
-        this.amigos.add(cliente);
+        this.amigos.add(cliente); 
     }
     
     public ArrayList<Juego> getJuegosFavoritos() {
@@ -65,7 +69,7 @@ public class Empleado extends Usuario {
         miCafe.agregarSugerencia(producto);
     }
     
-    public boolean verificarSiEsAmigo(Cliente supuesto){
+    public boolean verificarSiEsAmigo(Cliente supuesto){// Esto debería tener una prueba de integración (IGNORAR POR EL MOMENTO)
         for(Cliente amigo: amigos){
             if(amigo.getId() == supuesto.getId()){
                 return true;
@@ -91,14 +95,7 @@ public class Empleado extends Usuario {
         return true;
     }
     
- 
-    public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) {
-        Calendar hoy = Calendar.getInstance();
-        Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, false);    
-        return factura;
-    }
-    
-    // FUNCIONES DE TURNO en EMPLEADO
+    // FUNCIONES DE TURNO 
     public boolean pedirCambioTurno(Administrador admin, 
     		Calendar miFecha, Calendar nuevaFecha, Empleado companero) {
         return admin.procesarCambioTurno(this, companero, miFecha, nuevaFecha);
@@ -122,7 +119,7 @@ public class Empleado extends Usuario {
         }
     }
     
-    public boolean trabajaEnFecha(Calendar fechaConsulta) { // esto es de integración
+    public boolean trabajaEnFecha(Calendar fechaConsulta) {
         for (Turno turno : this.turnos) {
             if (turno.esMismaFecha(fechaConsulta) && turno.isActivo()) {
                 return true;
@@ -143,7 +140,7 @@ public class Empleado extends Usuario {
     }
     
     //TORNEO
-    public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException {
+    public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException, CafeException {
 	    Torneo torneo = null;
 	    
 	    for (Torneo t : miCafe.getTorneosActivos()) {
@@ -176,5 +173,12 @@ public class Empleado extends Usuario {
 	    torneosInscritos.add(torneo);
 	}
     
-   
+    
+    public ArrayList<Calendar> getListaFechas(){
+        ArrayList<Calendar> fechas = new ArrayList<>();
+        for(Turno turno: turnos){
+            fechas.add(turno.getFecha());
+        }
+        return fechas;
+    }
 }
