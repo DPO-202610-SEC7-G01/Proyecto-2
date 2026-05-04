@@ -16,7 +16,7 @@ public class Administrador extends Usuario {
 	private Cafe miCafe;
 	
 	//Constructor
-	public Administrador(int id, String login, String password, String nombre, Cafe cafe) throws InvalidCredentialsException, UsuariosException {
+	public Administrador(int id, String login, String password, String nombre, Cafe cafe) throws UsuariosException {
 		super(id, login, password, nombre);
 		this.miCafe = cafe;
 	}
@@ -38,8 +38,7 @@ public class Administrador extends Usuario {
 	
 	public void comprarJuego(int id, int precio, String nombre, int anioPublicacion, String empresMatriz, 
             int numJugadores, String restriccionEdad, String categoria, boolean esParaVenta) 
-            throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, 
-                   CategoriaInvalidaException {
+            throws UsuariosException, ProductosException {
 
 		if (anioPublicacion <= 0) {
 		throw new IllegalArgumentException("El año de publicación debe ser mayor a 0");
@@ -58,8 +57,7 @@ public class Administrador extends Usuario {
 	public void comprarJuegoDificil(int id, int precio, String nombre, int anioPublicacion, String empresMatriz,
             int numJugadores, String restriccionEdad, String categoria, 
             String instrucciones, boolean esParaVenta) 
-            throws NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, 
-                   CategoriaInvalidaException {
+            throws UsuariosException, ProductosException {
 
 			if (anioPublicacion <= 0) {
 			throw new IllegalArgumentException("El año de publicación debe ser mayor a 0");
@@ -118,12 +116,14 @@ public class Administrador extends Usuario {
 	}
 	
 	//COMIDA
-	public void crearPlatillo(int id, int precio, String nombre, ArrayList<String> alergenos) {
+	public void crearPlatillo(int id, int precio, String nombre, ArrayList<String> alergenos)
+			throws ProductosException {
 	    Platillo nuevoPlatillo = new Platillo(id, precio, nombre, alergenos);
 	    miCafe.getMenuPlatillos().add(nuevoPlatillo);
 	}
 
-	public void crearBebida(int id, int precio, String nombre, String temperatura, boolean alcohol) throws ProductosException {
+	public void crearBebida(int id, int precio, String nombre, String temperatura, boolean alcohol)
+			throws ProductosException {
 	    Bebida nuevaBebida = new Bebida(id, precio, nombre, temperatura, alcohol);
 	    miCafe.getMenuBebidas().add(nuevaBebida);
 	}
@@ -181,10 +181,10 @@ public class Administrador extends Usuario {
 	
 	//TORNEOS
 	public void crearTorneo(String tipo,  String nombre, Juego juego, int numParticipantes, int precio) 
-			throws IllegalArgumentException, NumeroJugadoresExcedidoException, InvalidCredentialsException {
+			throws IllegalArgumentException,UsuariosException, CafeException {
 	    validarTorneo(tipo, juego, numParticipantes);
 	    
-	    Torneo nuevoTorneo = new Torneo(tipo, nombre, juego, numParticipantes, precio);
+	    Torneo nuevoTorneo = new Torneo(tipo, nombre, juego, numParticipantes, precio, miCafe);
 	    miCafe.getTorneosActivos().add(nuevoTorneo);
 	}
 

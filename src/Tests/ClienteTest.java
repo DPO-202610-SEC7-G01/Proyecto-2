@@ -59,7 +59,7 @@ class ClienteTest {
     
     
     @BeforeEach
-    void setUp() throws UsuariosException, Exception {
+    void setUp() throws UsuariosException, CafeException, InvalidCredentialsException, ProductosException {
        // Asumimos que esto existe antes  de hacer cosas       
         miCafe = new Cafe(CAPACIDAD);
         miCafe.cambiarAdmin(new Administrador(ID_VALIDO, LOGIN_ADMIN, PASSWORD_ADMIN, NOMBRE_ADMIN,miCafe));      
@@ -68,7 +68,7 @@ class ClienteTest {
         
         miCafe.agregarJuegoPrestamo(juego);
         
-        torneo = new Torneo(TIPO, NOMBRE_TORNEO, juego, 4, PRECIO_TORNEO);
+        torneo = new Torneo(TIPO, NOMBRE_TORNEO, juego, 4, PRECIO_TORNEO, miCafe);
         miCafe.agregarTorneos(torneo);
 
         clienteValido = new Cliente(ID_VALIDO, LOGIN_VALIDO, PASSWORD_VALIDO, 
@@ -260,7 +260,7 @@ class ClienteTest {
     }
     
     @Test
-    void testInscribirseTorneoValido() throws TorneoException {
+    void testInscribirseTorneoValido() throws TorneoException, CafeException, UsuariosException {
         clienteValido.inscribirseTorneo(NOMBRE_JUEGO, miCafe);
         
         assertEquals(1, clienteValido.getTorneosInscritos().size());
@@ -269,18 +269,18 @@ class ClienteTest {
     
     @Test
     void testInscribirseTorneoNoEncontradoLanzaExcepcion() {
-        TorneoException exception = assertThrows(TorneoException.class, () -> {
+        UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             clienteValido.inscribirseTorneo("Juego Inexistente", miCafe);
         });
         
         assertTrue(exception.getMessage().contains("no encontrado"));
     }
-    
+
     @Test
-    void testInscribirseMismoTorneoDosVecesLanzaExcepcion() throws TorneoException {
+    void testInscribirseMismoTorneoDosVecesLanzaExcepcion() throws UsuariosException, CafeException {
         clienteValido.inscribirseTorneo(NOMBRE_JUEGO, miCafe);
         
-        TorneoException exception = assertThrows(TorneoException.class, () -> {
+        UsuariosException exception = assertThrows(UsuariosException.class, () -> {
             clienteValido.inscribirseTorneo(NOMBRE_JUEGO, miCafe);
         });
         
@@ -288,7 +288,7 @@ class ClienteTest {
     }
     
     @Test
-    void testDesinscribirseDeTodosLosTorneos() throws TorneoException {
+    void testDesinscribirseDeTodosLosTorneos() throws TorneoException, CafeException, UsuariosException {
         clienteValido.inscribirseTorneo(NOMBRE_JUEGO, miCafe);
         assertEquals(1, clienteValido.getTorneosInscritos().size());
         assertEquals(1, torneo.getParticipantes().size());
@@ -332,6 +332,43 @@ class ClienteTest {
         assertTrue(clienteValido.getJuegosFavoritos().contains(juego2));
     }
     
+    @Test
+    void testInscribirseMasDe3TorneosLanzaExcepcion() throws Exception {
+        Juego juego1 = new Juego(1, 50000, "Ajedrez", 2020, "Hasbro", 4, "-5", "Tablero");
+        Juego juego2 = new Juego(2, 30000, "Damas", 2019, "Mattel", 2, "-5", "Tablero");
+        Juego juego3 = new Juego(3, 40000, "Parchís", 2018, "Hasbro", 4, "-5", "Tablero");
+        Juego juego4 = new Juego(4, 20000, "Backgammon", 2017, "Mattel", 2, "Adultos", "Tablero");
+        
+        miCafe.agregarJuegoPrestamo(juego1);
+        miCafe.agregarJuegoPrestamo(juego2);
+        miCafe.agregarJuegoPrestamo(juego3);
+        miCafe.agregarJuegoPrestamo(juego4);
+        
+        Torneo torneo1 = new Torneo("Competitivo", "Torneo Ajedrez", juego1, 4, 10000, miCafe);
+        Torneo torneo2 = new Torneo("Amistoso", "Torneo Damas", juego2, 2, 0, miCafe);
+        Torneo torneo3 = new Torneo("Amistoso", "Torneo Parchís", juego3, 4, 0, miCafe);
+        Torneo torneo4 = new Torneo("Competitivo", "Torneo Backgammon", juego4, 2, 5000, miCafe);
+        
+        miCafe.agregarTorneos(torneo1);
+        miCafe.agregarTorneos(torneo2);
+        miCafe.agregarTorneos(torneo3);
+        miCafe.agregarTorneos(torneo4);
+        
+        clienteValido.inscribirseTorneo("Ajedrez", miCafe);
+        clienteValido.inscribirseTorneo("Damas", miCafe);
+        clienteValido.inscribirseTorneo("Parchís", miCafe);
+        
+        assertEquals(3, clienteValido.getTorneosInscritos().size());
+        
+        // Intentar inscribirse en el cuarto torneo (debería lanzar excepción)
+        UsuariosException exception = assertThrows(UsuariosException.class, () -> {
+            clienteValido.inscribirseTorneo("Backgammon", miCafe);
+        });
+        
+        // Verificar el mensaje de la excepción
+        assertTrue(exception.getMessage().contains("excede el límite máximo"));
+        assertTrue(exception.getMessage().contains("3"));
+    }
     
 	
 

@@ -1,5 +1,6 @@
 package modelo;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -60,6 +61,25 @@ public class Transaccion {
 	    if (p != null) {
 	        this.productos.add(p);
 	    }
+	}
+	
+	public Transaccion generarTransaccion(ArrayList<Producto> productosComprados, 
+	        int idNuevaTransaccion, Usuario usuario) {
+	    
+	    Calendar hoy = Calendar.getInstance();
+	    boolean tieneAmigos = false;
+	    
+	    // Si el usuario es cliente, verificar si tiene amigos
+	    if (usuario instanceof Cliente) {
+	        Cliente cliente = (Cliente) usuario;
+	        tieneAmigos = cliente.getAmigos();
+	    } else if (usuario instanceof Empleado) {
+	        // Si es empleado, se establece como false
+	        tieneAmigos = false;
+	    }
+	    
+	    Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, usuario, tieneAmigos);
+	    return factura;
 	}
 	
 	public int calcularTotal() {

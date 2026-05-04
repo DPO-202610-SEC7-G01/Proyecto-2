@@ -1,8 +1,7 @@
 package modelo.usuario;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+
 //exceptions
 import exceptions.*;
 
@@ -103,26 +102,31 @@ public class Cliente extends Usuario {
 	}
 	
 	//Métodos
-	public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws TorneoException {
+	public void inscribirseTorneo(String nombreTorneo, Cafe miCafe) throws UsuariosException, CafeException {
 	    Torneo torneo = null;
 	    
-	    for (Torneo t : miCafe.getTorneosActivos()) {
-	        if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
-	            torneo = t;
-	            break;
+	    if (miCafe.getTorneosActivos() != null) {
+	        for (Torneo t : miCafe.getTorneosActivos()) {
+	            if (t.getJuego().getNombre().equalsIgnoreCase(nombreTorneo) && t.isActivo()) {
+	                torneo = t;
+	                break;
+	            }
 	        }
 	    }
 	    
 	    if (torneo == null) {
-	        throw TorneoException.torneoNoEncontrado(nombreTorneo);
+	        throw new UsuariosException(this, "torneo", 
+	            "Torneo no encontrado para el juego: " + nombreTorneo);
 	    }
 	    
 	    if (torneosInscritos.size() >= 3) {
-	        throw TorneoException.excesoTorneos(3);
+	        throw new UsuariosException(this, "torneosInscritos", 
+	            "El usuario excede el límite máximo de 3 torneos");
 	    }
 	    
 	    if (torneosInscritos.contains(torneo)) {
-	        throw TorneoException.yaInscrito(nombreTorneo);
+	        throw new UsuariosException(this, "torneosInscritos", 
+	            "El usuario ya está inscrito en el torneo: " + nombreTorneo);
 	    }
 	    
 	    torneo.agregarParticipantes(this); 
@@ -135,9 +139,5 @@ public class Cliente extends Usuario {
 	    }
 	    torneosInscritos.clear();
 	}
-	public Transaccion generarTransaccion(List<Producto> productosComprados, int idNuevaTransaccion) { // esto no debería ir acá  (IGNORAR POR EL MOMENTO)
-		Calendar hoy = Calendar.getInstance();
-		Transaccion factura = new Transaccion(idNuevaTransaccion, hoy, productosComprados, this, this.amigos);
-		return factura; // Existe un método que calcula el monto final c:
-	}
+	
 }
