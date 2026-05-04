@@ -25,17 +25,18 @@ public class Cafe {
 	private ArrayList<Cliente> clientes; //
 	private ArrayList<Empleado> empleados; //
 	private ArrayList<Reserva> reservasPrevias; // 
-	public ArrayList<Juego> juegosPrestamo; //
-	public ArrayList<Juego> juegosVenta; // 
 	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;// 
 	private ArrayList<Transaccion> historialTransaccion; //
-	public ArrayList<Platillo> menuPlatillos; //
-	public ArrayList<Bebida> menuBebidas; //
 	public Map<Empleado, Turno> turnoEmpleados; 
 	private ArrayList<Producto> sugerenciasPendientes; //
 	private ArrayList<Torneo> torneosActivos;
 	private ArrayList<String> ganadores;
+	public ArrayList<Juego> juegosVenta; // 
+	public ArrayList<Platillo> menuPlatillos; //
+	public ArrayList<Bebida> menuBebidas; //
+	public ArrayList<Juego> juegosPrestamo; //
 	
+	public Inventario inventario;
 
 	// Constructor
 	public Cafe(int capacidad) {

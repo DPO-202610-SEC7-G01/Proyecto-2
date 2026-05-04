@@ -225,7 +225,7 @@ public class Administrador extends Usuario {
 	
 	
 	//FINANZAS
-	public String verFinanzas(Calendar fechaInicial, Calendar fechaFinal) {
+	public String verFinanzas(Calendar fechaInicial, Calendar fechaFinal) throws UsuariosException {
 	    StringBuilder reporte = new StringBuilder();
 	    ArrayList<Transaccion> historial = miCafe.getHistorialTransaccion();
 

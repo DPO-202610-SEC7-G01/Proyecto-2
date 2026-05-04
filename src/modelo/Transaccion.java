@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import exceptions.UsuariosException;
 import modelo.producto.*;
 import modelo.usuario.*;
 
@@ -83,7 +84,7 @@ public class Transaccion {
 	    return factura;
 	}
 	
-	public int calcularTotal() {
+	public int calcularTotal() throws UsuariosException {
 		double total = 0;
 		for (int i = 0; i < this.productos.size(); i++) {
 			Producto producto = this.productos.get(i);

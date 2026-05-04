@@ -13,13 +13,13 @@ import exceptions.TorneoException;
 import exceptions.UsuariosException;
 import modelo.Cafe;
 import modelo.Torneo;
-import modelo.Turno;
 import modelo.producto.Bebida;
 import modelo.producto.Juego;
 import modelo.producto.Producto;
 import modelo.usuario.Administrador;
 import modelo.usuario.Cliente;
 import modelo.usuario.Empleado;
+import modelo.usuario.Turno;
 import modelo.usuario.Usuario;
 
 class EmpleadoTest {
