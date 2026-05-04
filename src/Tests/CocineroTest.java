@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import exceptions.InvalidCredentialsException;
 import exceptions.ProductosException;
+import exceptions.UsuariosException;
 import modelo.usuario.Cocinero;
 import modelo.producto.Platillo;
 import modelo.producto.Bebida;
@@ -21,17 +22,19 @@ class CocineroTest {
     private static final String PASSWORD_CORRECTO = "Kat08";
     private static final String NOMBRE_CORRECTO = "Álvaro";
 	
-    private static final int ID_PLATILLO = 001;
-    private static final String NOMBRE_PLATILLO = "Sarandonga Enviablá";
-    private static final int precio = 79999;
-    private static final ArrayList<String> alergenos = new ArrayList<>(Arrays.asList("Camarones", "Nueces"));    
-	
-    private  static final int ID_BEBIDA = 001;
-    private static final String NOMBRE_BEBIDA= "Burunganda";
-    private static final int precio_ = 7999;
-    private static final String TEMPERATURA= "Fría";
+    private static final int ID_PLATILLO_VALIDO = 001;
+    private static final String NOMBRE_PLATILLO_VALIDO = "Sarandonga Enviablá";
+    private static final int PRECIO_PLATILLO_VALIDO = 15000;
+    private static final ArrayList<String> ALERGENOS_VALIDOS = new ArrayList<>(
+        Arrays.asList("Camarones", "Nueces")
+    );
+    
+    private static final int ID_BEBIDA_VALIDO = 1;
+    private static final String NOMBRE_BEBIDA_VALIDO = "Burunganda";
+    private static final int PRECIO_BEBIDA_VALIDO = 7999;
+    private static final String TEMPERATURA_FRIA = "Fría";
     private static final boolean ALCOHOL= true;
-
+  
 	
     private Cocinero cocinero;
     private Platillo platilloValido;
@@ -39,10 +42,10 @@ class CocineroTest {
     
     
     @BeforeEach
-    void setUp() throws InvalidCredentialsException, ProductosException {
+    void setUp() throws InvalidCredentialsException, ProductosException, UsuariosException {
         cocinero = new Cocinero(ID_CORRECTO, LOGIN_CORRECTO, PASSWORD_CORRECTO, NOMBRE_CORRECTO);
-        platilloValido = new Platillo(ID_PLATILLO,precio,NOMBRE_PLATILLO,alergenos);
-        bebidaValida = new Bebida(ID_BEBIDA,precio_,NOMBRE_BEBIDA,TEMPERATURA,ALCOHOL);
+        platilloValido = new Platillo(ID_PLATILLO_VALIDO,PRECIO_PLATILLO_VALIDO,NOMBRE_PLATILLO_VALIDO,ALERGENOS_VALIDOS);
+        bebidaValida = new Bebida(ID_BEBIDA_VALIDO,PRECIO_BEBIDA_VALIDO,NOMBRE_BEBIDA_VALIDO,TEMPERATURA_FRIA,ALCOHOL);
     }
     
     //Platillo
@@ -62,7 +65,7 @@ class CocineroTest {
     }
     
     @Test
-    void testAprenderMultiplesPlatillos() {
+    void testAprenderMultiplesPlatillos() throws ProductosException {
         Platillo platillo2 = new Platillo(2, 8999, "Tacos", new ArrayList<>(Arrays.asList("Tortilla", "Carne")));
         Platillo platillo3 = new Platillo(3, 6500, "Ensalada", new ArrayList<>(Arrays.asList("Lechuga", "Tomate")));
         
