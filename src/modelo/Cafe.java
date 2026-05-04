@@ -25,17 +25,11 @@ public class Cafe {
 	private ArrayList<Cliente> clientes; //
 	private ArrayList<Empleado> empleados; //
 	private ArrayList<Reserva> reservasPrevias; // 
-	private HashMap<Calendar, HashMap<Usuario,Juego>> historialUsoJuegos;// 
 	private ArrayList<Transaccion> historialTransaccion; //
 	public Map<Empleado, Turno> turnoEmpleados; 
 	private ArrayList<Producto> sugerenciasPendientes; //
 	private ArrayList<Torneo> torneosActivos;
 	private ArrayList<String> ganadores;
-	public ArrayList<Juego> juegosVenta; // 
-	public ArrayList<Platillo> menuPlatillos; //
-	public ArrayList<Bebida> menuBebidas; //
-	public ArrayList<Juego> juegosPrestamo; //
-	
 	public Inventario inventario;
 
 	// Constructor
@@ -45,19 +39,14 @@ public class Cafe {
 		this.capacidad = capacidad;
 		this.mesas = new ArrayList<Mesa>();
 		this.clientes = new ArrayList<Cliente>();
-		this.juegosVenta = new ArrayList<Juego>();
-		this.menuBebidas = new ArrayList<Bebida>();
 		this.empleados = new ArrayList<Empleado>();
-		this.juegosPrestamo = new ArrayList<Juego>();
-		this.menuPlatillos = new ArrayList<Platillo>();
 		this.reservasPrevias = new ArrayList<Reserva>();
 		this.sugerenciasPendientes = new ArrayList<Producto>();
 		this.turnoEmpleados = new HashMap<Empleado, Turno>();
 		this.historialTransaccion = new ArrayList<Transaccion>();
-		this.historialUsoJuegos = new HashMap<Calendar, HashMap<Usuario, Juego>>();
 		this.torneosActivos = new ArrayList<Torneo>();
 		this.ganadores = new ArrayList<String>();
-		
+		this.inventario = new Inventario();
 		
 	}
 
@@ -104,15 +93,15 @@ public class Cafe {
 	}
 
 	public HashMap<Calendar, HashMap<Usuario, Juego>> getHistorialUsoJuegos() {
-		return historialUsoJuegos; 
+		return inventario.getHistorialUsoJuegos(); 
 	} 
 	
 	public void registrarJuegoEnHistorial(Calendar fecha, Usuario usuario, Juego juego) {
-	    if (!historialUsoJuegos.containsKey(fecha)) {
-	        historialUsoJuegos.put(fecha, new HashMap<Usuario, Juego>());
+	    if (!inventario.getHistorialUsoJuegos().containsKey(fecha)) {
+	    	inventario.getHistorialUsoJuegos().put(fecha, new HashMap<Usuario, Juego>());
 	    }
 	    
-	    HashMap<Usuario, Juego> mapUsuarioJuego = historialUsoJuegos.get(fecha);
+	    HashMap<Usuario, Juego> mapUsuarioJuego = inventario.getHistorialUsoJuegos().get(fecha);
 	    mapUsuarioJuego.put(usuario, juego);
 	}
 	
@@ -129,25 +118,25 @@ public class Cafe {
 	}
 
 	public ArrayList<Juego> getJuegosPrestamo() {
-		return juegosPrestamo;
+		return inventario.getJuegosPrestamo();
 	}
 	public void agregarJuegoPrestamo(Juego juego) {
-		this.juegosPrestamo.add(juego);
+		this.inventario.getJuegosPrestamo().add(juego);
 	}
 
 	public ArrayList<Juego> getJuegosVenta() {
-		return juegosVenta;
+		return inventario.getJuegosVenta();
 	}
 	public void agregarJuegoVenta(Juego juego) {
-		this.juegosVenta.add(juego);
+		this.inventario.getJuegosVenta().add(juego);
 	}
 	
 	public ArrayList<Platillo> getMenuPlatillos(){
-		return menuPlatillos;
+		return inventario.getMenuPlatillos();
 	}
 	
 	public ArrayList<Bebida> getMenuBebidas(){
-		return menuBebidas;
+		return inventario.getMenuBebidas();
 	}
 	
 	public ArrayList<Producto> getSugerenciasPendientes(){
@@ -192,7 +181,7 @@ public class Cafe {
 				String cocinerosArchivo, String meserosArchivo, String clientesArchivo,
 				String reservasArchivo, String  historialPrestamosArchivo, String sugerenciasPendientesArchivo,
 				String transaccionesArchivo,String mesasArchivo, String turnosArchivo) throws IOException, FileNotFoundException, JSONException,
-				InvalidCredentialsException, ProductosException { 
+				InvalidCredentialsException, ProductosException, UsuariosException { 
 		
 		PersistenciaProductos.descargarProductos(juegosPrestamoArchivo,juegosVentaArchivo, juegosDificilesArchivo,
 						bebidasArchivo,platillosArchivo, this);
@@ -230,14 +219,15 @@ public class Cafe {
 	
 
 	//RESERVAR JUEGO
-	public boolean reservarJuego(Juego juego, Cliente cliente, Reserva r) throws JuegoNoAptoException {
-	    if (!juegosPrestamo.contains(juego)) {
+	public boolean reservarJuego(Juego juego, Cliente cliente, Reserva r) 
+			throws JuegoNoAptoException, UsuariosException {
+	    if (!inventario.getJuegosPrestamo().contains(juego)) {
 	    	throw new JuegoNoAptoException("El juego no está disponible en la lista de préstamo");
 	    }
 
 	    r.getMeseroAsignado().autorizarPrestamo(r, juego);
     	juego.setPrestado(true);
-        historialUsoJuegos.putIfAbsent(r.getFecha(), new HashMap<>());
+        inventario.getHistorialUsoJuegos().putIfAbsent(r.getFecha(), new HashMap<>());
 
         registrarJuegoEnHistorial(r.getFecha(),cliente,juego);
         
@@ -262,7 +252,7 @@ public class Cafe {
 	
 	
 	//RESERVAS
-	public boolean registrarNuevaReserva(Reserva r) {
+	public boolean registrarNuevaReserva(Reserva r) throws UsuariosException {
 	    if (verificarDisponibilidad(r.getFecha(), r.getNumPersonas()) && asignarMesa(r)) {
 	    	reservasPrevias.add(r);
 	        int puntosPorReserva = 10; 
@@ -286,10 +276,10 @@ public class Cafe {
 	}
 
 	public boolean estaJuegoReservadoEnFecha(Juego juego, Calendar fecha) {
-	    if (!historialUsoJuegos.containsKey(fecha)) {
+	    if (!inventario.getHistorialUsoJuegos().containsKey(fecha)) {
 	        return false;
 	    }
-	    HashMap<Usuario, Juego> registrosFecha = historialUsoJuegos.get(fecha);
+	    HashMap<Usuario, Juego> registrosFecha = inventario.getHistorialUsoJuegos().get(fecha);
 	    return registrosFecha.containsValue(juego);
 	}
 	
@@ -302,7 +292,7 @@ public class Cafe {
 	    }
 	}
 	
-	public double calcularIngresosTotales(Calendar fechaInicio, Calendar fechaFin) {
+	public double calcularIngresosTotales(Calendar fechaInicio, Calendar fechaFin) throws UsuariosException {
 		double total = 0;
 		for (Transaccion t : historialTransaccion) {
 			Calendar fecha = t.getFecha();

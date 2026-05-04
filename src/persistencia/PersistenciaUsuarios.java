@@ -20,8 +20,7 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	public static void descargarUsuarios(String administradorArchivo, String cocinerosArchivo,
 			String meserosArchivo, String clientesArchivo, Cafe miCafe) 
-			throws FileNotFoundException, IOException, JSONException, NumeroJugadoresExcedidoException, 
-			RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException{
+			throws FileNotFoundException, IOException, JSONException,InvalidCredentialsException, ProductosException, UsuariosException{
 		
 		descargarAdministrador(administradorArchivo, miCafe);
 		
@@ -55,7 +54,8 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	
 	//descargar
 	
-	public static void descargarAdministrador(String administradorArchivo, Cafe miCafe) throws FileNotFoundException, IOException, JSONException, InvalidCredentialsException {      
+	public static void descargarAdministrador(String administradorArchivo, Cafe miCafe) 
+			throws FileNotFoundException, IOException, JSONException, InvalidCredentialsException, UsuariosException {      
 	        JSONArray jAdmins = leerArchivoJSON(administradorArchivo);
 	        
 	        if (jAdmins.length() > 0) {
@@ -71,8 +71,9 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	        
 		}
  
-	public static ArrayList<Cliente> descargarClientes(String clientesArchivo) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {             
+	public static ArrayList<Cliente> descargarClientes(String clientesArchivo) 
+			throws IOException, FileNotFoundException, JSONException,
+			InvalidCredentialsException, UsuariosException, ProductosException {             
 	    JSONArray jClientes = leerArchivoJSON(clientesArchivo);
 	    ArrayList<Cliente> clientes = new ArrayList<>();
 	    
@@ -83,8 +84,9 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    return clientes;
 	}
 
-	public static Cliente descargarClientes(JSONObject jCliente) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	public static Cliente descargarClientes(JSONObject jCliente)
+			throws IOException, FileNotFoundException, JSONException,
+			InvalidCredentialsException, UsuariosException, ProductosException {
 		
 		ArrayList<String> alergenos = new ArrayList<>();
 		JSONArray jAlergenos = jCliente.optJSONArray("alergenos");
@@ -128,8 +130,9 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 
 	
 	
-	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
+	public static ArrayList<Cocinero> descargarCocineros(String cocinerosArchivo) 
+			throws IOException, FileNotFoundException, JSONException,
+	    InvalidCredentialsException, ProductosException, UsuariosException {
 	    ArrayList<Cocinero> chefsCargados = new ArrayList<>();
 	    JSONArray jEmpleados = leerArchivoJSON(cocinerosArchivo);
 	    
@@ -171,8 +174,9 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    return chefsCargados;
 	}
 
-	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo) throws IOException, FileNotFoundException, JSONException, 
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	public static ArrayList<Mesero> descargarMeseros(String meserosArchivo) 
+			throws IOException, FileNotFoundException, JSONException, InvalidCredentialsException, 
+			UsuariosException, ProductosException {
 	    ArrayList<Mesero> empleadosCargados = new ArrayList<>();
 	    JSONArray jEmpleados = leerArchivoJSON(meserosArchivo);
 	    
@@ -206,15 +210,15 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    return empleadosCargados;
 	}
 	
-	private static void cargarPuntosFidelidad(JSONObject jEmpleado, Empleado empleado) {
+	private static void cargarPuntosFidelidad(JSONObject jEmpleado, Empleado empleado) throws UsuariosException {
 	    if (jEmpleado.has("puntosFidelidad")) {
 	        int puntosFidelidad = jEmpleado.getInt("puntosFidelidad");
 	        empleado.sumarPuntosFidelidad(puntosFidelidad);
 	    }
 	}
 	
-	private static void cargarJuegosFavoritos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {
+	private static void cargarJuegosFavoritos(JSONObject jEmpleado, Empleado empleado) 
+			throws IOException, FileNotFoundException, JSONException, ProductosException{
 	    JSONArray juegosArray = jEmpleado.optJSONArray("juegosFavoritos");
 	    if (juegosArray != null) {
             for (int j = 0; j < juegosArray.length(); j++) {
@@ -225,7 +229,7 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	}
 	
 	private static void cargarAmigos(JSONObject jEmpleado, Empleado empleado) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	InvalidCredentialsException, UsuariosException, ProductosException {
 	    JSONArray amigosArray = jEmpleado.optJSONArray("amigos");
 	    if (amigosArray != null) {
 	    	for (int j=0; j< amigosArray.length(); j++) {

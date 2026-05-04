@@ -22,7 +22,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
     public static  void descargarProductos(String juegosPrestamoArchivo, String juegosVentaArchivo, 
              String juegosDificilesArchivo, String bebidasArchivo,
              String platillosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
-            NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, ProductosException {
+               ProductosException {
         
     	
     	ArrayList<Juego> juegosVenta = descargarJuegos(juegosVentaArchivo);
@@ -66,8 +66,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
     
     
     // descargar
-    public static ArrayList<Juego> descargarJuegos(String juegoArchivo) throws IOException, FileNotFoundException, JSONException,
-    NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException {     
+    public static ArrayList<Juego> descargarJuegos(String juegoArchivo)
+    		throws IOException, FileNotFoundException, JSONException, ProductosException {     
         JSONArray jJuegos = leerArchivoJSON(juegoArchivo);
         ArrayList<Juego> juegos = new ArrayList<>();
         
@@ -78,8 +78,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return juegos;
     }
 
-    public static Juego descargarJuegos(JSONObject jJuego) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException, 
-    RestriccionEdadInvalidaException, CategoriaInvalidaException {
+    public static Juego descargarJuegos(JSONObject jJuego) throws IOException,
+    FileNotFoundException, ProductosException    {
         int id = jJuego.getInt("id");
         String nombre = jJuego.getString("nombre");
         int precio = jJuego.getInt("precio");
@@ -103,7 +103,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return nuevoJuego;
     }
     
-    public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo) throws  IOException,FileNotFoundException { 
+    public static ArrayList<Platillo> descargarPlatillos(String platilloArchivo)
+    		throws  IOException,FileNotFoundException, JSONException, ProductosException { 
     	JSONArray jPlatillos = leerArchivoJSON(platilloArchivo);
     	ArrayList<Platillo> platillos= new ArrayList<>();
     	
@@ -114,7 +115,8 @@ public class PersistenciaProductos extends PersistenciaCentral{
  		return platillos;
     }
 
-    public static Platillo descargarPlatillos(JSONObject jPlatillo) throws IOException, FileNotFoundException {
+    public static Platillo descargarPlatillos(JSONObject jPlatillo) throws IOException, FileNotFoundException,
+    JSONException, ProductosException {
         ArrayList<String> alergenos = new ArrayList<>();
         
         // optJSONArray evita que el programa se estrelle si un platillo no tiene la llave "alergenos"
@@ -164,8 +166,9 @@ public class PersistenciaProductos extends PersistenciaCentral{
         return nuevaBebida;
     }
     
-    public static ArrayList<Producto> descargarProductos(JSONArray jProductos) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException,
-    RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, ProductosException {
+    public static ArrayList<Producto> descargarProductos(JSONArray jProductos) 
+    		throws IOException, FileNotFoundException, 
+     JSONException, ProductosException {
         ArrayList<Producto> productos = new ArrayList<>();
         
         for (int i = 0; i < jProductos.length(); i++) {
@@ -198,7 +201,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
      JSONArray juegosVentaArray = new JSONArray();
      JSONArray juegosDificilesArray = new JSONArray();
         	
-     for (Juego juego : miCafe.juegosPrestamo) {
+     for (Juego juego : miCafe.inventario.getJuegosPrestamo()) {
         	JSONObject jJuego = AsalvarJuegos(juego);
         	if (juego instanceof JuegoDificil) {
     			juegosDificilesArray.put(jJuego);
@@ -206,7 +209,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
         	juegosPrestamoArray.put(jJuego);}		
         } 
 
-     for (Juego juego : miCafe.juegosVenta) {
+     for (Juego juego : miCafe.inventario.getJuegosVenta()) {
     	 JSONObject jJuego = AsalvarJuegos(juego);
      	juegosVentaArray.put(jJuego);		
      } 
@@ -239,7 +242,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
     public static void salvarPlatillos(String platillosArchivos, Cafe miCafe)  throws  IOException,FileNotFoundException {
     	JSONArray platillosArray = new JSONArray();
     	
-    	for (Platillo platillo : miCafe.menuPlatillos) {
+    	for (Platillo platillo : miCafe.inventario.getMenuPlatillos()) {
     		platillosArray.put(AsalvarPlatillos(platillo));
     	}
     	guardarArchivoJSON(platillosArchivos,platillosArray);
@@ -252,7 +255,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
         jPlatillo.put("nombre", platillo.getNombre());
         jPlatillo.put("precio", platillo.getPrecio());
         
-        JSONArray alergenos = new JSONArray(); // Aun no se si funciona
+        JSONArray alergenos = new JSONArray();
 	       for (String alergeno: platillo.getAlergeneos()) {
 	    	   alergenos.put(alergeno);
 	       }
@@ -266,7 +269,7 @@ public class PersistenciaProductos extends PersistenciaCentral{
 	public static void salvarBebidas(String bebidasArchivos, Cafe miCafe)  throws  IOException,FileNotFoundException {
 		JSONArray bebidasArray = new JSONArray();
     	
-    	for (Bebida bebida : miCafe.menuBebidas) {
+    	for (Bebida bebida : miCafe.inventario.getMenuBebidas()) {
         	bebidasArray.put(AsalvarBebidas(bebida));  
         	} 
     	

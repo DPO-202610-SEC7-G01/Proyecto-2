@@ -25,8 +25,9 @@ import modelo.producto.*;
 public class PersistenciaCafe extends PersistenciaCentral{
 
 	public static void descargarCafe(String reservasArchivo, String historialPrestamosArchivo,String sugerenciasPendientesArchivo,
-			String transaccionesArchivo, String mesasArchivo, String  turnosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, 
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException, ProductosException{
+			String transaccionesArchivo, String mesasArchivo, String  turnosArchivo, Cafe miCafe) 
+					throws IOException, FileNotFoundException, 
+					JSONException, InvalidCredentialsException, ProductosException, UsuariosException{
 		
 		//Aun que el café empieza con 0 de disponibilidad entonces voy a aumentarlo acorde a la mesa
 		descargarMesas(mesasArchivo,miCafe);
@@ -56,7 +57,7 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	}
 	
 	public static void descargarReservas(String reservasArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException, ProductosException {
+	 InvalidCredentialsException, ProductosException, UsuariosException {
 	    JSONArray jReservas = leerArchivoJSON(reservasArchivo);
 	    for (int i = 0; i < jReservas.length(); i++) {
 	        JSONObject jReserva = jReservas.getJSONObject(i);
@@ -87,8 +88,8 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	    }
 	}
 
-	public static void descargarTransaccion(String transaccionesArchivo, Cafe miCafe) throws IOException, FileNotFoundException, NumeroJugadoresExcedidoException,
-	RestriccionEdadInvalidaException, CategoriaInvalidaException, JSONException, InvalidCredentialsException, ProductosException {
+	public static void descargarTransaccion(String transaccionesArchivo, Cafe miCafe) throws IOException,
+	FileNotFoundException, JSONException, InvalidCredentialsException, ProductosException, UsuariosException {
 	    JSONArray jTransacciones = leerArchivoJSON(transaccionesArchivo);
 	    
 	    for (int i = 0; i < jTransacciones.length(); i++) {
@@ -112,8 +113,9 @@ public class PersistenciaCafe extends PersistenciaCentral{
 	    }
 	}
 	
-	public static void descargarHistorialPrestamos(String historialPrestamosArchivo, Cafe miCafe) throws IOException, FileNotFoundException, JSONException,
-	NumeroJugadoresExcedidoException, RestriccionEdadInvalidaException, CategoriaInvalidaException, InvalidCredentialsException {
+	public static void descargarHistorialPrestamos(String historialPrestamosArchivo, Cafe miCafe) 
+			throws IOException, FileNotFoundException, JSONException,InvalidCredentialsException,
+			UsuariosException, ProductosException {
 	    JSONObject jHistorialCompleto = new JSONObject(new String(Files.readAllBytes(new File(historialPrestamosArchivo).toPath())));
 	    JSONArray jHistorialPrestamos = jHistorialCompleto.getJSONArray("historialUsoJuegos");
 	    
