@@ -73,7 +73,13 @@ public class Empleado extends Usuario {
         }
         return false;
     }
-    
+    public ArrayList<Calendar> getListaFechas(){
+        ArrayList<Calendar> fechas = new ArrayList<>();
+        for(Turno turno: turnos){
+            fechas.add(turno.getFecha());
+        }
+        return fechas;
+    }
     //PRESTAMO DE JUEGOS
     public boolean aptoPrestamo(Juego juego, Calendar fechaConsulta) {
         boolean trabajaEnFecha = trabajaEnFecha(fechaConsulta);

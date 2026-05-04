@@ -142,7 +142,6 @@ public class ConsolaCliente extends ConsolaAbstract{
 		int idT = aleatorio.nextInt(10000);
 		Transaccion t = null;
 		t = c.generarTransaccion(carrito, idT);
-
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
 			imprimirFactura(t, c);
