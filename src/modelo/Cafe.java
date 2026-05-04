@@ -181,7 +181,9 @@ public class Cafe {
 	public void nuevoGanadores(String ganador) {
 		ganadores.add(ganador);
 	}
-
+	public void agregarTorneo(Torneo torneo){
+		torneosActivos.add(torneo);
+	}
 	//Persistencia
 	//Carga de Datos Iniciales
 	public void descargarDatos(String juegosPrestamoArchivo, String juegosVentaArchivo, String juegosDificilesArchivo,

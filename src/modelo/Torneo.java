@@ -72,7 +72,6 @@ public class Torneo {
     public String getTipo() { 
     	return tipo;
     }
-
     public Juego getJuego() {
     	return juego; 
     }
@@ -127,7 +126,7 @@ public class Torneo {
 		participantes.remove(participante);
 	}
 	
-	public String gePremio() {
+	public String getPremio() {
     	return premio;
     }
 	
@@ -271,5 +270,4 @@ public class Torneo {
         String registroGanador = usuario.getNombre() + " - " + this.nombre;
         miCafe.nuevoGanadores(registroGanador);
     }
-    
 }

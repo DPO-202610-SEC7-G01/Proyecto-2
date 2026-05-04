@@ -484,6 +484,92 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		                break;
 		        }
 		    }
+			// Torneos gestion
+	public void crearTorneo(){
+		System.out.println("\n--- CREAR TORNEO ---");
+		System.out.println("Ingrese la categoria del juego: ");
+		String cat = lector.nextLine();
+		System.out.println("Ingrese el nombre de juego: ");
+		String nombre = lector.nextLine();
+		Juego juego = buscarJuego(nombre);
+		if(juego == null){
+			System.out.println("No se encontro el juego.");
+			return;
+		}
+		int numParticipantes = leerEntero("Ingrese el numero de participantes del torneo: ");
+		if(numParticipantes < 0){
+			System.out.println("Numero de participantes invalido.");
+			return;
+		}
+		int precio = leerEntero("Ingrese el precio de inscripcion al torneo: ");
+		Torneo torneo = new Torneo(cat,nombre,juego,numParticipantes,precio);
+		miCafe.agregarTorneo(torneo);
+	}
+	public void verTorneos(){
+		System.out.println("\n--- VER LOS TORNEOS ---");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		for(Torneo torneo: miCafe.getTorneosActivos()){
+			System.out.println("----- TORNEO -----");
+			System.out.println("Nombre: " + torneo.getNombre());
+			System.out.println("Juego: " + (torneo.getJuego() != null ? torneo.getJuego().getNombre() : "N/A"));
+			System.out.println("Tipo: " + torneo.getTipo());
+			System.out.println("Fecha: " + (torneo.getFecha() != null ? sdf.format(torneo.getFecha().getTime()) : "No definida"));
+			System.out.println("Estado: " + (torneo.isActivo() ? "Activo" : "Inactivo"));
+
+			System.out.println("Participantes: " +
+					(torneo.getParticipantes() != null ? torneo.getParticipantes().size() : 0) +
+					" / " + torneo.getNumParticipantes());
+
+			System.out.println("Precio: " + torneo.getPrecio());
+			System.out.println("Premio: " + (torneo.getPremio() != null ? torneo.getPremio() : "N/A"));
+			System.out.println("------------------");
+		}
+	}
+	public Juego buscarJuego(String nombre){
+		for(Juego juego: miCafe.getJuegosPrestamo()){
+			if(juego.getNombre().equals(nombre)){
+				return juego;
+			}
+		}
+		return null;
+	}
+	public void eliminarJuego(){
+		System.out.println("\n--- ELIMINAR TORNEO ---");
+		System.out.println("Ingrese el nombre de juego: ");
+		String nombre = lector.nextLine();
+		Juego juego = buscarJuego(nombre);
+		if(juego != null){
+			miCafe.getTorneosActivos().remove(juego);
+			System.out.println("Juego eliminado exitosamente.");
+		}
+		else{
+			System.out.println("Juego no encontrado.");
+		}
+	}
+	public void consultarInscritosTorneos(){
+		System.out.println("\n--- Inscritos por torneo ---");
+		ArrayList<Torneo> torneos = miCafe.getTorneosActivos();
+
+		if (torneos == null || torneos.isEmpty()) {
+			System.out.println("No hay torneos registrados.");
+			return;
+		}
+
+		for (Torneo t : torneos) {
+			System.out.println("\nTorneo: " + t.getNombre());
+
+			ArrayList<Usuario> inscritos = t.getParticipantes();
+
+			if (inscritos == null || inscritos.isEmpty()) {
+				System.out.println("  No hay inscritos.");
+			} else {
+				for (int i = 0; i < inscritos.size(); i++) {
+					Usuario u = inscritos.get(i);
+					System.out.println("  " + (i + 1) + ". " + u.getNombre());
+				}
+			}
+		}
+	}
 	public static void main(Cafe miCafe) {
 		Scanner lectorMenu = new Scanner(System.in);
 		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);
@@ -497,8 +583,12 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			System.out.println("2. Gestionar turnos.");
 			System.out.println("3. Gestionar juegos.");
 			System.out.println("4. Aceptar sugerencias de platillos");
-			System.out.println("4. Ver finanzas del cafe.");
-			System.out.println("6. Salir");
+			System.out.println("5. Ver finanzas del cafe.");
+			System.out.println("6. Crear torneo.");
+			System.out.println("7. Ver torneos.");
+			System.out.println("8. Eliminar torneo.");
+			System.out.println("9. Ver inscritos por torneos.");
+			System.out.println("10. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -524,6 +614,18 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 						consola.verFinanzas();
 						break;
 					case 6:
+						consola.crearTorneo();
+						break;
+					case 7:
+						consola.verTorneos();
+						break;
+					case 8:
+						consola.eliminarJuego();
+						break;
+					case 9:
+						consola.consultarInscritosTorneos();
+						break;
+					case 10:
 						return;
 				}
 			} catch (Exception e) {
