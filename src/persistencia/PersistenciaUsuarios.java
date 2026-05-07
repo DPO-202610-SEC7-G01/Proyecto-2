@@ -110,7 +110,10 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	    
 	    
 	    if (jCliente.has("puntosFidelidad")) {
-	        nuevoCliente.sumarPuntosFidelidad(jCliente.getInt("puntosFidelidad"));
+	        int puntosFidelidad = jCliente.getInt("puntosFidelidad");
+	        if (puntosFidelidad > 0) {
+	            nuevoCliente.sumarPuntosFidelidad(puntosFidelidad);
+	        }
 	    }
 	    
 	    JSONArray juegosFavoritos = jCliente.optJSONArray("juegosFavoritos");
@@ -213,7 +216,9 @@ public class PersistenciaUsuarios  extends PersistenciaCentral{
 	private static void cargarPuntosFidelidad(JSONObject jEmpleado, Empleado empleado) throws UsuariosException {
 	    if (jEmpleado.has("puntosFidelidad")) {
 	        int puntosFidelidad = jEmpleado.getInt("puntosFidelidad");
-	        empleado.sumarPuntosFidelidad(puntosFidelidad);
+	        if (puntosFidelidad > 0) {
+	            empleado.sumarPuntosFidelidad(puntosFidelidad);
+	        }
 	    }
 	}
 	

@@ -106,7 +106,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		return null;
 	}
 
-	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	public void registrarMesero(int id, String nombre, String login, String password, Cafe miCafe) throws UsuariosException {
 		Empleado empleadoActivo = autenticarUsuario();
 		if (empleadoActivo == null) {
 			return;
@@ -114,9 +114,9 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		registrarMeseroSinAutenticacion(id, nombre, login, password, miCafe);
 	}
 
-	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws UsuariosException {
 		Mesero nuevoM = new Mesero(id, login, password, nombre);
-		miCafe.getEmpleados().add(nuevoM);
+		miCafe.agregarEmpleado(nuevoM);
 	}
 
 	public void registrarCocinero(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
@@ -129,7 +129,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
-		miCafe.getEmpleados().add(nuevoC);
+		miCafe.agregarEmpleado(nuevoC);
 	}
 
 	public boolean tieneTurno(List<Calendar> turnos, Calendar buscado) {
@@ -231,8 +231,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 			int sel = lector.nextInt();
 			if (sel >= 0 && sel < menu.size()) {
-				mes.servirPlatillos(r, menu.get(sel));
-				System.out.println(" Verificando alérgenos y sirviendo...");
+				try {
+					mes.servirPlatillos(r, menu.get(sel));
+					System.out.println(" Verificando alérgenos y sirviendo...");
+				} catch (UsuariosException e) {
+					System.out.println("No se pudo servir el platillo: " + e.getMessage());
+				}
 			}
 		}
 
@@ -243,8 +247,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 			int sel = lector.nextInt();
 			if (sel >= 0 && sel < menuB.size()) {
-				mes.servirBebidas(r, menuB.get(sel));
-				System.out.println(" Validando restricciones de edad/seguridad y sirviendo...");
+				try {
+					mes.servirBebidas(r, menuB.get(sel));
+					System.out.println(" Validando restricciones de edad/seguridad y sirviendo...");
+				} catch (UsuariosException e) {
+					System.out.println("No se pudo servir la bebida: " + e.getMessage());
+				}
 			}
 		}
 
@@ -345,7 +353,7 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 		if(e== null){
 			return;
 		}
-		List<Producto> carrito = new ArrayList<>();
+		ArrayList<Producto> carrito = new ArrayList<>();
 		boolean comprando = true;
 
 		// 1. Bucle de selección de productos
@@ -377,8 +385,8 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 
 		// 2. Generación y Registro
 		int idT = aleatorio.nextInt(10000);
-		Transaccion t = null;
-		t = e.generarTransaccion(carrito, idT);
+		Transaccion generador = new Transaccion();
+		Transaccion t = generador.generarTransaccion(carrito, idT, e);
 
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
@@ -387,8 +395,12 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 	}
 	
 	public static void main(Cafe miCafe) {
-		Scanner lectorMenu = new Scanner(System.in);
+		Scanner lectorMenu = ConsolaAbstract.scannerCompartido != null
+				? ConsolaAbstract.scannerCompartido
+				: new Scanner(System.in);
+		ConsolaAbstract.setScannerCompartido(lectorMenu);
 		ConsolaEmpleado consola = new ConsolaEmpleado(miCafe);
+		consola.lector = lectorMenu;
 
 		int opcion = 0;
 		
@@ -436,9 +448,8 @@ public class ConsolaEmpleado extends ConsolaAbstract{
 				opcion = 0;
 			}
 
-		} while (opcion != 1);
+		} while (opcion != 6);
 
-		lectorMenu.close();
 	}
 	
 }

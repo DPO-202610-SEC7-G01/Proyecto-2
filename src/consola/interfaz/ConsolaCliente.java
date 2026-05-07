@@ -41,6 +41,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 		System.out.print("Alérgenos: ");
 		String alergenos = lector.nextLine();
 		ArrayList<String> alergenosLista = leerAlergenos(alergenos);
+		System.out.println("Login: "+ login);
 		try {
 			Cliente nuevoC = new Cliente(id, login, password, nombre, edad, alergenosLista);
 			miCafe.getClientes().add(nuevoC);
@@ -142,8 +143,8 @@ public class ConsolaCliente extends ConsolaAbstract{
 
 		// 3. Generación y Registro
 		int idT = aleatorio.nextInt(10000);
-		Transaccion t = new Transaccion();
-		t.generarTransaccion(carrito,idT, c);
+		Transaccion generador = new Transaccion();
+		Transaccion t = generador.generarTransaccion(carrito, idT, c);
 		if (t != null) {
 			miCafe.getHistorialTransaccion().add(t);
 			imprimirFactura(t, c);
@@ -186,19 +187,29 @@ public class ConsolaCliente extends ConsolaAbstract{
 		Calendar fechaReserva = Calendar.getInstance();
 		Reserva nuevaReserva = new Reserva(listaClientesReserva, numPersonas, fechaReserva);
 
-		boolean exito = miCafe.registrarNuevaReserva(nuevaReserva);
+		try {
+			boolean exito = miCafe.registrarNuevaReserva(nuevaReserva);
 
-		if (exito) {
-			System.out.println("\u001B[32m" + " ¡Reserva Exitosa!" + "\u001B[0m");
-			System.out.println("Mesa asignada: " + nuevaReserva.getMesa().getId());
-			System.out.println("Total de reservas actuales en el café: " + miCafe.getReservasPrevias().size());
-		} else {
-			System.out.println("❌ No se pudo completar la reserva. Verifique disponibilidad de capacidad o mesas.");
-			System.out.println("Total de reservas actuales en el café: " + miCafe.getReservasPrevias().size());
+			if (exito) {
+				System.out.println("\u001B[32m" + " ¡Reserva Exitosa!" + "\u001B[0m");
+				if (nuevaReserva.getMesa() != null) {
+					System.out.println("Mesa asignada: " + nuevaReserva.getMesa().getId());
+					System.out.println("Use este numero de mesa para gestionar solicitudes o terminar la reserva.");
+					System.out.println("Personas en la reserva: " + nuevaReserva.getNumPersonas());
+				} else {
+					System.out.println("Reserva creada, pero no se pudo mostrar la mesa asignada.");
+				}
+				System.out.println("Total de reservas actuales en el café: " + miCafe.getReservasPrevias().size());
+			} else {
+				System.out.println("No se pudo completar la reserva. Verifique disponibilidad de capacidad o mesas.");
+				System.out.println("Total de reservas actuales en el café: " + miCafe.getReservasPrevias().size());
+			}
+		} catch (UsuariosException e) {
+			System.out.println("Error al registrar la reserva: " + e.getMessage());
 		}
 	}
 	
-	public void solicitudesReserva(ConsolaEmpleado consolaEmpleado) throws JuegoNoAptoException {
+	public void solicitudesReserva(ConsolaEmpleado consolaEmpleado) {
 		System.out.println("\n--- GESTIÓN DE SOLICITUDES EN MESA ---");
 		int numMesa = leerEntero("Ingrese el numero de la mesa: ");
 
@@ -233,11 +244,26 @@ public class ConsolaCliente extends ConsolaAbstract{
 			}
 		}
 
+		if (meserosDisponibles.isEmpty()) {
+			for (Empleado e : miCafe.getEmpleados()) {
+				if (e instanceof Mesero) {
+					Mesero mesero = (Mesero) e;
+					if (mesero.getReservasAsignadas().size() < 2) {
+						meserosDisponibles.add(mesero);
+					}
+				}
+			}
+		}
+
 		// SI LA RESERVA NO TIENE MESERO, LE ASIGNAMOS UNO
 		if (reservaEncontrada.getMeseroAsignado() == null && !meserosDisponibles.isEmpty()) {
 			Mesero inicial = meserosDisponibles.get(aleatorio.nextInt(meserosDisponibles.size()));
 			inicial.nuevaReserva(reservaEncontrada, reservaEncontrada.getFecha());
+			if (!inicial.getReservasAsignadas().contains(reservaEncontrada)) {
+				inicial.getReservasAsignadas().add(reservaEncontrada);
+			}
 			reservaEncontrada.setMesero(inicial);
+			System.out.println("Mesero asignado: " + inicial.getNombre());
 		}
 
 		boolean atendiendo = true;
@@ -291,7 +317,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 							miCafe.registrarJuegoEnHistorial(reservaEncontrada.getFecha(), reservaEncontrada.getClientes().get(0), juegoElegido);
 							System.out.println("¡Prestamo exitoso disfrute el juego!");
 
-						} catch(JuegoNoAptoException e){
+						} catch(UsuariosException e){
 							System.out.println("El prestamo del juego fue rechazado: " + e.getMessage());
 						}
 					} else {
@@ -368,12 +394,16 @@ public class ConsolaCliente extends ConsolaAbstract{
 	    }
 	}
 
-	public void cambioContrasena() throws InvalidCredentialsException {
+	public void cambioContrasena() {
 		System.out.println("\n--- CAMBIO DE CONTRASEÑA ---");
 		System.out.print("Ingrese su login de usuario: ");
 		String loginBusqueda = lector.nextLine();
 
 		Usuario usuarioEncontrado = buscarUsuario(loginBusqueda);
+		if (usuarioEncontrado == null) {
+			System.out.println("Usuario no encontrado.");
+			return;
+		}
 		System.out.print("Ingrese la nueva contraseña: ");
 		String nuevaPass = lector.nextLine();
 		try {
@@ -418,9 +448,12 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println("------------------");
 		}
 	}
-	public void inscribirseTorneo() throws CafeException {
+	public void inscribirseTorneo() {
 		System.out.println("\n--- Inscribirse a torneo ---");
 		Cliente c = autenticarUsuario();
+		if (c == null) {
+			return;
+		}
 		System.out.println("Ingrese el nombre del torneo: ");
 		String nombre = lector.nextLine().toLowerCase();
 		Torneo torneo = buscarTorneo(nombre);
@@ -428,12 +461,20 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println("Torneo no encontrado, verifique que el nombre sea correcto.");
 		}
 		else {
-			torneo.agregarParticipantes(c);
+			try {
+				torneo.agregarParticipantes(c);
+				System.out.println("Inscripción realizada exitosamente.");
+			} catch (CafeException e) {
+				System.out.println("Error al inscribirse al torneo: " + e.getMessage());
+			}
 		}
 	}
-	public void desinscribirseTorneo() throws CafeException {
+	public void desinscribirseTorneo() {
 		System.out.println("\n--- Desinscribirse a torneo ---");
 		Cliente c = autenticarUsuario();
+		if (c == null) {
+			return;
+		}
 		System.out.println("Ingrese el nombre del torneo: ");
 		String nombre = lector.nextLine().toLowerCase();
 		Torneo torneo = buscarTorneo(nombre);
@@ -446,16 +487,21 @@ public class ConsolaCliente extends ConsolaAbstract{
 	}
 	public Torneo buscarTorneo(String nombre){
 		for(Torneo torneo: miCafe.getTorneosActivos()){
-			if(torneo.getNombre().equals(nombre)){
+			if(torneo.getNombre().toLowerCase().equals(nombre)){
 				return torneo;
 			}
 		}
 		return null;
 	}
 	public static void main(Cafe miCafe) {
-		Scanner lectorMenu = new Scanner(System.in);
+		Scanner lectorMenu = ConsolaAbstract.scannerCompartido != null
+				? ConsolaAbstract.scannerCompartido
+				: new Scanner(System.in);
+		ConsolaAbstract.setScannerCompartido(lectorMenu);
 		ConsolaCliente consola = new ConsolaCliente(miCafe);
 		ConsolaEmpleado consolaemp = new ConsolaEmpleado(miCafe);
+		consola.lector = lectorMenu;
+		consolaemp.lector = lectorMenu;
 		int opcion = 0;
 		
 		do {
@@ -463,13 +509,14 @@ public class ConsolaCliente extends ConsolaAbstract{
 			System.out.println("0.  Registrarse Primera Vez ");
 			System.out.println("1. Ingresar juego favorito.");
 			System.out.println("2. Comprar productos.");
-			System.out.println("3. Solicitudes reserva.");
-			System.out.println("4. Terminar reserva.");
-			System.out.println("5. Cambio de contraseña");
-			System.out.println("6. Ver torneos disponibles.");
-			System.out.println("7. Inscribirse a torneo.");
-			System.out.println("8. Desinscribirse a torneo.");
-			System.out.println("9. Salir");
+			System.out.println("3. Hacer reserva.");
+			System.out.println("4. Solicitudes reserva.");
+			System.out.println("5. Terminar reserva.");
+			System.out.println("6. Cambio de contraseña");
+			System.out.println("7. Ver torneos disponibles.");
+			System.out.println("8. Inscribirse a torneo.");
+			System.out.println("9. Desinscribirse a torneo.");
+			System.out.println("10. Salir");
 			System.out.print("Seleccione una opción: ");
 
 			try {
@@ -486,24 +533,27 @@ public class ConsolaCliente extends ConsolaAbstract{
 						consola.simularCompra();
 						break;
 					case 3:
-						consola.solicitudesReserva(consolaemp);
+						consola.hacerReserva();
 						break;
 					case 4:
-						consola.terminarReserva();
+						consola.solicitudesReserva(consolaemp);
 						break;
 					case 5:
-						consola.cambioContrasena();
+						consola.terminarReserva();
 						break;
 					case 6:
-						consola.verTorneos();
+						consola.cambioContrasena();
 						break;
 					case 7:
-						consola.inscribirseTorneo();
+						consola.verTorneos();
 						break;
 					case 8:
-						consola.desinscribirseTorneo();
+						consola.inscribirseTorneo();
 						break;
 					case 9:
+						consola.desinscribirseTorneo();
+						break;
+					case 10:
 						return;
 				}
 			} catch (Exception e) {
@@ -512,8 +562,7 @@ public class ConsolaCliente extends ConsolaAbstract{
 				opcion = 0;
 			}
 
-		} while (opcion != 1);
+		} while (opcion != 10);
 
-		lectorMenu.close();
 }
 }

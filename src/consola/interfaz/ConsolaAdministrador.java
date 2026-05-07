@@ -94,13 +94,13 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 				System.out.println("❌ Opción inválida.");
 		}
 	}
-	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException {
+	private void registrarMeseroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws UsuariosException {
 			Mesero nuevoM = new Mesero(id, login, password, nombre);
-			miCafe.getEmpleados().add(nuevoM);
+			miCafe.agregarEmpleado(nuevoM);
 		}
 	private void registrarCocineroSinAutenticacion(int id, String nombre, String login, String password, Cafe miCafe) throws InvalidCredentialsException, UsuariosException {
 		Cocinero nuevoC = new Cocinero(id, login, password, nombre);
-		miCafe.getEmpleados().add(nuevoC);
+		miCafe.agregarEmpleado(nuevoC);
 	}
 	public Usuario autenticarUsuario(){
 		System.out.print("Login del Administrador: ");
@@ -169,20 +169,18 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	}
 	
 	public void agregarTurno() {
-		Administrador admin = (Administrador) autenticarUsuario();
-		if(admin == null){
-			return;
-		}
+		Administrador admin = miCafe.getAdmin();
 		System.out.println("\n--- AGREGAR TURNO A EMPLEADO ---");
 
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 		System.out.println("Ingrese el login del empleado del cual desea agregar el turno: ");
 		String login = lector.nextLine();
-		lector.nextLine();
-		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
-		if (empleadoActivo == null) {
+		Usuario usuario = buscarUsuario(login);
+		if (!(usuario instanceof Empleado)) {
+			System.out.println("Empleado no encontrado.");
 			return;
 		}
+		Empleado empleadoActivo = (Empleado) usuario;
 		System.out.print("Ingrese la fecha (dd/MM/yyyy): ");
 		String input = lector.nextLine();
 		// Parsear a LocalDate
@@ -201,7 +199,7 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 	}
 	public boolean tieneTurno(ArrayList<Calendar> turnos, Calendar cal){
 		for(Calendar c: turnos){
-			if(c.equals(cal)){
+			if(mismoDia(c, cal)){
 				return true;
 			}
 		}
@@ -240,32 +238,34 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 		System.out.println("Ingrese el login del empleado");
 		String login = lector.nextLine();
-		lector.nextLine();
-		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
-		if (empleadoActivo == null) {
+		Usuario usuario = buscarUsuario(login);
+		if (!(usuario instanceof Empleado)) {
+			System.out.println("Empleado no encontrado.");
 			return;
 		}
+		Empleado empleadoActivo = (Empleado) usuario;
 		List<Turno> turnos = empleadoActivo.getTurnos();
+		if (turnos.isEmpty()) {
+			System.out.println("El empleado no tiene turnos asignados.");
+			return;
+		}
 		for (Turno jornada : turnos) {
 			System.out.println(jornada.getFecha());
-			return;
 		}
 	}
 
 	public void cambiarTurno() {
-		if(autenticarUsuario()== null){
-			return;
-		}
 		System.out.println("\n--- CAMBIAR TURNO DE EMPLEADO ---");
 		// Validamos que el usuario exista, sea un Empleado y la contraseña coincida
 		System.out.println("Ingrese el login del empleado");
 		String login = lector.nextLine();
-		lector.nextLine();
-		Empleado empleadoActivo = (Empleado) buscarUsuario(login);
-		if (empleadoActivo == null) {
+		Usuario usuario = buscarUsuario(login);
+		if (!(usuario instanceof Empleado)) {
+			System.out.println("Empleado no encontrado.");
 			return;
 		}
-		Scanner sc = new Scanner(System.in);
+		Empleado empleadoActivo = (Empleado) usuario;
+		Scanner sc = lector;
 		System.out.print("Ingrese la fecha del turno(dd/MM/yyyy): ");
 		String input = sc.nextLine();
 		// Parsear a LocalDate
@@ -388,6 +388,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 
 	    } catch (ParseException e) {
 	        System.out.println("Error: Formato de fecha inválido. Use dd/mm/aaaa (ej: 07/04/2026).");
+	    } catch (UsuariosException e) {
+	        System.out.println("Error al generar el reporte financiero: " + e.getMessage());
 	    }
 	}
 	
@@ -487,23 +489,53 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 			// Torneos gestion
 	public void crearTorneo(){
 		System.out.println("\n--- CREAR TORNEO ---");
-		System.out.println("Ingrese la categoria del juego: ");
-		String cat = lector.nextLine();
-		System.out.println("Ingrese el nombre de juego: ");
-		String nombre = lector.nextLine();
-		Juego juego = buscarJuego(nombre);
-		if(juego == null){
-			System.out.println("No se encontro el juego.");
+		Administrador admin = (Administrador) autenticarUsuario();
+		if(admin == null){
 			return;
 		}
+		int opcionTipo = leerEntero("Ingrese el tipo de torneo (1. Amistoso / 2. Competitivo): ");
+		String tipo;
+		if (opcionTipo == 1) {
+			tipo = "Amistoso";
+		} else if (opcionTipo == 2) {
+			tipo = "Competitivo";
+		} else {
+			System.out.println("Tipo de torneo invalido.");
+			return;
+		}
+		if (miCafe.getJuegosPrestamo().isEmpty()) {
+			System.out.println("No hay juegos de prestamo disponibles para crear torneos.");
+			return;
+		}
+		System.out.println("Seleccione el juego del torneo:");
+		for (int i = 0; i < miCafe.getJuegosPrestamo().size(); i++) {
+			Juego juegoDisponible = miCafe.getJuegosPrestamo().get(i);
+			System.out.println(i + ". " + juegoDisponible.getNombre());
+		}
+		int indiceJuego = leerEntero("Ingrese el numero del juego: ");
+		if (indiceJuego < 0 || indiceJuego >= miCafe.getJuegosPrestamo().size()) {
+			System.out.println("Juego no encontrado.");
+			return;
+		}
+		Juego juego = miCafe.getJuegosPrestamo().get(indiceJuego);
+		System.out.println("Ingrese el nombre del torneo: ");
+		String nombre = lector.nextLine();
 		int numParticipantes = leerEntero("Ingrese el numero de participantes del torneo: ");
-		if(numParticipantes < 0){
+		if(numParticipantes <= 0){
 			System.out.println("Numero de participantes invalido.");
 			return;
 		}
-		int precio = leerEntero("Ingrese el precio de inscripcion al torneo: ");
-		Torneo torneo = new Torneo(cat,nombre,juego,numParticipantes,precio);
-		miCafe.agregarTorneo(torneo);
+		int precio = 0;
+		if (tipo.equals("Competitivo")) {
+			precio = leerEntero("Ingrese el precio de inscripcion al torneo: ");
+		}
+		try {
+			Torneo torneo = new Torneo(tipo, nombre, juego, numParticipantes, precio, miCafe);
+			miCafe.agregarTorneo(torneo);
+			System.out.println("Torneo creado exitosamente.");
+		} catch (CafeException e) {
+			System.out.println("Error al crear el torneo: " + e.getMessage());
+		}
 	}
 	private void verTorneos(){
 		System.out.println("\n--- VER LOS TORNEOS ---");
@@ -571,8 +603,12 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 		}
 	}
 	public static void main(Cafe miCafe) {
-		Scanner lectorMenu = new Scanner(System.in);
+		Scanner lectorMenu = ConsolaAbstract.scannerCompartido != null
+				? ConsolaAbstract.scannerCompartido
+				: new Scanner(System.in);
+		ConsolaAbstract.setScannerCompartido(lectorMenu);
 		ConsolaAdministrador consola = new ConsolaAdministrador(miCafe);
+		consola.lector = lectorMenu;
 
 		int opcion = 0;
 		
@@ -634,9 +670,8 @@ public class ConsolaAdministrador extends ConsolaAbstract{
 				opcion = 0;
 			}
 
-		} while (opcion != 1);
+		} while (opcion != 10);
 
-		lectorMenu.close();
 	}
 	
 }

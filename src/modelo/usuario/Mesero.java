@@ -70,7 +70,7 @@ public class Mesero extends Empleado{
 	    
 	    // Validación por edad (juego para adultos)
 	    if (juego.getRestriccionEdad().equals("Adultos") && r.edadMinima() < 18) {
-	        throw new UsuariosException(r.getClientes().getFirst(), juego, 18);
+	        throw new UsuariosException(r.getClientes().get(0), juego, 18);
 	    }
 	    
 	    // Validación por categoría Acción con bebidas calientes
@@ -101,13 +101,13 @@ public class Mesero extends Empleado{
 	public void servirPlatillos(Reserva r, Platillo p) throws UsuariosException {
 	    
 	    Cocinero cocineroDeTurno = miCafe.turnoCocineros(r.getFecha());
+	    if (cocineroDeTurno == null || !conocePlatillo(cocineroDeTurno, p)) {
+	        cocineroDeTurno = buscarCocineroParaPlatillo(p);
+	    }
+
 	    if (cocineroDeTurno == null) {
 	        throw new UsuariosException(r, UsuariosException.RAZON_COCINERO_NO_DISPONIBLE,
-	            "No hay ningún cocinero programado para el turno de la fecha.");
-	    }
-	    
-	    if (!cocineroDeTurno.getPlatillosConocidos().contains(p)) {
-	        throw new UsuariosException(cocineroDeTurno, p, r);
+	            "No hay ningún cocinero disponible que prepare este platillo.");
 	    }
 	    
 	    ArrayList<Cliente> clientesAfectados = new ArrayList<>();
@@ -138,14 +138,14 @@ public class Mesero extends Empleado{
 	
 	public void servirBebidas(Reserva r, Bebida b) throws UsuariosException {
 	    Cocinero cocineroDeTurno = miCafe.turnoCocineros(r.getFecha());
+	    if (cocineroDeTurno == null || !conoceBebida(cocineroDeTurno, b)) {
+	        cocineroDeTurno = buscarCocineroParaBebida(b);
+	    }
+
 	    if (cocineroDeTurno == null) {
 	        throw new UsuariosException(r, UsuariosException.RAZON_COCINERO_NO_DISPONIBLE,
-	            "No hay ningún cocinero disponible en el turno actual para preparar bebidas.");
+	            "No hay ningún cocinero disponible que prepare esta bebida.");
 	    }	    
-	    if (!cocineroDeTurno.getBebidasConocidas().contains(b)) {
-	        throw new UsuariosException(cocineroDeTurno, b, r);
-	    }
-	    
 	    if (b.isTieneAlcohol() && r.edadMinima() < 18) {
 	        throw new UsuariosException(r, UsuariosException.RAZON_EDAD, 
 	            "No se pueden servir bebidas alcohólicas. La edad mínima de la reserva es " + 
@@ -167,6 +167,48 @@ public class Mesero extends Empleado{
 	    }
 	    
 	    r.addTransaccion(b);
+	}
+
+	private Cocinero buscarCocineroParaPlatillo(Platillo platillo) {
+	    for (Empleado empleado : miCafe.getEmpleados()) {
+	        if (empleado instanceof Cocinero) {
+	            Cocinero cocinero = (Cocinero) empleado;
+	            if (conocePlatillo(cocinero, platillo)) {
+	                return cocinero;
+	            }
+	        }
+	    }
+	    return null;
+	}
+
+	private Cocinero buscarCocineroParaBebida(Bebida bebida) {
+	    for (Empleado empleado : miCafe.getEmpleados()) {
+	        if (empleado instanceof Cocinero) {
+	            Cocinero cocinero = (Cocinero) empleado;
+	            if (conoceBebida(cocinero, bebida)) {
+	                return cocinero;
+	            }
+	        }
+	    }
+	    return null;
+	}
+
+	private boolean conocePlatillo(Cocinero cocinero, Platillo platillo) {
+	    for (Platillo conocido : cocinero.getPlatillosConocidos()) {
+	        if (conocido.getId() == platillo.getId() || conocido.getNombre().equalsIgnoreCase(platillo.getNombre())) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+
+	private boolean conoceBebida(Cocinero cocinero, Bebida bebida) {
+	    for (Bebida conocida : cocinero.getBebidasConocidas()) {
+	        if (conocida.getId() == bebida.getId() || conocida.getNombre().equalsIgnoreCase(bebida.getNombre())) {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 	
 

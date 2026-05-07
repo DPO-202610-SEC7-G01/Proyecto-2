@@ -6,6 +6,7 @@ import modelo.Transaccion;
 import modelo.usuario.Cliente;
 import modelo.usuario.Empleado;
 import modelo.usuario.Usuario;
+import exceptions.UsuariosException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,13 +17,21 @@ import java.util.Scanner;
 
 abstract class ConsolaAbstract {
     static protected Cafe miCafe;
+    static protected Scanner scannerCompartido;
     protected Scanner lector;
     protected Random aleatorio;
 
     public ConsolaAbstract(Cafe cafe) {
         ConsolaAbstract.miCafe = cafe;
-        this.lector = new Scanner(System.in);
+        if (scannerCompartido == null) {
+            scannerCompartido = new Scanner(System.in);
+        }
+        this.lector = scannerCompartido;
         this.aleatorio = new Random();
+    }
+
+    protected static void setScannerCompartido(Scanner scanner) {
+        scannerCompartido = scanner;
     }
     public Usuario buscarUsuario(String login) {
         for (Cliente c : miCafe.getClientes()) {
@@ -115,7 +124,13 @@ abstract class ConsolaAbstract {
         }
 
         double totalConImpuestos = subtotalNeto + totalImpuestos;
-        int totalPagar = t.calcularTotal();
+        int totalPagar;
+        try {
+            totalPagar = t.calcularTotal();
+        } catch (UsuariosException e) {
+            System.out.println("Error al calcular el total de la factura: " + e.getMessage());
+            return;
+        }
         double ahorro = totalConImpuestos - totalPagar;
 
         System.out.println("----------------------------------------");

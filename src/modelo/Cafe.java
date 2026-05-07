@@ -148,6 +148,9 @@ public class Cafe {
 	}
 	
 	public void agregarEmpleado(Empleado e) {
+		if (e instanceof Mesero) {
+			((Mesero) e).setCafe(this);
+		}
 		this.empleados.add(e);
 		
 		ArrayList<Turno> turnos=  e.getTurnos();

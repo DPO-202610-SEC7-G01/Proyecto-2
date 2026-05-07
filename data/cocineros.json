@@ -11,9 +11,23 @@
         "nombre": "Café Americano",
         "temperatura": "Caliente",
         "esAlcoholica": false
+      },
+      {
+        "id": 204,
+        "precio": 25000,
+        "nombre": "Vino Tinto Reserva",
+        "temperatura": "Caliente",
+        "esAlcoholica": true
       }
     ],
-    "platillosConocidos": [],
+    "platillosConocidos": [
+      {
+        "id": 104,
+        "precio": 45000,
+        "nombre": "Filete de Res",
+        "alergenos": []
+      }
+    ],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": [],
@@ -24,11 +38,25 @@
     "login": "chefclaudia",
     "password": "clave_segura_2",
     "nombre": "Claudia Méndez",
-    "bebidasConocidas": [],
+    "bebidasConocidas": [
+      {
+        "id": 202,
+        "precio": 15000,
+        "nombre": "Jugo de Naranja Natural",
+        "temperatura": "Fría",
+        "esAlcoholica": false
+      }
+    ],
     "platillosConocidos": [
       {
         "id": 101,
         "precio": 25000,
+        "nombre": "Sandwich de Pavo",
+        "alergenos": ["Gluten", "Lácteos"]
+      },
+      {
+        "id": 105,
+        "precio": 18000,
         "nombre": "Sandwich de Pavo",
         "alergenos": ["Gluten", "Lácteos"]
       }
@@ -43,8 +71,23 @@
     "login": "chefandres",
     "password": "clave_segura_3",
     "nombre": "Andrés Felipe",
-    "bebidasConocidas": [],
-    "platillosConocidos": [],
+    "bebidasConocidas": [
+      {
+        "id": 203,
+        "precio": 18000,
+        "nombre": "Limonada de Coco",
+        "temperatura": "Fría",
+        "esAlcoholica": false
+      }
+    ],
+    "platillosConocidos": [
+      {
+        "id": 102,
+        "precio": 32000,
+        "nombre": "Hamburguesa Clásica",
+        "alergenos": ["Gluten", "Lácteos", "Huevo"]
+      }
+    ],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": [],
@@ -55,8 +98,23 @@
     "login": "chefbeatriz",
     "password": "clave_segura_4",
     "nombre": "Beatriz Soler",
-    "bebidasConocidas": [],
-    "platillosConocidos": [],
+    "bebidasConocidas": [
+      {
+        "id": 205,
+        "precio": 22000,
+        "nombre": "Cerveza Artesanal IPA",
+        "temperatura": "Fría",
+        "esAlcoholica": true
+      }
+    ],
+    "platillosConocidos": [
+      {
+        "id": 103,
+        "precio": 28000,
+        "nombre": "Ensalada César",
+        "alergenos": ["Lácteos", "Huevo", "Anchoas"]
+      }
+    ],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": [
@@ -79,8 +137,23 @@
     "login": "chefmarcos",
     "password": "clave_segura_5",
     "nombre": "Marcos Duarte",
-    "bebidasConocidas": [],
-    "platillosConocidos": [],
+    "bebidasConocidas": [
+      {
+        "id": 201,
+        "precio": 12000,
+        "nombre": "Café Americano",
+        "temperatura": "Caliente",
+        "esAlcoholica": false
+      }
+    ],
+    "platillosConocidos": [
+      {
+        "id": 106,
+        "precio": 22000,
+        "nombre": "Sopa de Tomate",
+        "alergenos": ["Lácteos"]
+      }
+    ],
     "puntosFidelidad": 0,
     "juegosFavoritos": [],
     "amigos": [],

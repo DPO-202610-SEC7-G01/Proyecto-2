@@ -20,7 +20,7 @@ public class ConsolaGeneral {
 	//Objetos Constantes
 	static private Cafe miCafe;
 
-	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException,  InvalidCredentialsException, ProductosException
+	public void NuevoCafe() throws IOException, FileNotFoundException, JSONException, InvalidCredentialsException, ProductosException, UsuariosException
 	{ // Método de Carga
 		miCafe = new Cafe(0); 
 		
@@ -44,14 +44,23 @@ public class ConsolaGeneral {
 		        );
 	}
 
-	public static void main(String[] args) throws IOException, FileNotFoundException, JSONException, InvalidCredentialsException, ProductosException {
+	public static void main(String[] args) {
 		ConsolaGeneral consola = new ConsolaGeneral();
-		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
 
 		Scanner lectorMenu = new Scanner(System.in);
+		ConsolaAbstract.setScannerCompartido(lectorMenu);
 		int opcion = 0;
 		
-		consola.NuevoCafe(); 
+		try {
+			consola.NuevoCafe();
+		} catch (IOException | JSONException | InvalidCredentialsException | ProductosException | UsuariosException e) {
+			System.out.println("Error cargando los datos del cafe: " + e.getMessage());
+			lectorMenu.close();
+			return;
+		}
+
+		ConsolaAdministrador consolaAdmin = new ConsolaAdministrador(miCafe);
+		consolaAdmin.lector = lectorMenu;
 
 		System.out.println("BIENVENIDO A DULCES N DADOS ");
 		
@@ -74,13 +83,13 @@ public class ConsolaGeneral {
 				switch (opcion) {
 				case 1:
 					ConsolaAdministrador.main(miCafe);
-					return;
+					break;
 				case 2:
 					ConsolaEmpleado.main(miCafe);
-					return;
+					break;
 				case 3:
 					ConsolaCliente.main(miCafe);
-					return;
+					break;
 				case 4:
 					System.out.println("Saliendo del sistema... ¡Hasta luego!");
 					return;
@@ -91,7 +100,7 @@ public class ConsolaGeneral {
 				opcion = 0;
 			}
 
-		} while (opcion != 1);
+		} while (opcion != 4);
 
 		lectorMenu.close();
 	}
